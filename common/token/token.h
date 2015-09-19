@@ -17,9 +17,9 @@ protected:
 public:
 	Token(const int & nTokenStartFrom = 1);
 	const int & lookup(const ttoken & key);
-	const int & find(const ttoken & key, const int & val = 0);
+	int find(const ttoken & key, const int & val = 0);
 	const ttoken & key(const int & token) const;
-	const int & count() const;
+	int count() const;
 	void add(const ttoken & key);
 
 	friend std::istream & operator>>(std::istream & is, Token & token) {
@@ -54,7 +54,7 @@ inline const int & Token::lookup(const ttoken & key) {
 	return m_mapTokens[key];
 }
 
-inline const int & Token::find(const ttoken & key, const int & val) {
+inline int Token::find(const ttoken & key, const int & val) {
 	return m_mapTokens.find(key) == m_mapTokens.end() ? val : m_mapTokens[key];
 }
 
@@ -62,8 +62,8 @@ inline const ttoken & Token::key(const int & token) const {
 	return m_vecKeys[token - m_nStartingToken];
 }
 
-inline  const int & Token::count() const {
-	return m_nWaterMark;
+inline int Token::count() const {
+	return m_vecKeys.size();
 }
 
 inline void Token::add(const ttoken & key) {

@@ -86,6 +86,7 @@ namespace titov {
 			if (m_lRightNodes[i].size() > 0) {
 				std::cout << i;
 				for (const auto & rn : m_lRightNodes[i]) {
+					std::cout.flush();
 					std::cout << (RIGHTNODE_DIRECTION(rn) == GRAPH_LEFT ? " <-" : " ->") << "(" << TDepLabel::key(RIGHTNODE_LABEL(rn)) << ")" << RIGHTNODE_POS(rn);
 				}
 				std::cout << std::endl;
@@ -313,23 +314,6 @@ namespace titov {
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
-//		if (m_nNextWord != item.m_nNextWord) {
-//			return false;
-//		}
-//		if (m_nStackBack != item.m_nStackBack) {
-//			return false;
-//		}
-//		for (int i = 0; i <= m_nStackBack; ++i) {
-//			if (m_lStack[i] != item.m_lStack[i]) {
-//				return false;
-//			}
-//		}
-//		for (int i = 0; i <= m_nNextWord; ++i) {
-//			if (m_lRightNodes[i] != item.m_lRightNodes[i]) {
-//				return false;
-//			}
-//		}
-//		return true;
 		if (m_nActionBack != item.m_nActionBack) {
 			return false;
 		}
@@ -357,7 +341,9 @@ namespace titov {
 		m_nScore = item.m_nScore;
 
 		size_t len = sizeof(int) * (m_nNextWord + 1);
-		memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
+		if (m_nStackBack >= 0) {
+			memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
+		}
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 
 		memcpy(m_lHeadL, item.m_lHeadL, len);

@@ -10,9 +10,9 @@ public:
 	TDepLabel();
 	~TDepLabel();
 
-	static const int & code(const ttoken & s);
+	static int code(const ttoken & s);
 	static const ttoken & key(const int & token);
-	static const int & count();
+	static int count();
 	static const int START = 1;
 	static const int ROOT = 1;
 	static void add(const ttoken & s);
@@ -24,11 +24,11 @@ inline TDepLabel::TDepLabel() = default;
 
 inline TDepLabel::~TDepLabel() = default;
 
-inline const int & TDepLabel::count() {
+inline int TDepLabel::count() {
 	return TDepLabel::tokenizer.count();
 }
 
-inline const int & TDepLabel::code(const ttoken & s) {
+inline int TDepLabel::code(const ttoken & s) {
 	return TDepLabel::tokenizer.lookup(s);
 }
 

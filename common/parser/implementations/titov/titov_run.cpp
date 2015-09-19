@@ -110,6 +110,8 @@ namespace titov {
 		AR_RE_END = (m_bLabelFeature ? AR_RE_FIRST + TDepLabel::count() : AR_RE_FIRST + 1);
 
 #ifdef _DEBUG
+		std::cout << TDepLabel::getTokenizer();
+		std::cout << "dep label count : " << TDepLabel::count() << std::endl;
 		std::cout << "al_sw_first = " << AL_SW_FIRST << std::endl;
 		std::cout << "ar_sw_first = " << AR_SW_FIRST << std::endl;
 		std::cout << "al_sh_first = " << AL_SH_FIRST << std::endl;
@@ -117,6 +119,7 @@ namespace titov {
 		std::cout << "al_re_first = " << AL_RE_FIRST << std::endl;
 		std::cout << "ar_re_first = " << AR_RE_FIRST << std::endl;
 #endif
+
 		std::ifstream treeInput;
 		if (m_bPathFeature) {
 			treeInput.open(sSyntaxTreeFile);

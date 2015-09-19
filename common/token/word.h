@@ -10,9 +10,9 @@ public:
 	TWord();
 	~TWord();
 
-	static const int & code(const ttoken & s);
+	static int code(const ttoken & s);
 	static const ttoken & key(const int & token);
-	static const int & count();
+	static int count();
 	static const int START = 1;
 
 	static Token & getTokenizer();
@@ -22,11 +22,11 @@ inline TWord::TWord() = default;
 
 inline TWord::~TWord() = default;
 
-inline const int & TWord::code(const ttoken & s) {
+inline int TWord::code(const ttoken & s) {
 	return tokenizer.lookup(s);
 }
 
-inline const int & TWord::count() {
+inline int TWord::count() {
 	return TWord::tokenizer.count();
 }
 

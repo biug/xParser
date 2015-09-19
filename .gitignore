@@ -44,10 +44,10 @@ Temporary Items
 
 # CPP
 # =========================
-.o
-.exe
-.xml
-.feat
-.prefs
-.project
-.cproject
+*.o
+*.exe
+*.xml
+*.feat
+*.prefs
+*.project
+*.cproject

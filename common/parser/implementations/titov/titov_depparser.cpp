@@ -141,17 +141,28 @@ namespace titov {
 				break;
 			}
 
+#ifdef _DEBUG
+			std::cout << "step : " << step++ << std::endl;
+			m_pGenerated->bestUnsortItem().print();
+#endif
+
 			std::swap(m_pGenerated, m_pGenerator);
 
 			clearItem.move(m_iCorrect.action(step++));
 		}
 
-		if (m_nState == PARSE) {
+		if (m_nState == PARSE && m_pGenerator->size() > 0) {
 			while (true) {
 				decode();
 				if (m_pGenerated->size() == 0) {
 					break;
 				}
+
+#ifdef _DEBUG
+				std::cout << "step : " << step++ << std::endl;
+				m_pGenerated->bestUnsortItem().print();
+#endif
+
 				std::swap(m_pGenerated, m_pGenerator);
 			}
 		}
@@ -173,6 +184,7 @@ namespace titov {
 		m_pGenerated->clear();
 
 		for (const auto & iGenerator : *m_pGenerator) {
+
 			m_abScores.clear();
 			getActionScores(*iGenerator);
 
@@ -275,22 +287,6 @@ namespace titov {
 	}
 
 	void DepParser::generate(DependencyGraph * retval, const DependencyGraph & correct) {
-//		const StateItem & item = m_abFinished.bestUnsortItem();
-//		StateItem clearItem;
-//
-//		if (m_nState == PARSE) {
-//			m_nScoreIndex = eNonAverage;
-//		}
-//
-//		for (int i = 1; i <= item.actionBack(); ++i) {
-//			getActionScores(clearItem);
-//			clearItem.move(item.action(i));
-//			clearItem.setScore(clearItem.getScore() + m_mapPackedScore[item.action(i)]);
-//			printAction(item.action(i));
-//			std::cout << "action score is " << m_mapPackedScore[item.action(i)] << std::endl;
-//			std::cout << "step score : " << clearItem.getScore() << std::endl;
-//		}
-//		std::cout << "final score : " << m_abFinished.bestUnsortItem().getScore() << std::endl;
 		m_abFinished.bestUnsortItem().generateGraph(correct, *retval);
 	}
 

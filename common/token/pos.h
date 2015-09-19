@@ -10,9 +10,9 @@ public:
 	TPOSTag();
 	~TPOSTag();
 
-	static const int & code(const ttoken & s);
+	static int code(const ttoken & s);
 	static const ttoken & key(const int & token);
-	static const int & count();
+	static int count();
 	static const int START = 1;
 
 	static Token & getTokenizer();
@@ -22,11 +22,11 @@ inline TPOSTag::TPOSTag() = default;
 
 inline TPOSTag::~TPOSTag() = default;
 
-inline const int & TPOSTag::count() {
+inline int TPOSTag::count() {
 	return TPOSTag::tokenizer.count();
 }
 
-inline const int & TPOSTag::code(const ttoken & s) {
+inline int TPOSTag::code(const ttoken & s) {
 	return TPOSTag::tokenizer.lookup(s);
 }
 
