@@ -124,6 +124,7 @@ namespace titov {
 	typedef PackedScoreMap<WordPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagMap;
 	typedef PackedScoreMap<WordWordPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagMap;
 	typedef PackedScoreMap<WordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagMap;
+	typedef PackedScoreMap<WordPOSTagPOSTagInt, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagIntMap;
 	typedef PackedScoreMap<WordWordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagPOSTagMap;
 
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;

@@ -53,6 +53,7 @@ namespace titov {
 		WordPOSTagInt word_postag_int;
 		WordWordPOSTag word_word_postag;
 		WordPOSTagPOSTag word_postag_postag;
+		WordPOSTagPOSTagInt word_postag_postag_int;
 		WordWordPOSTagPOSTag word_word_postag_postag;
 		TwoWordsInt word_word_int;
 		TwoWords two_words;

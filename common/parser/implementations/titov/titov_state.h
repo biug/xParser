@@ -30,14 +30,10 @@ namespace titov {
 
 		int m_lStack[MAX_SENTENCE_SIZE];
 		int m_lHeadL[MAX_SENTENCE_SIZE];	//heads for every node
-		int m_lSubHeadL[MAX_SENTENCE_SIZE];
 		int m_lHeadLabelL[MAX_SENTENCE_SIZE];	//label for every node
-		int m_lSubHeadLabelL[MAX_SENTENCE_SIZE];
 		int m_lHeadLNum[MAX_SENTENCE_SIZE];
 		int m_lHeadR[MAX_SENTENCE_SIZE];
-		int m_lSubHeadR[MAX_SENTENCE_SIZE];
 		int m_lHeadLabelR[MAX_SENTENCE_SIZE];
-		int m_lSubHeadLabelR[MAX_SENTENCE_SIZE];
 		int m_lHeadRNum[MAX_SENTENCE_SIZE];
 		int m_lPredL[MAX_SENTENCE_SIZE];		//left dependency children
 		int m_lSubPredL[MAX_SENTENCE_SIZE];
@@ -227,28 +223,12 @@ namespace titov {
 		return m_lHeadR[index];
 	}
 
-	inline const int & StateItem::leftSubHead(const int & index) const {
-		return m_lSubHeadL[index];
-	}
-
-	inline const int & StateItem::rightSubHead(const int & index) const {
-		return m_lSubHeadR[index];
-	}
-
 	inline const int & StateItem::leftHeadLabel(const int & index) const {
 		return m_lHeadLabelL[index];
 	}
 
 	inline const int & StateItem::rightHeadLabel(const int & index) const {
 		return m_lHeadLabelR[index];
-	}
-
-	inline const int & StateItem::leftSubHeadLabel(const int & index) const {
-		return m_lSubHeadLabelL[index];
-	}
-
-	inline const int & StateItem::rightSubHeadLabel(const int & index) const {
-		return m_lSubHeadLabelR[index];
 	}
 
 	inline const int & StateItem::leftPred(const int & index) const {

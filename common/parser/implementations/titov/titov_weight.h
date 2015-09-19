@@ -33,12 +33,29 @@ namespace titov {
 		POSTagSet2IntMap m_mapN0ptN0ipt;
 		POSTagSet3IntMap m_mapN0ptN0iptN0jpt;
 
+		// unigram with label
+		// st, n0, st2
+		WordIntMap m_mapSTwSTLHl;
+		WordIntMap m_mapSTwSTLPl;
+		WordIntMap m_mapSTwSTRHl;
+		WordIntMap m_mapSTwSTRPl;
+		WordIntMap m_mapST2wST2LHl;
+		WordIntMap m_mapST2wST2LPl;
+		WordIntMap m_mapST2wST2RHl;
+		WordIntMap m_mapST2wST2RPl;
+		WordIntMap m_mapN0wN0LHl;
+		WordIntMap m_mapN0wN0LPl;
+
 		// unigram with arity
 		// st, n0, st2
 		WordIntMap m_mapSTwSTLHi;
 		WordIntMap m_mapSTwSTLPi;
 		WordIntMap m_mapSTwSTRHi;
 		WordIntMap m_mapSTwSTRPi;
+		WordIntMap m_mapST2wST2LHi;
+		WordIntMap m_mapST2wST2LPi;
+		WordIntMap m_mapST2wST2RHi;
+		WordIntMap m_mapST2wST2RPi;
 		WordIntMap m_mapN0wN0LHi;
 		WordIntMap m_mapN0wN0LPi;
 
@@ -108,60 +125,60 @@ namespace titov {
 		POSTagSet3Map m_mapSTptN0ptST2pt;
 
 		// st + n0 + st left/right head/pred
-		WordPOSTagPOSTagMap m_mapSTwN0ptSTLHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wSTLHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptSTLHw;
-		POSTagSet3Map m_mapSTptN0ptSTLHpt;
-		WordPOSTagPOSTagMap m_mapSTwN0ptSTLPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wSTLPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptSTLPw;
-		POSTagSet3Map m_mapSTptN0ptSTLPpt;
-		WordPOSTagPOSTagMap m_mapSTwN0ptSTRHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wSTRHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptSTRHw;
-		POSTagSet3Map m_mapSTptN0ptSTRHpt;
-		WordPOSTagPOSTagMap m_mapSTwN0ptSTRPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wSTRPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptSTRPw;
-		POSTagSet3Map m_mapSTptN0ptSTRPpt;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTLHwSTLHl;
+		POSTagSet3IntMap m_mapSTptN0ptSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTLPwSTLPl;
+		POSTagSet3IntMap m_mapSTptN0ptSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTRHwSTRHl;
+		POSTagSet3IntMap m_mapSTptN0ptSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTRPptSTRPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTRPptSTRPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTRPwSTRPl;
+		POSTagSet3IntMap m_mapSTptN0ptSTRPptSTRPl;
 
 		// st + n0 + n0 left head/pred
-		WordPOSTagPOSTagMap m_mapSTwN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wN0LHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptN0LHw;
-		POSTagSet3Map m_mapSTptN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapSTwN0ptN0LPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0wN0LPpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptN0LPw;
-		POSTagSet3Map m_mapSTptN0ptN0LPpt;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptN0LHwN0LHl;
+		POSTagSet3IntMap m_mapSTptN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptN0LPwN0LPl;
+		POSTagSet3IntMap m_mapSTptN0ptN0LPptN0LPl;
 
 		// st + n0 + st left/right head/pred
-		WordPOSTagPOSTagMap m_mapST2wN0ptST2LHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wST2LHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptST2LHw;
-		POSTagSet3Map m_mapST2ptN0ptST2LHpt;
-		WordPOSTagPOSTagMap m_mapST2wN0ptST2LPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wST2LPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptST2LPw;
-		POSTagSet3Map m_mapST2ptN0ptST2LPpt;
-		WordPOSTagPOSTagMap m_mapST2wN0ptST2RHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wST2RHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptST2RHw;
-		POSTagSet3Map m_mapST2ptN0ptST2RHpt;
-		WordPOSTagPOSTagMap m_mapST2wN0ptST2RPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wST2RPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptST2RPw;
-		POSTagSet3Map m_mapST2ptN0ptST2RPpt;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2LHptST2LHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2LHptST2LHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2LHwST2LHl;
+		POSTagSet3IntMap m_mapST2ptN0ptST2LHptST2LHl;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2LPptST2LPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2LPptST2LPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2LPwST2LPl;
+		POSTagSet3IntMap m_mapST2ptN0ptST2LPptST2LPl;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2RHptST2RHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2RHptST2RHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2RHwST2RHl;
+		POSTagSet3IntMap m_mapST2ptN0ptST2RHptST2RHl;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2RPptST2RPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2RPptST2RPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2RPwST2RPl;
+		POSTagSet3IntMap m_mapST2ptN0ptST2RPptST2RPl;
 
 		// st + n0 + n0 left head/pred
-		WordPOSTagPOSTagMap m_mapST2wN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wN0LHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LHw;
-		POSTagSet3Map m_mapST2ptN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapST2wN0ptN0LPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0wN0LPpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LPw;
-		POSTagSet3Map m_mapST2ptN0ptN0LPpt;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptN0LHwN0LHl;
+		POSTagSet3IntMap m_mapST2ptN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapST2wN0ptN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0wN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapST2ptN0ptN0LPwN0LPl;
+		POSTagSet3IntMap m_mapST2ptN0ptN0LPptN0LPl;
 
 		// quar-gram
 		// st + n0 + st left head + st left pred

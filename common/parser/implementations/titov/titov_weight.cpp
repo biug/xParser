@@ -28,12 +28,29 @@ namespace titov {
 		m_mapN0ptN0ipt("m_mapN0ptN0ipt"),
 		m_mapN0ptN0iptN0jpt("m_mapN0ptN0iptN0jpt"),
 
+		// unigram with label
+		// st, n0, st2
+		m_mapSTwSTLHl("m_mapSTwSTLHl"),
+		m_mapSTwSTLPl("m_mapSTwSTLPl"),
+		m_mapSTwSTRHl("m_mapSTwSTRHl"),
+		m_mapSTwSTRPl("m_mapSTwSTRPl"),
+		m_mapST2wST2LHl("m_mapST2wST2LHl"),
+		m_mapST2wST2LPl("m_mapST2wST2LPl"),
+		m_mapST2wST2RHl("m_mapST2wST2RHl"),
+		m_mapST2wST2RPl("m_mapST2wST2RPl"),
+		m_mapN0wN0LHl("m_mapN0wN0LHl"),
+		m_mapN0wN0LPl("m_mapN0wN0LPl"),
+
 		// unigram with arity
 		// st, n0, st2
 		m_mapSTwSTLHi("m_mapSTwSTLHi"),
 		m_mapSTwSTLPi("m_mapSTwSTLPi"),
 		m_mapSTwSTRHi("m_mapSTwSTRHi"),
 		m_mapSTwSTRPi("m_mapSTwSTRPi"),
+		m_mapST2wST2LHi("m_mapST2wST2LHi"),
+		m_mapST2wST2LPi("m_mapST2wST2LPi"),
+		m_mapST2wST2RHi("m_mapST2wST2RHi"),
+		m_mapST2wST2RPi("m_mapST2wST2RPi"),
 		m_mapN0wN0LHi("m_mapN0wN0LHi"),
 		m_mapN0wN0LPi("m_mapN0wN0LPi"),
 
@@ -103,60 +120,60 @@ namespace titov {
 		m_mapSTptN0ptST2pt("m_mapSTptN0ptST2pt"),
 
 		// st + n0 + st left/right head/pred
-		m_mapSTwN0ptSTLHpt("m_mapSTwN0ptSTLHpt"),
-		m_mapSTptN0wSTLHpt("m_mapSTptN0wSTLHpt"),
-		m_mapSTptN0ptSTLHw("m_mapSTptN0ptSTLHw"),
-		m_mapSTptN0ptSTLHpt("m_mapSTptN0ptSTLHpt"),
-		m_mapSTwN0ptSTLPpt("m_mapSTwN0ptSTLPpt"),
-		m_mapSTptN0wSTLPpt("m_mapSTptN0wSTLPpt"),
-		m_mapSTptN0ptSTLPw("m_mapSTptN0ptSTLPw"),
-		m_mapSTptN0ptSTLPpt("m_mapSTptN0ptSTLPpt"),
-		m_mapSTwN0ptSTRHpt("m_mapSTwN0ptSTRHpt"),
-		m_mapSTptN0wSTRHpt("m_mapSTptN0wSTRHpt"),
-		m_mapSTptN0ptSTRHw("m_mapSTptN0ptSTRHw"),
-		m_mapSTptN0ptSTRHpt("m_mapSTptN0ptSTRHpt"),
-		m_mapSTwN0ptSTRPpt("m_mapSTwN0ptSTRPpt"),
-		m_mapSTptN0wSTRPpt("m_mapSTptN0wSTRPpt"),
-		m_mapSTptN0ptSTRPw("m_mapSTptN0ptSTRPw"),
-		m_mapSTptN0ptSTRPpt("m_mapSTptN0ptSTRPpt"),
+		m_mapSTwN0ptSTLHptSTLHl("m_mapSTwN0ptSTLHptSTLHl"),
+		m_mapSTptN0wSTLHptSTLHl("m_mapSTptN0wSTLHptSTLHl"),
+		m_mapSTptN0ptSTLHwSTLHl("m_mapSTptN0ptSTLHwSTLHl"),
+		m_mapSTptN0ptSTLHptSTLHl("m_mapSTptN0ptSTLHptSTLHl"),
+		m_mapSTwN0ptSTLPptSTLPl("m_mapSTwN0ptSTLPptSTLPl"),
+		m_mapSTptN0wSTLPptSTLPl("m_mapSTptN0wSTLPptSTLPl"),
+		m_mapSTptN0ptSTLPwSTLPl("m_mapSTptN0ptSTLPwSTLPl"),
+		m_mapSTptN0ptSTLPptSTLPl("m_mapSTptN0ptSTLPptSTLPl"),
+		m_mapSTwN0ptSTRHptSTRHl("m_mapSTwN0ptSTRHptSTRHl"),
+		m_mapSTptN0wSTRHptSTRHl("m_mapSTptN0wSTRHptSTRHl"),
+		m_mapSTptN0ptSTRHwSTRHl("m_mapSTptN0ptSTRHwSTRHl"),
+		m_mapSTptN0ptSTRHptSTRHl("m_mapSTptN0ptSTRHptSTRHl"),
+		m_mapSTwN0ptSTRPptSTRPl("m_mapSTwN0ptSTRPptSTRPl"),
+		m_mapSTptN0wSTRPptSTRPl("m_mapSTptN0wSTRPptSTRPl"),
+		m_mapSTptN0ptSTRPwSTRPl("m_mapSTptN0ptSTRPwSTRPl"),
+		m_mapSTptN0ptSTRPptSTRPl("m_mapSTptN0ptSTRPptSTRPl"),
 
-		// st + n0 + n0 right head/pred
-		m_mapSTwN0ptN0LHpt("m_mapSTwN0ptN0LHpt"),
-		m_mapSTptN0wN0LHpt("m_mapSTptN0wN0LHpt"),
-		m_mapSTptN0ptN0LHw("m_mapSTptN0ptN0LHw"),
-		m_mapSTptN0ptN0LHpt("m_mapSTptN0ptN0LHpt"),
-		m_mapSTwN0ptN0LPpt("m_mapSTwN0ptN0LPpt"),
-		m_mapSTptN0wN0LPpt("m_mapSTptN0wN0LPpt"),
-		m_mapSTptN0ptN0LPw("m_mapSTptN0ptN0LPw"),
-		m_mapSTptN0ptN0LPpt("m_mapSTptN0ptN0LPpt"),
+		// st + n0 + n0 left head/pred
+		m_mapSTwN0ptN0LHptN0LHl("m_mapSTwN0ptN0LHptN0LHl"),
+		m_mapSTptN0wN0LHptN0LHl("m_mapSTptN0wN0LHptN0LHl"),
+		m_mapSTptN0ptN0LHwN0LHl("m_mapSTptN0ptN0LHwN0LHl"),
+		m_mapSTptN0ptN0LHptN0LHl("m_mapSTptN0ptN0LHptN0LHl"),
+		m_mapSTwN0ptN0LPptN0LPl("m_mapSTwN0ptN0LPptN0LPl"),
+		m_mapSTptN0wN0LPptN0LPl("m_mapSTptN0wN0LPptN0LPl"),
+		m_mapSTptN0ptN0LPwN0LPl("m_mapSTptN0ptN0LPwN0LPl"),
+		m_mapSTptN0ptN0LPptN0LPl("m_mapSTptN0ptN0LPptN0LPl"),
 
-		// st2 + n0 + st2 left/right head/pred
-		m_mapST2wN0ptST2LHpt("m_mapST2wN0ptST2LHpt"),
-		m_mapST2ptN0wST2LHpt("m_mapST2ptN0wST2LHpt"),
-		m_mapST2ptN0ptST2LHw("m_mapST2ptN0ptST2LHw"),
-		m_mapST2ptN0ptST2LHpt("m_mapST2ptN0ptST2LHpt"),
-		m_mapST2wN0ptST2LPpt("m_mapST2wN0ptST2LPpt"),
-		m_mapST2ptN0wST2LPpt("m_mapST2ptN0wST2LPpt"),
-		m_mapST2ptN0ptST2LPw("m_mapST2ptN0ptST2LPw"),
-		m_mapST2ptN0ptST2LPpt("m_mapST2ptN0ptST2LPpt"),
-		m_mapST2wN0ptST2RHpt("m_mapST2wN0ptST2RHpt"),
-		m_mapST2ptN0wST2RHpt("m_mapST2ptN0wST2RHpt"),
-		m_mapST2ptN0ptST2RHw("m_mapST2ptN0ptST2RHw"),
-		m_mapST2ptN0ptST2RHpt("m_mapST2ptN0ptST2RHpt"),
-		m_mapST2wN0ptST2RPpt("m_mapST2wN0ptST2RPpt"),
-		m_mapST2ptN0wST2RPpt("m_mapST2ptN0wST2RPpt"),
-		m_mapST2ptN0ptST2RPw("m_mapST2ptN0ptST2RPw"),
-		m_mapST2ptN0ptST2RPpt("m_mapST2ptN0ptST2RPpt"),
+		// st + n0 + st left/right head/pred
+		m_mapST2wN0ptST2LHptST2LHl("m_mapST2wN0ptST2LHptST2LHl"),
+		m_mapST2ptN0wST2LHptST2LHl("m_mapST2ptN0wST2LHptST2LHl"),
+		m_mapST2ptN0ptST2LHwST2LHl("m_mapST2ptN0ptST2LHwST2LHl"),
+		m_mapST2ptN0ptST2LHptST2LHl("m_mapST2ptN0ptST2LHptST2LHl"),
+		m_mapST2wN0ptST2LPptST2LPl("m_mapST2wN0ptST2LPptST2LPl"),
+		m_mapST2ptN0wST2LPptST2LPl("m_mapST2ptN0wST2LPptST2LPl"),
+		m_mapST2ptN0ptST2LPwST2LPl("m_mapST2ptN0ptST2LPwST2LPl"),
+		m_mapST2ptN0ptST2LPptST2LPl("m_mapST2ptN0ptST2LPptST2LPl"),
+		m_mapST2wN0ptST2RHptST2RHl("m_mapST2wN0ptST2RHptST2RHl"),
+		m_mapST2ptN0wST2RHptST2RHl("m_mapST2ptN0wST2RHptST2RHl"),
+		m_mapST2ptN0ptST2RHwST2RHl("m_mapST2ptN0ptST2RHwST2RHl"),
+		m_mapST2ptN0ptST2RHptST2RHl("m_mapST2ptN0ptST2RHptST2RHl"),
+		m_mapST2wN0ptST2RPptST2RPl("m_mapST2wN0ptST2RPptST2RPl"),
+		m_mapST2ptN0wST2RPptST2RPl("m_mapST2ptN0wST2RPptST2RPl"),
+		m_mapST2ptN0ptST2RPwST2RPl("m_mapST2ptN0ptST2RPwST2RPl"),
+		m_mapST2ptN0ptST2RPptST2RPl("m_mapST2ptN0ptST2RPptST2RPl"),
 
-		// st2 + n0 + n0 right head/pred
-		m_mapST2wN0ptN0LHpt("m_mapST2wN0ptN0LHpt"),
-		m_mapST2ptN0wN0LHpt("m_mapST2ptN0wN0LHpt"),
-		m_mapST2ptN0ptN0LHw("m_mapST2ptN0ptN0LHw"),
-		m_mapST2ptN0ptN0LHpt("m_mapST2ptN0ptN0LHpt"),
-		m_mapST2wN0ptN0LPpt("m_mapST2wN0ptN0LPpt"),
-		m_mapST2ptN0wN0LPpt("m_mapST2ptN0wN0LPpt"),
-		m_mapST2ptN0ptN0LPw("m_mapST2ptN0ptN0LPw"),
-		m_mapST2ptN0ptN0LPpt("m_mapST2ptN0ptN0LPpt"),
+		// st + n0 + n0 left head/pred
+		m_mapST2wN0ptN0LHptN0LHl("m_mapST2wN0ptN0LHptN0LHl"),
+		m_mapST2ptN0wN0LHptN0LHl("m_mapST2ptN0wN0LHptN0LHl"),
+		m_mapST2ptN0ptN0LHwN0LHl("m_mapST2ptN0ptN0LHwN0LHl"),
+		m_mapST2ptN0ptN0LHptN0LHl("m_mapST2ptN0ptN0LHptN0LHl"),
+		m_mapST2wN0ptN0LPptN0LPl("m_mapST2wN0ptN0LPptN0LPl"),
+		m_mapST2ptN0wN0LPptN0LPl("m_mapST2ptN0wN0LPptN0LPl"),
+		m_mapST2ptN0ptN0LPwN0LPl("m_mapST2ptN0ptN0LPwN0LPl"),
+		m_mapST2ptN0ptN0LPptN0LPl("m_mapST2ptN0ptN0LPptN0LPl"),
 
 		// quar-gram
 		// st + n0 + st left head + st left pred
@@ -230,12 +247,29 @@ namespace titov {
 		input >> m_mapN0ptN0ipt;
 		input >> m_mapN0ptN0iptN0jpt;
 
+		// unigram with label
+		// st, n0, st2
+		input >> m_mapSTwSTLHl;
+		input >> m_mapSTwSTLPl;
+		input >> m_mapSTwSTRHl;
+		input >> m_mapSTwSTRPl;
+		input >> m_mapST2wST2LHl;
+		input >> m_mapST2wST2LPl;
+		input >> m_mapST2wST2RHl;
+		input >> m_mapST2wST2RPl;
+		input >> m_mapN0wN0LHl;
+		input >> m_mapN0wN0LPl;
+
 		// unigram with arity
 		// st, n0, st2
 		input >> m_mapSTwSTLHi;
 		input >> m_mapSTwSTLPi;
 		input >> m_mapSTwSTRHi;
 		input >> m_mapSTwSTRPi;
+		input >> m_mapST2wST2LHi;
+		input >> m_mapST2wST2LPi;
+		input >> m_mapST2wST2RHi;
+		input >> m_mapST2wST2RPi;
 		input >> m_mapN0wN0LHi;
 		input >> m_mapN0wN0LPi;
 
@@ -305,60 +339,60 @@ namespace titov {
 		input >> m_mapSTptN0ptST2pt;
 
 		// st + n0 + st left/right head/pred
-		input >> m_mapSTwN0ptSTLHpt;
-		input >> m_mapSTptN0wSTLHpt;
-		input >> m_mapSTptN0ptSTLHw;
-		input >> m_mapSTptN0ptSTLHpt;
-		input >> m_mapSTwN0ptSTLPpt;
-		input >> m_mapSTptN0wSTLPpt;
-		input >> m_mapSTptN0ptSTLPw;
-		input >> m_mapSTptN0ptSTLPpt;
-		input >> m_mapSTwN0ptSTRHpt;
-		input >> m_mapSTptN0wSTRHpt;
-		input >> m_mapSTptN0ptSTRHw;
-		input >> m_mapSTptN0ptSTRHpt;
-		input >> m_mapSTwN0ptSTRPpt;
-		input >> m_mapSTptN0wSTRPpt;
-		input >> m_mapSTptN0ptSTRPw;
-		input >> m_mapSTptN0ptSTRPpt;
+		input >> m_mapSTwN0ptSTLHptSTLHl;
+		input >> m_mapSTptN0wSTLHptSTLHl;
+		input >> m_mapSTptN0ptSTLHwSTLHl;
+		input >> m_mapSTptN0ptSTLHptSTLHl;
+		input >> m_mapSTwN0ptSTLPptSTLPl;
+		input >> m_mapSTptN0wSTLPptSTLPl;
+		input >> m_mapSTptN0ptSTLPwSTLPl;
+		input >> m_mapSTptN0ptSTLPptSTLPl;
+		input >> m_mapSTwN0ptSTRHptSTRHl;
+		input >> m_mapSTptN0wSTRHptSTRHl;
+		input >> m_mapSTptN0ptSTRHwSTRHl;
+		input >> m_mapSTptN0ptSTRHptSTRHl;
+		input >> m_mapSTwN0ptSTRPptSTRPl;
+		input >> m_mapSTptN0wSTRPptSTRPl;
+		input >> m_mapSTptN0ptSTRPwSTRPl;
+		input >> m_mapSTptN0ptSTRPptSTRPl;
 
-		// st + n0 + n0 right head/pred
-		input >> m_mapSTwN0ptN0LHpt;
-		input >> m_mapSTptN0wN0LHpt;
-		input >> m_mapSTptN0ptN0LHw;
-		input >> m_mapSTptN0ptN0LHpt;
-		input >> m_mapSTwN0ptN0LPpt;
-		input >> m_mapSTptN0wN0LPpt;
-		input >> m_mapSTptN0ptN0LPw;
-		input >> m_mapSTptN0ptN0LPpt;
+		// st + n0 + n0 left head/pred
+		input >> m_mapSTwN0ptN0LHptN0LHl;
+		input >> m_mapSTptN0wN0LHptN0LHl;
+		input >> m_mapSTptN0ptN0LHwN0LHl;
+		input >> m_mapSTptN0ptN0LHptN0LHl;
+		input >> m_mapSTwN0ptN0LPptN0LPl;
+		input >> m_mapSTptN0wN0LPptN0LPl;
+		input >> m_mapSTptN0ptN0LPwN0LPl;
+		input >> m_mapSTptN0ptN0LPptN0LPl;
 
-		// st2 + n0 + st2 left/right head/pred
-		input >> m_mapST2wN0ptST2LHpt;
-		input >> m_mapST2ptN0wST2LHpt;
-		input >> m_mapST2ptN0ptST2LHw;
-		input >> m_mapST2ptN0ptST2LHpt;
-		input >> m_mapST2wN0ptST2LPpt;
-		input >> m_mapST2ptN0wST2LPpt;
-		input >> m_mapST2ptN0ptST2LPw;
-		input >> m_mapST2ptN0ptST2LPpt;
-		input >> m_mapST2wN0ptST2RHpt;
-		input >> m_mapST2ptN0wST2RHpt;
-		input >> m_mapST2ptN0ptST2RHw;
-		input >> m_mapST2ptN0ptST2RHpt;
-		input >> m_mapST2wN0ptST2RPpt;
-		input >> m_mapST2ptN0wST2RPpt;
-		input >> m_mapST2ptN0ptST2RPw;
-		input >> m_mapST2ptN0ptST2RPpt;
+		// st + n0 + st left/right head/pred
+		input >> m_mapST2wN0ptST2LHptST2LHl;
+		input >> m_mapST2ptN0wST2LHptST2LHl;
+		input >> m_mapST2ptN0ptST2LHwST2LHl;
+		input >> m_mapST2ptN0ptST2LHptST2LHl;
+		input >> m_mapST2wN0ptST2LPptST2LPl;
+		input >> m_mapST2ptN0wST2LPptST2LPl;
+		input >> m_mapST2ptN0ptST2LPwST2LPl;
+		input >> m_mapST2ptN0ptST2LPptST2LPl;
+		input >> m_mapST2wN0ptST2RHptST2RHl;
+		input >> m_mapST2ptN0wST2RHptST2RHl;
+		input >> m_mapST2ptN0ptST2RHwST2RHl;
+		input >> m_mapST2ptN0ptST2RHptST2RHl;
+		input >> m_mapST2wN0ptST2RPptST2RPl;
+		input >> m_mapST2ptN0wST2RPptST2RPl;
+		input >> m_mapST2ptN0ptST2RPwST2RPl;
+		input >> m_mapST2ptN0ptST2RPptST2RPl;
 
-		// st2 + n0 + n0 right head/pred
-		input >> m_mapST2wN0ptN0LHpt;
-		input >> m_mapST2ptN0wN0LHpt;
-		input >> m_mapST2ptN0ptN0LHw;
-		input >> m_mapST2ptN0ptN0LHpt;
-		input >> m_mapST2wN0ptN0LPpt;
-		input >> m_mapST2ptN0wN0LPpt;
-		input >> m_mapST2ptN0ptN0LPw;
-		input >> m_mapST2ptN0ptN0LPpt;
+		// st + n0 + n0 left head/pred
+		input >> m_mapST2wN0ptN0LHptN0LHl;
+		input >> m_mapST2ptN0wN0LHptN0LHl;
+		input >> m_mapST2ptN0ptN0LHwN0LHl;
+		input >> m_mapST2ptN0ptN0LHptN0LHl;
+		input >> m_mapST2wN0ptN0LPptN0LPl;
+		input >> m_mapST2ptN0wN0LPptN0LPl;
+		input >> m_mapST2ptN0ptN0LPwN0LPl;
+		input >> m_mapST2ptN0ptN0LPptN0LPl;
 
 		// quar-gram
 		// st + n0 + st left head + st left pred
@@ -426,12 +460,29 @@ namespace titov {
 		output << m_mapN0ptN0ipt;
 		output << m_mapN0ptN0iptN0jpt;
 
+		// unigram with label
+		// st, n0, st2
+		output << m_mapSTwSTLHl;
+		output << m_mapSTwSTLPl;
+		output << m_mapSTwSTRHl;
+		output << m_mapSTwSTRPl;
+		output << m_mapST2wST2LHl;
+		output << m_mapST2wST2LPl;
+		output << m_mapST2wST2RHl;
+		output << m_mapST2wST2RPl;
+		output << m_mapN0wN0LHl;
+		output << m_mapN0wN0LPl;
+
 		// unigram with arity
 		// st, n0, st2
 		output << m_mapSTwSTLHi;
 		output << m_mapSTwSTLPi;
 		output << m_mapSTwSTRHi;
 		output << m_mapSTwSTRPi;
+		output << m_mapST2wST2LHi;
+		output << m_mapST2wST2LPi;
+		output << m_mapST2wST2RHi;
+		output << m_mapST2wST2RPi;
 		output << m_mapN0wN0LHi;
 		output << m_mapN0wN0LPi;
 
@@ -501,60 +552,60 @@ namespace titov {
 		output << m_mapSTptN0ptST2pt;
 
 		// st + n0 + st left/right head/pred
-		output << m_mapSTwN0ptSTLHpt;
-		output << m_mapSTptN0wSTLHpt;
-		output << m_mapSTptN0ptSTLHw;
-		output << m_mapSTptN0ptSTLHpt;
-		output << m_mapSTwN0ptSTLPpt;
-		output << m_mapSTptN0wSTLPpt;
-		output << m_mapSTptN0ptSTLPw;
-		output << m_mapSTptN0ptSTLPpt;
-		output << m_mapSTwN0ptSTRHpt;
-		output << m_mapSTptN0wSTRHpt;
-		output << m_mapSTptN0ptSTRHw;
-		output << m_mapSTptN0ptSTRHpt;
-		output << m_mapSTwN0ptSTRPpt;
-		output << m_mapSTptN0wSTRPpt;
-		output << m_mapSTptN0ptSTRPw;
-		output << m_mapSTptN0ptSTRPpt;
+		output << m_mapSTwN0ptSTLHptSTLHl;
+		output << m_mapSTptN0wSTLHptSTLHl;
+		output << m_mapSTptN0ptSTLHwSTLHl;
+		output << m_mapSTptN0ptSTLHptSTLHl;
+		output << m_mapSTwN0ptSTLPptSTLPl;
+		output << m_mapSTptN0wSTLPptSTLPl;
+		output << m_mapSTptN0ptSTLPwSTLPl;
+		output << m_mapSTptN0ptSTLPptSTLPl;
+		output << m_mapSTwN0ptSTRHptSTRHl;
+		output << m_mapSTptN0wSTRHptSTRHl;
+		output << m_mapSTptN0ptSTRHwSTRHl;
+		output << m_mapSTptN0ptSTRHptSTRHl;
+		output << m_mapSTwN0ptSTRPptSTRPl;
+		output << m_mapSTptN0wSTRPptSTRPl;
+		output << m_mapSTptN0ptSTRPwSTRPl;
+		output << m_mapSTptN0ptSTRPptSTRPl;
 
-		// st + n0 + n0 right head/pred
-		output << m_mapSTwN0ptN0LHpt;
-		output << m_mapSTptN0wN0LHpt;
-		output << m_mapSTptN0ptN0LHw;
-		output << m_mapSTptN0ptN0LHpt;
-		output << m_mapSTwN0ptN0LPpt;
-		output << m_mapSTptN0wN0LPpt;
-		output << m_mapSTptN0ptN0LPw;
-		output << m_mapSTptN0ptN0LPpt;
+		// st + n0 + n0 left head/pred
+		output << m_mapSTwN0ptN0LHptN0LHl;
+		output << m_mapSTptN0wN0LHptN0LHl;
+		output << m_mapSTptN0ptN0LHwN0LHl;
+		output << m_mapSTptN0ptN0LHptN0LHl;
+		output << m_mapSTwN0ptN0LPptN0LPl;
+		output << m_mapSTptN0wN0LPptN0LPl;
+		output << m_mapSTptN0ptN0LPwN0LPl;
+		output << m_mapSTptN0ptN0LPptN0LPl;
 
-		// st2 + n0 + st2 left/right head/pred
-		output << m_mapST2wN0ptST2LHpt;
-		output << m_mapST2ptN0wST2LHpt;
-		output << m_mapST2ptN0ptST2LHw;
-		output << m_mapST2ptN0ptST2LHpt;
-		output << m_mapST2wN0ptST2LPpt;
-		output << m_mapST2ptN0wST2LPpt;
-		output << m_mapST2ptN0ptST2LPw;
-		output << m_mapST2ptN0ptST2LPpt;
-		output << m_mapST2wN0ptST2RHpt;
-		output << m_mapST2ptN0wST2RHpt;
-		output << m_mapST2ptN0ptST2RHw;
-		output << m_mapST2ptN0ptST2RHpt;
-		output << m_mapST2wN0ptST2RPpt;
-		output << m_mapST2ptN0wST2RPpt;
-		output << m_mapST2ptN0ptST2RPw;
-		output << m_mapST2ptN0ptST2RPpt;
+		// st + n0 + st left/right head/pred
+		output << m_mapST2wN0ptST2LHptST2LHl;
+		output << m_mapST2ptN0wST2LHptST2LHl;
+		output << m_mapST2ptN0ptST2LHwST2LHl;
+		output << m_mapST2ptN0ptST2LHptST2LHl;
+		output << m_mapST2wN0ptST2LPptST2LPl;
+		output << m_mapST2ptN0wST2LPptST2LPl;
+		output << m_mapST2ptN0ptST2LPwST2LPl;
+		output << m_mapST2ptN0ptST2LPptST2LPl;
+		output << m_mapST2wN0ptST2RHptST2RHl;
+		output << m_mapST2ptN0wST2RHptST2RHl;
+		output << m_mapST2ptN0ptST2RHwST2RHl;
+		output << m_mapST2ptN0ptST2RHptST2RHl;
+		output << m_mapST2wN0ptST2RPptST2RPl;
+		output << m_mapST2ptN0wST2RPptST2RPl;
+		output << m_mapST2ptN0ptST2RPwST2RPl;
+		output << m_mapST2ptN0ptST2RPptST2RPl;
 
-		// st2 + n0 + n0 right head/pred
-		output << m_mapST2wN0ptN0LHpt;
-		output << m_mapST2ptN0wN0LHpt;
-		output << m_mapST2ptN0ptN0LHw;
-		output << m_mapST2ptN0ptN0LHpt;
-		output << m_mapST2wN0ptN0LPpt;
-		output << m_mapST2ptN0wN0LPpt;
-		output << m_mapST2ptN0ptN0LPw;
-		output << m_mapST2ptN0ptN0LPpt;
+		// st + n0 + n0 left head/pred
+		output << m_mapST2wN0ptN0LHptN0LHl;
+		output << m_mapST2ptN0wN0LHptN0LHl;
+		output << m_mapST2ptN0ptN0LHwN0LHl;
+		output << m_mapST2ptN0ptN0LHptN0LHl;
+		output << m_mapST2wN0ptN0LPptN0LPl;
+		output << m_mapST2ptN0wN0LPptN0LPl;
+		output << m_mapST2ptN0ptN0LPwN0LPl;
+		output << m_mapST2ptN0ptN0LPptN0LPl;
 
 		// quar-gram
 		// st + n0 + st left head + st left pred
@@ -607,12 +658,29 @@ namespace titov {
 		m_mapN0ptN0ipt.computeAverage(round);
 		m_mapN0ptN0iptN0jpt.computeAverage(round);
 
+		// unigram with label
+		// st, n0, st2
+		m_mapSTwSTLHl.computeAverage(round);
+		m_mapSTwSTLPl.computeAverage(round);
+		m_mapSTwSTRHl.computeAverage(round);
+		m_mapSTwSTRPl.computeAverage(round);
+		m_mapST2wST2LHl.computeAverage(round);
+		m_mapST2wST2LPl.computeAverage(round);
+		m_mapST2wST2RHl.computeAverage(round);
+		m_mapST2wST2RPl.computeAverage(round);
+		m_mapN0wN0LHl.computeAverage(round);
+		m_mapN0wN0LPl.computeAverage(round);
+
 		// unigram with arity
 		// st, n0, st2
 		m_mapSTwSTLHi.computeAverage(round);
 		m_mapSTwSTLPi.computeAverage(round);
 		m_mapSTwSTRHi.computeAverage(round);
 		m_mapSTwSTRPi.computeAverage(round);
+		m_mapST2wST2LHi.computeAverage(round);
+		m_mapST2wST2LPi.computeAverage(round);
+		m_mapST2wST2RHi.computeAverage(round);
+		m_mapST2wST2RPi.computeAverage(round);
 		m_mapN0wN0LHi.computeAverage(round);
 		m_mapN0wN0LPi.computeAverage(round);
 
@@ -682,60 +750,60 @@ namespace titov {
 		m_mapSTptN0ptST2pt.computeAverage(round);
 
 		// st + n0 + st left/right head/pred
-		m_mapSTwN0ptSTLHpt.computeAverage(round);
-		m_mapSTptN0wSTLHpt.computeAverage(round);
-		m_mapSTptN0ptSTLHw.computeAverage(round);
-		m_mapSTptN0ptSTLHpt.computeAverage(round);
-		m_mapSTwN0ptSTLPpt.computeAverage(round);
-		m_mapSTptN0wSTLPpt.computeAverage(round);
-		m_mapSTptN0ptSTLPw.computeAverage(round);
-		m_mapSTptN0ptSTLPpt.computeAverage(round);
-		m_mapSTwN0ptSTRHpt.computeAverage(round);
-		m_mapSTptN0wSTRHpt.computeAverage(round);
-		m_mapSTptN0ptSTRHw.computeAverage(round);
-		m_mapSTptN0ptSTRHpt.computeAverage(round);
-		m_mapSTwN0ptSTRPpt.computeAverage(round);
-		m_mapSTptN0wSTRPpt.computeAverage(round);
-		m_mapSTptN0ptSTRPw.computeAverage(round);
-		m_mapSTptN0ptSTRPpt.computeAverage(round);
+		m_mapSTwN0ptSTLHptSTLHl.computeAverage(round);
+		m_mapSTptN0wSTLHptSTLHl.computeAverage(round);
+		m_mapSTptN0ptSTLHwSTLHl.computeAverage(round);
+		m_mapSTptN0ptSTLHptSTLHl.computeAverage(round);
+		m_mapSTwN0ptSTLPptSTLPl.computeAverage(round);
+		m_mapSTptN0wSTLPptSTLPl.computeAverage(round);
+		m_mapSTptN0ptSTLPwSTLPl.computeAverage(round);
+		m_mapSTptN0ptSTLPptSTLPl.computeAverage(round);
+		m_mapSTwN0ptSTRHptSTRHl.computeAverage(round);
+		m_mapSTptN0wSTRHptSTRHl.computeAverage(round);
+		m_mapSTptN0ptSTRHwSTRHl.computeAverage(round);
+		m_mapSTptN0ptSTRHptSTRHl.computeAverage(round);
+		m_mapSTwN0ptSTRPptSTRPl.computeAverage(round);
+		m_mapSTptN0wSTRPptSTRPl.computeAverage(round);
+		m_mapSTptN0ptSTRPwSTRPl.computeAverage(round);
+		m_mapSTptN0ptSTRPptSTRPl.computeAverage(round);
 
-		// st + n0 + n0 right head/pred
-		m_mapSTwN0ptN0LHpt.computeAverage(round);
-		m_mapSTptN0wN0LHpt.computeAverage(round);
-		m_mapSTptN0ptN0LHw.computeAverage(round);
-		m_mapSTptN0ptN0LHpt.computeAverage(round);
-		m_mapSTwN0ptN0LPpt.computeAverage(round);
-		m_mapSTptN0wN0LPpt.computeAverage(round);
-		m_mapSTptN0ptN0LPw.computeAverage(round);
-		m_mapSTptN0ptN0LPpt.computeAverage(round);
+		// st + n0 + n0 left head/pred
+		m_mapSTwN0ptN0LHptN0LHl.computeAverage(round);
+		m_mapSTptN0wN0LHptN0LHl.computeAverage(round);
+		m_mapSTptN0ptN0LHwN0LHl.computeAverage(round);
+		m_mapSTptN0ptN0LHptN0LHl.computeAverage(round);
+		m_mapSTwN0ptN0LPptN0LPl.computeAverage(round);
+		m_mapSTptN0wN0LPptN0LPl.computeAverage(round);
+		m_mapSTptN0ptN0LPwN0LPl.computeAverage(round);
+		m_mapSTptN0ptN0LPptN0LPl.computeAverage(round);
 
-		// st2 + n0 + st2 left/right head/pred
-		m_mapST2wN0ptST2LHpt.computeAverage(round);
-		m_mapST2ptN0wST2LHpt.computeAverage(round);
-		m_mapST2ptN0ptST2LHw.computeAverage(round);
-		m_mapST2ptN0ptST2LHpt.computeAverage(round);
-		m_mapST2wN0ptST2LPpt.computeAverage(round);
-		m_mapST2ptN0wST2LPpt.computeAverage(round);
-		m_mapST2ptN0ptST2LPw.computeAverage(round);
-		m_mapST2ptN0ptST2LPpt.computeAverage(round);
-		m_mapST2wN0ptST2RHpt.computeAverage(round);
-		m_mapST2ptN0wST2RHpt.computeAverage(round);
-		m_mapST2ptN0ptST2RHw.computeAverage(round);
-		m_mapST2ptN0ptST2RHpt.computeAverage(round);
-		m_mapST2wN0ptST2RPpt.computeAverage(round);
-		m_mapST2ptN0wST2RPpt.computeAverage(round);
-		m_mapST2ptN0ptST2RPw.computeAverage(round);
-		m_mapST2ptN0ptST2RPpt.computeAverage(round);
+		// st + n0 + st left/right head/pred
+		m_mapST2wN0ptST2LHptST2LHl.computeAverage(round);
+		m_mapST2ptN0wST2LHptST2LHl.computeAverage(round);
+		m_mapST2ptN0ptST2LHwST2LHl.computeAverage(round);
+		m_mapST2ptN0ptST2LHptST2LHl.computeAverage(round);
+		m_mapST2wN0ptST2LPptST2LPl.computeAverage(round);
+		m_mapST2ptN0wST2LPptST2LPl.computeAverage(round);
+		m_mapST2ptN0ptST2LPwST2LPl.computeAverage(round);
+		m_mapST2ptN0ptST2LPptST2LPl.computeAverage(round);
+		m_mapST2wN0ptST2RHptST2RHl.computeAverage(round);
+		m_mapST2ptN0wST2RHptST2RHl.computeAverage(round);
+		m_mapST2ptN0ptST2RHwST2RHl.computeAverage(round);
+		m_mapST2ptN0ptST2RHptST2RHl.computeAverage(round);
+		m_mapST2wN0ptST2RPptST2RPl.computeAverage(round);
+		m_mapST2ptN0wST2RPptST2RPl.computeAverage(round);
+		m_mapST2ptN0ptST2RPwST2RPl.computeAverage(round);
+		m_mapST2ptN0ptST2RPptST2RPl.computeAverage(round);
 
-		// st2 + n0 + n0 right head/pred
-		m_mapST2wN0ptN0LHpt.computeAverage(round);
-		m_mapST2ptN0wN0LHpt.computeAverage(round);
-		m_mapST2ptN0ptN0LHw.computeAverage(round);
-		m_mapST2ptN0ptN0LHpt.computeAverage(round);
-		m_mapST2wN0ptN0LPpt.computeAverage(round);
-		m_mapST2ptN0wN0LPpt.computeAverage(round);
-		m_mapST2ptN0ptN0LPw.computeAverage(round);
-		m_mapST2ptN0ptN0LPpt.computeAverage(round);
+		// st + n0 + n0 left head/pred
+		m_mapST2wN0ptN0LHptN0LHl.computeAverage(round);
+		m_mapST2ptN0wN0LHptN0LHl.computeAverage(round);
+		m_mapST2ptN0ptN0LHwN0LHl.computeAverage(round);
+		m_mapST2ptN0ptN0LHptN0LHl.computeAverage(round);
+		m_mapST2wN0ptN0LPptN0LPl.computeAverage(round);
+		m_mapST2ptN0wN0LPptN0LPl.computeAverage(round);
+		m_mapST2ptN0ptN0LPwN0LPl.computeAverage(round);
+		m_mapST2ptN0ptN0LPptN0LPl.computeAverage(round);
 
 		// quar-gram
 		// st + n0 + st left head + st left pred

@@ -76,6 +76,7 @@ typedef TriGram<gtype> WordPOSTagPOSTag;
 typedef QuarGram<gtype> POSTagSet4;
 typedef QuarGram<gtype> ThreeWordsInt;
 typedef QuarGram<gtype> WordWordPOSTagPOSTag;
+typedef QuarGram<gtype> WordWordPOSTagInt;
 
 typedef BiGram<gtype> WordInt;
 typedef BiGram<gtype> POSTagInt;

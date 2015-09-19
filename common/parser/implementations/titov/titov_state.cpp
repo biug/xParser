@@ -14,9 +14,7 @@ namespace titov {
 	void StateItem::arcLeft(const int & l) {
 		const int & left = m_lStack[m_nStackBack];
 		//add new head for left and add label
-		m_lSubHeadR[left] = m_lHeadR[left];
 		m_lHeadR[left] = m_nNextWord;
-		m_lSubHeadLabelR[left] = m_lHeadLabelR[left];
 		m_lHeadLabelR[left] = l;
 		++m_lHeadRNum[left];
 		//sibling is the previous child of buffer seek
@@ -47,22 +45,9 @@ namespace titov {
 		const int & left = m_lStack[m_nStackBack];
 		//sibling is the previous child of buffer seek
 		int & buffer_left_head = m_lHeadL[m_nNextWord];
-		if (buffer_left_head == -1) {
+		if (buffer_left_head == -1 || left < buffer_left_head) {
 			buffer_left_head = left;
 			m_lHeadLabelL[m_nNextWord] = l;
-		}
-		else if (left < buffer_left_head) {
-			m_lSubHeadL[m_nNextWord] = buffer_left_head;
-			m_lSubHeadLabelL[m_nNextWord] = m_lHeadLabelL[m_nNextWord];
-			buffer_left_head = left;
-			m_lHeadLabelL[m_nNextWord] = l;
-		}
-		else {
-			int & sub_buffer_left_head = m_lSubHeadL[m_nNextWord];
-			if (sub_buffer_left_head == -1 || left < sub_buffer_left_head) {
-				sub_buffer_left_head = left;
-				m_lSubHeadLabelL[m_nNextWord] = l;
-			}
 		}
 		++m_lHeadLNum[m_nNextWord];
 		m_lSubPredR[left] = m_lPredR[left];
@@ -131,11 +116,9 @@ namespace titov {
 
 	void StateItem::clearNext() {
 		m_lHeadL[m_nNextWord] = -1;
-		m_lSubHeadL[m_nNextWord] = -1;
 		m_lHeadLabelL[m_nNextWord] = 0;
 		m_lHeadLNum[m_nNextWord] = 0;
 		m_lHeadR[m_nNextWord] = -1;
-		m_lSubHeadR[m_nNextWord] = -1;
 		m_lHeadLabelR[m_nNextWord] = 0;
 		m_lHeadRNum[m_nNextWord] = 0;
 		m_lPredL[m_nNextWord] = -1;
@@ -347,14 +330,10 @@ namespace titov {
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 
 		memcpy(m_lHeadL, item.m_lHeadL, len);
-		memcpy(m_lSubHeadL, item.m_lSubHeadL, len);
 		memcpy(m_lHeadLabelL, item.m_lHeadLabelL, len);
-		memcpy(m_lSubHeadLabelL, item.m_lSubHeadLabelL, len);
 		memcpy(m_lHeadLNum, item.m_lHeadLNum, len);
 		memcpy(m_lHeadR, item.m_lHeadR, len);
-		memcpy(m_lSubHeadR, item.m_lSubHeadR, len);
 		memcpy(m_lHeadLabelR, item.m_lHeadLabelR, len);
-		memcpy(m_lSubHeadLabelR, item.m_lSubHeadLabelR, len);
 		memcpy(m_lHeadRNum, item.m_lHeadRNum, len);
 		memcpy(m_lPredL, item.m_lPredL, len);
 		memcpy(m_lSubPredL, item.m_lSubPredL, len);
