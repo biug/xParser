@@ -498,26 +498,28 @@ namespace titov {
 
 		// unigram with label
 		// st, n0, st2
-		word_int.refer(st_word, stlh_label);
-		cweight->m_mapSTwSTLHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st_word, stlp_label);
-		cweight->m_mapSTwSTLPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st_word, strh_label);
-		cweight->m_mapSTwSTRHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st_word, strp_label);
-		cweight->m_mapSTwSTRPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2lh_label);
-		cweight->m_mapST2wST2LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2lp_label);
-		cweight->m_mapST2wST2LPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2rh_label);
-		cweight->m_mapST2wST2RHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2rp_label);
-		cweight->m_mapST2wST2RPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(n0_word, n0lh_label);
-		cweight->m_mapN0wN0LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(n0_word, n0lp_label);
-		cweight->m_mapN0wN0LPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		if (m_bLabel) {
+			word_int.refer(st_word, stlh_label);
+			cweight->m_mapSTwSTLHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st_word, stlp_label);
+			cweight->m_mapSTwSTLPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st_word, strh_label);
+			cweight->m_mapSTwSTRHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st_word, strp_label);
+			cweight->m_mapSTwSTRPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st2_word, st2lh_label);
+			cweight->m_mapST2wST2LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st2_word, st2lp_label);
+			cweight->m_mapST2wST2LPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st2_word, st2rh_label);
+			cweight->m_mapST2wST2RHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(st2_word, st2rp_label);
+			cweight->m_mapST2wST2RPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(n0_word, n0lh_label);
+			cweight->m_mapN0wN0LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+			word_int.refer(n0_word, n0lp_label);
+			cweight->m_mapN0wN0LPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		}
 
 		// unigram with arity
 		// st, n0, st2
