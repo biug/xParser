@@ -21,10 +21,14 @@ namespace titov {
 		// st + sti, n0 + n0i
 		m_mapSTiw("m_mapSTiw"),
 		m_mapSTiwSTjw("m_mapSTiwSTjw"),
+		m_mapST2iw("m_mapST2iw"),
+		m_mapST2iwST2jw("m_mapST2iwST2jw"),
 		m_mapN0iw("m_mapN0iw"),
 		m_mapN0iwN0jw("m_mapN0iwN0jw"),
 		m_mapSTipt("m_mapSTipt"),
 		m_mapSTiptSTjpt("m_mapSTiptSTjpt"),
+		m_mapST2ipt("m_mapST2ipt"),
+		m_mapST2iptST2jpt("m_mapST2iptST2jpt"),
 		m_mapN0ipt("m_mapN0ipt"),
 		m_mapN0iptN0jpt("m_mapN0iptN0jpt"),
 
@@ -47,6 +51,12 @@ namespace titov {
 		m_mapSTwSTPi("m_mapSTwSTPi"),
 		m_mapN0wN0LHi("m_mapN0wN0LHi"),
 		m_mapN0wN0LPi("m_mapN0wN0LPi"),
+		m_mapST2wST2LHi("m_mapST2wST2LHi"),
+		m_mapST2wST2LPi("m_mapST2wST2LPi"),
+		m_mapST2wST2RHi("m_mapST2wST2RHi"),
+		m_mapST2wST2RPi("m_mapST2wST2RPi"),
+		m_mapST2wST2Hi("m_mapST2wST2Hi"),
+		m_mapST2wST2Pi("m_mapST2wST2Pi"),
 
 		// bi-gram
 		// st + n0
@@ -83,6 +93,9 @@ namespace titov {
 		m_mapST2wN0ptD("m_mapST2wN0ptD"),
 		m_mapST2ptN0wD("m_mapST2ptN0wD"),
 		m_mapST2ptN0ptD("m_mapST2ptN0ptD"),
+		// st2 + n0 + st2 left/right head/pred
+		m_mapST2wN0wST2RPi("m_mapST2wN0wST2RPi"),
+		m_mapST2wN0wN0LPi("m_mapST2wN0wN0LPi"),
 
 		// st + st2
 		m_mapSTwST2w("m_mapSTwST2w"),
@@ -139,6 +152,44 @@ namespace titov {
 		m_mapSTptN0ptSTRPptSTRP2pt("m_mapSTptN0ptSTRPptSTRP2pt"),
 		// st + n0 + n0 left pred + n0 left pred 2
 		m_mapSTptN0ptN0LPptN0LP2pt("m_mapSTptN0ptN0LPptN0LP2pt"),
+
+		// st2 + n0 + st2 left/right head/pred
+		m_mapST2wN0ptST2LHpt("m_mapST2wN0ptST2LHpt"),
+		m_mapST2ptN0wST2LHpt("m_mapST2ptN0wST2LHpt"),
+		m_mapST2ptN0ptST2LHw("m_mapST2ptN0ptST2LHw"),
+		m_mapST2ptN0ptST2LHpt("m_mapST2ptN0ptST2LHpt"),
+		m_mapST2wN0ptST2LPpt("m_mapST2wN0ptST2LPpt"),
+		m_mapST2ptN0wST2LPpt("m_mapST2ptN0wST2LPpt"),
+		m_mapST2ptN0ptST2LPw("m_mapST2ptN0ptST2LPw"),
+		m_mapST2ptN0ptST2LPpt("m_mapST2ptN0ptST2LPpt"),
+		m_mapST2wN0ptST2RHpt("m_mapST2wN0ptST2RHpt"),
+		m_mapST2ptN0wST2RHpt("m_mapST2ptN0wST2RHpt"),
+		m_mapST2ptN0ptST2RHw("m_mapST2ptN0ptST2RHw"),
+		m_mapST2ptN0ptST2RHpt("m_mapST2ptN0ptST2RHpt"),
+		m_mapST2wN0ptST2RPpt("m_mapST2wN0ptST2RPpt"),
+		m_mapST2ptN0wST2RPpt("m_mapST2ptN0wST2RPpt"),
+		m_mapST2ptN0ptST2RPw("m_mapST2ptN0ptST2RPw"),
+		m_mapST2ptN0ptST2RPpt("m_mapST2ptN0ptST2RPpt"),
+
+		// st2 + n0 + n0 left head/pred
+		m_mapST2wN0ptN0LHpt("m_mapST2wN0ptN0LHpt"),
+		m_mapST2ptN0wN0LHpt("m_mapST2ptN0wN0LHpt"),
+		m_mapST2ptN0ptN0LHw("m_mapST2ptN0ptN0LHw"),
+		m_mapST2ptN0ptN0LHpt("m_mapST2ptN0ptN0LHpt"),
+		m_mapST2wN0ptN0LPpt("m_mapST2wN0ptN0LPpt"),
+		m_mapST2ptN0wN0LPpt("m_mapST2ptN0wN0LPpt"),
+		m_mapST2ptN0ptN0LPw("m_mapST2ptN0ptN0LPw"),
+		m_mapST2ptN0ptN0LPpt("m_mapST2ptN0ptN0LPpt"),
+
+		// quar-gram
+		// st2 + n0 + st2 right head + st2 right pred
+		m_mapST2ptN0ptST2RHptST2RPpt("m_mapST2ptN0ptST2RHptST2RPpt"),
+		// st2 + n0 + st2 left pred + st2 left pred 2
+		m_mapST2ptN0ptST2LPptST2LP2pt("m_mapST2ptN0ptST2LPptST2LP2pt"),
+		// st2 + n0 + st2 right pred + st2 right pred 2
+		m_mapST2ptN0ptST2RPptST2RP2pt("m_mapST2ptN0ptST2RPptST2RP2pt"),
+		// st2 + n0 + n0 left pred + n0 left pred 2
+		m_mapST2ptN0ptN0LPptN0LP2pt("m_mapST2ptN0ptN0LPptN0LP2pt"),
 
 		m_mapSTwSTll("m_mapSTwSTll"),
 		m_mapSTwSTrl("m_mapSTwSTrl"),
@@ -203,15 +254,19 @@ namespace titov {
 		// st + sti, n0 + n0i
 		input >> m_mapSTiw;
 		input >> m_mapSTiwSTjw;
+		input >> m_mapST2iw;
+		input >> m_mapST2iwST2jw;
 		input >> m_mapN0iw;
 		input >> m_mapN0iwN0jw;
 		input >> m_mapSTipt;
 		input >> m_mapSTiptSTjpt;
+		input >> m_mapST2ipt;
+		input >> m_mapST2iptST2jpt;
 		input >> m_mapN0ipt;
 		input >> m_mapN0iptN0jpt;
 
 		// unigram with label
-		// st, n0, st2
+		// st, n0
 		input >> m_mapSTwSTLHl;
 		input >> m_mapSTwSTLPl;
 		input >> m_mapSTwSTRHl;
@@ -220,7 +275,7 @@ namespace titov {
 		input >> m_mapN0wN0LPl;
 
 		// unigram with arity
-		// st, n0, st2
+		// st, n0
 		input >> m_mapSTwSTLHi;
 		input >> m_mapSTwSTLPi;
 		input >> m_mapSTwSTRHi;
@@ -229,6 +284,12 @@ namespace titov {
 		input >> m_mapSTwSTPi;
 		input >> m_mapN0wN0LHi;
 		input >> m_mapN0wN0LPi;
+		input >> m_mapST2wST2LHi;
+		input >> m_mapST2wST2LPi;
+		input >> m_mapST2wST2RHi;
+		input >> m_mapST2wST2RPi;
+		input >> m_mapST2wST2Hi;
+		input >> m_mapST2wST2Pi;
 
 		// bi-gram
 		// st + n0
@@ -265,6 +326,9 @@ namespace titov {
 		input >> m_mapST2wN0ptD;
 		input >> m_mapST2ptN0wD;
 		input >> m_mapST2ptN0ptD;
+		// st2 + n0 + st2 left/right head/pred
+		input >> m_mapST2wN0wST2RPi;
+		input >> m_mapST2wN0wN0LPi;
 
 		// st + st2
 		input >> m_mapSTwST2w;
@@ -321,6 +385,44 @@ namespace titov {
 		input >> m_mapSTptN0ptSTRPptSTRP2pt;
 		// st + n0 + n0 left pred + n0 left pred 2
 		input >> m_mapSTptN0ptN0LPptN0LP2pt;
+
+		// st2 + n0 + st2 left/right head/pred
+		input >> m_mapST2wN0ptST2LHpt;
+		input >> m_mapST2ptN0wST2LHpt;
+		input >> m_mapST2ptN0ptST2LHw;
+		input >> m_mapST2ptN0ptST2LHpt;
+		input >> m_mapST2wN0ptST2LPpt;
+		input >> m_mapST2ptN0wST2LPpt;
+		input >> m_mapST2ptN0ptST2LPw;
+		input >> m_mapST2ptN0ptST2LPpt;
+		input >> m_mapST2wN0ptST2RHpt;
+		input >> m_mapST2ptN0wST2RHpt;
+		input >> m_mapST2ptN0ptST2RHw;
+		input >> m_mapST2ptN0ptST2RHpt;
+		input >> m_mapST2wN0ptST2RPpt;
+		input >> m_mapST2ptN0wST2RPpt;
+		input >> m_mapST2ptN0ptST2RPw;
+		input >> m_mapST2ptN0ptST2RPpt;
+
+		// st2 + n0 + n0 left head/pred
+		input >> m_mapST2wN0ptN0LHpt;
+		input >> m_mapST2ptN0wN0LHpt;
+		input >> m_mapST2ptN0ptN0LHw;
+		input >> m_mapST2ptN0ptN0LHpt;
+		input >> m_mapST2wN0ptN0LPpt;
+		input >> m_mapST2ptN0wN0LPpt;
+		input >> m_mapST2ptN0ptN0LPw;
+		input >> m_mapST2ptN0ptN0LPpt;
+
+		// quar-gram
+		// st2 + n0 + st2 right head + st2 right pred
+		input >> m_mapST2ptN0ptST2RHptST2RPpt;
+		// st2 + n0 + st2 left pred + st2 left pred 2
+		input >> m_mapST2ptN0ptST2LPptST2LP2pt;
+		// st2 + n0 + st2 right pred + st2 right pred 2
+		input >> m_mapST2ptN0ptST2RPptST2RP2pt;
+		// st2 + n0 + n0 left pred + n0 left pred 2
+		input >> m_mapST2ptN0ptN0LPptN0LP2pt;
 
 		input >> m_mapSTwSTll;
 		input >> m_mapSTwSTrl;
@@ -380,15 +482,19 @@ namespace titov {
 		// st + sti, n0 + n0i
 		output << m_mapSTiw;
 		output << m_mapSTiwSTjw;
+		output << m_mapST2iw;
+		output << m_mapST2iwST2jw;
 		output << m_mapN0iw;
 		output << m_mapN0iwN0jw;
 		output << m_mapSTipt;
 		output << m_mapSTiptSTjpt;
+		output << m_mapST2ipt;
+		output << m_mapST2iptST2jpt;
 		output << m_mapN0ipt;
 		output << m_mapN0iptN0jpt;
 
 		// unigram with label
-		// st, n0, st2
+		// st, n0
 		output << m_mapSTwSTLHl;
 		output << m_mapSTwSTLPl;
 		output << m_mapSTwSTRHl;
@@ -397,7 +503,7 @@ namespace titov {
 		output << m_mapN0wN0LPl;
 
 		// unigram with arity
-		// st, n0, st2
+		// st, n0
 		output << m_mapSTwSTLHi;
 		output << m_mapSTwSTLPi;
 		output << m_mapSTwSTRHi;
@@ -406,6 +512,12 @@ namespace titov {
 		output << m_mapSTwSTPi;
 		output << m_mapN0wN0LHi;
 		output << m_mapN0wN0LPi;
+		output << m_mapST2wST2LHi;
+		output << m_mapST2wST2LPi;
+		output << m_mapST2wST2RHi;
+		output << m_mapST2wST2RPi;
+		output << m_mapST2wST2Hi;
+		output << m_mapST2wST2Pi;
 
 		// bi-gram
 		// st + n0
@@ -442,6 +554,9 @@ namespace titov {
 		output << m_mapST2wN0ptD;
 		output << m_mapST2ptN0wD;
 		output << m_mapST2ptN0ptD;
+		// st2 + n0 + st2 left/right head/pred
+		output << m_mapST2wN0wST2RPi;
+		output << m_mapST2wN0wN0LPi;
 
 		// st + st2
 		output << m_mapSTwST2w;
@@ -499,6 +614,44 @@ namespace titov {
 		// st + n0 + n0 left pred + n0 left pred 2
 		output << m_mapSTptN0ptN0LPptN0LP2pt;
 
+		// st2 + n0 + st2 left/right head/pred
+		output << m_mapST2wN0ptST2LHpt;
+		output << m_mapST2ptN0wST2LHpt;
+		output << m_mapST2ptN0ptST2LHw;
+		output << m_mapST2ptN0ptST2LHpt;
+		output << m_mapST2wN0ptST2LPpt;
+		output << m_mapST2ptN0wST2LPpt;
+		output << m_mapST2ptN0ptST2LPw;
+		output << m_mapST2ptN0ptST2LPpt;
+		output << m_mapST2wN0ptST2RHpt;
+		output << m_mapST2ptN0wST2RHpt;
+		output << m_mapST2ptN0ptST2RHw;
+		output << m_mapST2ptN0ptST2RHpt;
+		output << m_mapST2wN0ptST2RPpt;
+		output << m_mapST2ptN0wST2RPpt;
+		output << m_mapST2ptN0ptST2RPw;
+		output << m_mapST2ptN0ptST2RPpt;
+
+		// st2 + n0 + n0 left head/pred
+		output << m_mapST2wN0ptN0LHpt;
+		output << m_mapST2ptN0wN0LHpt;
+		output << m_mapST2ptN0ptN0LHw;
+		output << m_mapST2ptN0ptN0LHpt;
+		output << m_mapST2wN0ptN0LPpt;
+		output << m_mapST2ptN0wN0LPpt;
+		output << m_mapST2ptN0ptN0LPw;
+		output << m_mapST2ptN0ptN0LPpt;
+
+		// quar-gram
+		// st2 + n0 + st2 right head + st2 right pred
+		output << m_mapST2ptN0ptST2RHptST2RPpt;
+		// st2 + n0 + st2 left pred + st2 left pred 2
+		output << m_mapST2ptN0ptST2LPptST2LP2pt;
+		// st2 + n0 + st2 right pred + st2 right pred 2
+		output << m_mapST2ptN0ptST2RPptST2RP2pt;
+		// st2 + n0 + n0 left pred + n0 left pred 2
+		output << m_mapST2ptN0ptN0LPptN0LP2pt;
+
 		output << m_mapSTwSTll;
 		output << m_mapSTwSTrl;
 		output << m_mapN0wN0ll;
@@ -542,15 +695,19 @@ namespace titov {
 		// st + sti, n0 + n0i
 		m_mapSTiw.computeAverage(round);
 		m_mapSTiwSTjw.computeAverage(round);
+		m_mapST2iw.computeAverage(round);
+		m_mapST2iwST2jw.computeAverage(round);
 		m_mapN0iw.computeAverage(round);
 		m_mapN0iwN0jw.computeAverage(round);
 		m_mapSTipt.computeAverage(round);
 		m_mapSTiptSTjpt.computeAverage(round);
+		m_mapST2ipt.computeAverage(round);
+		m_mapST2iptST2jpt.computeAverage(round);
 		m_mapN0ipt.computeAverage(round);
 		m_mapN0iptN0jpt.computeAverage(round);
 
 		// unigram with label
-		// st, n0, st2
+		// st, n0
 		m_mapSTwSTLHl.computeAverage(round);
 		m_mapSTwSTLPl.computeAverage(round);
 		m_mapSTwSTRHl.computeAverage(round);
@@ -559,7 +716,7 @@ namespace titov {
 		m_mapN0wN0LPl.computeAverage(round);
 
 		// unigram with arity
-		// st, n0, st2
+		// st, n0
 		m_mapSTwSTLHi.computeAverage(round);
 		m_mapSTwSTLPi.computeAverage(round);
 		m_mapSTwSTRHi.computeAverage(round);
@@ -568,6 +725,12 @@ namespace titov {
 		m_mapSTwSTPi.computeAverage(round);
 		m_mapN0wN0LHi.computeAverage(round);
 		m_mapN0wN0LPi.computeAverage(round);
+		m_mapST2wST2LHi.computeAverage(round);
+		m_mapST2wST2LPi.computeAverage(round);
+		m_mapST2wST2RHi.computeAverage(round);
+		m_mapST2wST2RPi.computeAverage(round);
+		m_mapST2wST2Hi.computeAverage(round);
+		m_mapST2wST2Pi.computeAverage(round);
 
 		// bi-gram
 		// st + n0
@@ -604,6 +767,9 @@ namespace titov {
 		m_mapST2wN0ptD.computeAverage(round);
 		m_mapST2ptN0wD.computeAverage(round);
 		m_mapST2ptN0ptD.computeAverage(round);
+		// st2 + n0 + st2 left/right head/pred
+		m_mapST2wN0wST2RPi.computeAverage(round);
+		m_mapST2wN0wN0LPi.computeAverage(round);
 
 		// st + st2
 		m_mapSTwST2w.computeAverage(round);
@@ -660,6 +826,44 @@ namespace titov {
 		m_mapSTptN0ptSTRPptSTRP2pt.computeAverage(round);
 		// st + n0 + n0 left pred + n0 left pred 2
 		m_mapSTptN0ptN0LPptN0LP2pt.computeAverage(round);
+
+		// st2 + n0 + st2 left/right head/pred
+		m_mapST2wN0ptST2LHpt.computeAverage(round);
+		m_mapST2ptN0wST2LHpt.computeAverage(round);
+		m_mapST2ptN0ptST2LHw.computeAverage(round);
+		m_mapST2ptN0ptST2LHpt.computeAverage(round);
+		m_mapST2wN0ptST2LPpt.computeAverage(round);
+		m_mapST2ptN0wST2LPpt.computeAverage(round);
+		m_mapST2ptN0ptST2LPw.computeAverage(round);
+		m_mapST2ptN0ptST2LPpt.computeAverage(round);
+		m_mapST2wN0ptST2RHpt.computeAverage(round);
+		m_mapST2ptN0wST2RHpt.computeAverage(round);
+		m_mapST2ptN0ptST2RHw.computeAverage(round);
+		m_mapST2ptN0ptST2RHpt.computeAverage(round);
+		m_mapST2wN0ptST2RPpt.computeAverage(round);
+		m_mapST2ptN0wST2RPpt.computeAverage(round);
+		m_mapST2ptN0ptST2RPw.computeAverage(round);
+		m_mapST2ptN0ptST2RPpt.computeAverage(round);
+
+		// st2 + n0 + n0 left head/pred
+		m_mapST2wN0ptN0LHpt.computeAverage(round);
+		m_mapST2ptN0wN0LHpt.computeAverage(round);
+		m_mapST2ptN0ptN0LHw.computeAverage(round);
+		m_mapST2ptN0ptN0LHpt.computeAverage(round);
+		m_mapST2wN0ptN0LPpt.computeAverage(round);
+		m_mapST2ptN0wN0LPpt.computeAverage(round);
+		m_mapST2ptN0ptN0LPw.computeAverage(round);
+		m_mapST2ptN0ptN0LPpt.computeAverage(round);
+
+		// quar-gram
+		// st2 + n0 + st2 right head + st2 right pred
+		m_mapST2ptN0ptST2RHptST2RPpt.computeAverage(round);
+		// st2 + n0 + st2 left pred + st2 left pred 2
+		m_mapST2ptN0ptST2LPptST2LP2pt.computeAverage(round);
+		// st2 + n0 + st2 right pred + st2 right pred 2
+		m_mapST2ptN0ptST2RPptST2RP2pt.computeAverage(round);
+		// st2 + n0 + n0 left pred + n0 left pred 2
+		m_mapST2ptN0ptN0LPptN0LP2pt.computeAverage(round);
 
 		m_mapSTwSTll.computeAverage(round);
 		m_mapSTwSTrl.computeAverage(round);

@@ -303,14 +303,8 @@ namespace titov {
 	}
 
 	inline bool StateItem::canShiftReduce() const {
-		for (int i = m_nNextWord - 1; i >= 0; --i) {
-			for (const auto & rn : m_lRightNodes[i]) {
-				if (RIGHTNODE_POS(rn) == m_nNextWord) {
-					return false;
-				}
-			}
-		}
-		return true;
+		// remove shift reduce
+		return false;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

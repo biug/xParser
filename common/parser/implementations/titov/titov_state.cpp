@@ -185,24 +185,8 @@ namespace titov {
 	}
 
 	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & direction, const int & label) {
-		if (m_nNextWord < graph.size()) {
-			bool left_empty = true;
-			for (int i = m_nNextWord - 1; i >= 0; --i) {
-				for (const auto & rn : GRAPHNODE_RIGHTNODES(graph[i])) {
-					if (RIGHTNODE_POS(rn) == m_nNextWord) {
-						left_empty = false;
-						break;
-					}
-				}
-				if (!left_empty) {
-					break;
-				}
-			}
-			if (left_empty && GRAPHNODE_RIGHTNODES(graph[m_nNextWord]).size() == 0) {
-				shiftReduce();
-				return true;
-			}
-		}
+		// remove shift-reduce
+
 		if (m_nStackBack >= 0) {
 			int & seek = seeks[m_lStack[m_nStackBack]];
 			const DependencyGraphNode & node = graph[m_lStack[m_nStackBack]];

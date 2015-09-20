@@ -13,7 +13,7 @@ namespace twostack {
 	class Weight : public WeightBase {
 	public:
 		// uni-gram
-		// st, n0, st2, sst
+		// st, n0, st2
 		WordMap m_mapSTw;
 		POSTagMap m_mapSTpt;
 		WordMap m_mapST2w;
@@ -27,10 +27,14 @@ namespace twostack {
 		// st + sti, n0 + n0i
 		WordIntMap m_mapSTiw;
 		TwoWordsIntMap m_mapSTiwSTjw;
+		WordIntMap m_mapST2iw;
+		TwoWordsIntMap m_mapST2iwST2jw;
 		WordIntMap m_mapN0iw;
 		TwoWordsIntMap m_mapN0iwN0jw;
 		POSTagIntMap m_mapSTipt;
 		POSTagSet2IntMap m_mapSTiptSTjpt;
+		POSTagIntMap m_mapST2ipt;
+		POSTagSet2IntMap m_mapST2iptST2jpt;
 		POSTagIntMap m_mapN0ipt;
 		POSTagSet2IntMap m_mapN0iptN0jpt;
 
@@ -44,15 +48,31 @@ namespace twostack {
 		WordIntMap m_mapN0wN0LPl;
 
 		// unigram with arity
-		// st, n0
+		// st, n0, st2, sst
+		// st
 		WordIntMap m_mapSTwSTLHi;
 		WordIntMap m_mapSTwSTLPi;
 		WordIntMap m_mapSTwSTRHi;
 		WordIntMap m_mapSTwSTRPi;
 		WordIntMap m_mapSTwSTHi;
 		WordIntMap m_mapSTwSTPi;
+		// n0
 		WordIntMap m_mapN0wN0LHi;
 		WordIntMap m_mapN0wN0LPi;
+		// st2
+		WordIntMap m_mapST2wST2LHi;
+		WordIntMap m_mapST2wST2LPi;
+		WordIntMap m_mapST2wST2RHi;
+		WordIntMap m_mapST2wST2RPi;
+		WordIntMap m_mapST2wST2Hi;
+		WordIntMap m_mapST2wST2Pi;
+		// sst
+		WordIntMap m_mapSSTwSSTLHi;
+		WordIntMap m_mapSSTwSSTLPi;
+		WordIntMap m_mapSSTwSSTRHi;
+		WordIntMap m_mapSSTwSSTRPi;
+		WordIntMap m_mapSSTwSSTHi;
+		WordIntMap m_mapSSTwSSTPi;
 
 		// bi-gram
 		// st + n0
@@ -89,6 +109,9 @@ namespace twostack {
 		WordPOSTagIntMap m_mapST2wN0ptD;
 		WordPOSTagIntMap m_mapST2ptN0wD;
 		POSTagSet2IntMap m_mapST2ptN0ptD;
+		// st2 + n0 + st2 left/right head/pred
+		TwoWordsIntMap m_mapST2wN0wST2RPi;
+		TwoWordsIntMap m_mapST2wN0wN0LPi;
 
 		// sst + n0
 		TwoWordsMap m_mapSSTwN0w;
@@ -105,6 +128,9 @@ namespace twostack {
 		WordPOSTagIntMap m_mapSSTwN0ptD;
 		WordPOSTagIntMap m_mapSSTptN0wD;
 		POSTagSet2IntMap m_mapSSTptN0ptD;
+		// st2 + n0 + st2 left/right head/pred
+		TwoWordsIntMap m_mapSSTwN0wSSTRPi;
+		TwoWordsIntMap m_mapSSTwN0wN0LPi;
 
 		// st + st2
 		TwoWordsMap m_mapSTwST2w;
@@ -178,6 +204,82 @@ namespace twostack {
 		// st + n0 + n0 left pred + n0 left pred 2
 		POSTagSet4Map m_mapSTptN0ptN0LPptN0LP2pt;
 
+		// st2 + n0 + st2 left/right head/pred
+		WordPOSTagPOSTagMap m_mapST2wN0ptST2LHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wST2LHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptST2LHw;
+		POSTagSet3Map m_mapST2ptN0ptST2LHpt;
+		WordPOSTagPOSTagMap m_mapST2wN0ptST2LPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wST2LPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptST2LPw;
+		POSTagSet3Map m_mapST2ptN0ptST2LPpt;
+		WordPOSTagPOSTagMap m_mapST2wN0ptST2RHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wST2RHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptST2RHw;
+		POSTagSet3Map m_mapST2ptN0ptST2RHpt;
+		WordPOSTagPOSTagMap m_mapST2wN0ptST2RPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wST2RPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptST2RPw;
+		POSTagSet3Map m_mapST2ptN0ptST2RPpt;
+
+		// st2 + n0 + n0 left head/pred
+		WordPOSTagPOSTagMap m_mapST2wN0ptN0LHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wN0LHpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LHw;
+		POSTagSet3Map m_mapST2ptN0ptN0LHpt;
+		WordPOSTagPOSTagMap m_mapST2wN0ptN0LPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wN0LPpt;
+		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LPw;
+		POSTagSet3Map m_mapST2ptN0ptN0LPpt;
+
+		// quar-gram
+		// st2 + n0 + st2 right head + st2 right pred
+		POSTagSet4Map m_mapST2ptN0ptST2RHptST2RPpt;
+		// st2 + n0 + st2 left pred + st2 left pred 2
+		POSTagSet4Map m_mapST2ptN0ptST2LPptST2LP2pt;
+		// st2 + n0 + st2 right pred + st2 right pred 2
+		POSTagSet4Map m_mapST2ptN0ptST2RPptST2RP2pt;
+		// st2 + n0 + n0 left pred + n0 left pred 2
+		POSTagSet4Map m_mapST2ptN0ptN0LPptN0LP2pt;
+
+		// sst + n0 + sst left/right head/pred
+		WordPOSTagPOSTagMap m_mapSSTwN0ptSSTLHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wSSTLHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptSSTLHw;
+		POSTagSet3Map m_mapSSTptN0ptSSTLHpt;
+		WordPOSTagPOSTagMap m_mapSSTwN0ptSSTLPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wSSTLPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptSSTLPw;
+		POSTagSet3Map m_mapSSTptN0ptSSTLPpt;
+		WordPOSTagPOSTagMap m_mapSSTwN0ptSSTRHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wSSTRHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptSSTRHw;
+		POSTagSet3Map m_mapSSTptN0ptSSTRHpt;
+		WordPOSTagPOSTagMap m_mapSSTwN0ptSSTRPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wSSTRPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptSSTRPw;
+		POSTagSet3Map m_mapSSTptN0ptSSTRPpt;
+
+		// sst + n0 + n0 left head/pred
+		WordPOSTagPOSTagMap m_mapSSTwN0ptN0LHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wN0LHpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptN0LHw;
+		POSTagSet3Map m_mapSSTptN0ptN0LHpt;
+		WordPOSTagPOSTagMap m_mapSSTwN0ptN0LPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wN0LPpt;
+		WordPOSTagPOSTagMap m_mapSSTptN0ptN0LPw;
+		POSTagSet3Map m_mapSSTptN0ptN0LPpt;
+
+		// quar-gram
+		// sst + n0 + sst right head + sst right pred
+		POSTagSet4Map m_mapSSTptN0ptSSTRHptSSTRPpt;
+		// sst + n0 + sst left pred + sst left pred 2
+		POSTagSet4Map m_mapSSTptN0ptSSTLPptSSTLP2pt;
+		// sst + n0 + sst right pred + sst right pred 2
+		POSTagSet4Map m_mapSSTptN0ptSSTRPptSSTRP2pt;
+		// sst + n0 + n0 left pred + n0 left pred 2
+		POSTagSet4Map m_mapSSTptN0ptN0LPptN0LP2pt;
+
 		WordTagsetMap m_mapSTwSTll;
 		WordTagsetMap m_mapSTwSTrl;
 		WordTagsetMap m_mapN0wN0ll;
@@ -200,8 +302,10 @@ namespace twostack {
 		// string feature
 		StringMap m_mapSTPOSPath;
 		StringMap m_mapST2POSPath;
+		StringMap m_mapSSTPOSPath;
 		StringMap m_mapSTFPOSPath;
 		StringMap m_mapST2FPOSPath;
+		StringMap m_mapSSTFPOSPath;
 
 	public:
 		Weight(const std::string & sRead, const std::string & sRecord);

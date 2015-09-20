@@ -143,8 +143,8 @@ namespace titov {
 	typedef PackedScoreMap<WordPOSTagPOSTagInt, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagIntMap;
 	typedef PackedScoreMap<WordWordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagPOSTagMap;
 
-	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
-	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
+	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
+	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
 	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet4Map;
 
 	typedef PackedScoreMap<std::string, ScoreArray, PackedScoreType, AddScoreType> StringMap;

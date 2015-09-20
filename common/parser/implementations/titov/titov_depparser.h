@@ -65,7 +65,7 @@ namespace titov {
 		POSTagSet3Int postag_set_3_int;
 		Int set_of_2_postags;
 		Int set_of_3_postags;
-		Int set_of_4_postags;
+		UNSIGNED set_of_4_postags;
 		WordTagset word_tagset;
 		POSTagTagset postag_tagset;
 		TwoWordsTagset two_words_tagset;
