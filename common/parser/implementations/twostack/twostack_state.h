@@ -2,6 +2,7 @@
 #define _TWOSTACK_STATE_H
 
 #include "twostack_macros.h"
+#include "common/token/tagset.h"
 #include "common/token/deplabel.h"
 
 namespace twostack {
@@ -36,14 +37,10 @@ namespace twostack {
 		int m_lStack[MAX_SENTENCE_SIZE];
 		int m_lSecondStack[MAX_SENTENCE_SIZE];
 		int m_lHeadL[MAX_SENTENCE_SIZE];	//heads for every node
-		int m_lSubHeadL[MAX_SENTENCE_SIZE];
 		int m_lHeadLabelL[MAX_SENTENCE_SIZE];	//label for every node
-		int m_lSubHeadLabelL[MAX_SENTENCE_SIZE];
 		int m_lHeadLNum[MAX_SENTENCE_SIZE];
 		int m_lHeadR[MAX_SENTENCE_SIZE];
-		int m_lSubHeadR[MAX_SENTENCE_SIZE];
 		int m_lHeadLabelR[MAX_SENTENCE_SIZE];
-		int m_lSubHeadLabelR[MAX_SENTENCE_SIZE];
 		int m_lHeadRNum[MAX_SENTENCE_SIZE];
 		int m_lPredL[MAX_SENTENCE_SIZE];		//left dependency children
 		int m_lSubPredL[MAX_SENTENCE_SIZE];
@@ -55,6 +52,9 @@ namespace twostack {
 		int m_lPredLabelR[MAX_SENTENCE_SIZE];
 		int m_lSubPredLabelR[MAX_SENTENCE_SIZE];
 		int m_lPredRNum[MAX_SENTENCE_SIZE];
+
+		Tagset m_lPredLabelSetL[MAX_SENTENCE_SIZE];
+		Tagset m_lPredLabelSetR[MAX_SENTENCE_SIZE];
 
 		std::vector<RightNodeWithLabel> m_lRightNodes[MAX_SENTENCE_SIZE];
 
@@ -104,6 +104,9 @@ namespace twostack {
 		const int & leftPredArity(const int & index) const;
 		const int & rightHeadArity(const int & index) const;
 		const int & rightPredArity(const int & index) const;
+		const Tagset & leftPredLabelSet(const int & index) const;
+		const Tagset & rightPredLabelSet(const int & index) const;
+
 
 		const int & size() const;
 		const int & stackBack() const;
@@ -269,28 +272,12 @@ namespace twostack {
 		return m_lHeadR[index];
 	}
 
-	inline const int & StateItem::leftSubHead(const int & index) const {
-		return m_lSubHeadL[index];
-	}
-
-	inline const int & StateItem::rightSubHead(const int & index) const {
-		return m_lSubHeadR[index];
-	}
-
 	inline const int & StateItem::leftHeadLabel(const int & index) const {
 		return m_lHeadLabelL[index];
 	}
 
 	inline const int & StateItem::rightHeadLabel(const int & index) const {
 		return m_lHeadLabelR[index];
-	}
-
-	inline const int & StateItem::leftSubHeadLabel(const int & index) const {
-		return m_lSubHeadLabelL[index];
-	}
-
-	inline const int & StateItem::rightSubHeadLabel(const int & index) const {
-		return m_lSubHeadLabelR[index];
 	}
 
 	inline const int & StateItem::leftPred(const int & index) const {
@@ -341,6 +328,14 @@ namespace twostack {
 		return m_lPredRNum[index];
 	}
 
+	inline const Tagset & StateItem::leftPredLabelSet(const int & index) const {
+		return m_lPredLabelSetL[index];
+	}
+
+	inline const Tagset & StateItem::rightPredLabelSet(const int & index) const {
+		return m_lPredLabelSetR[index];
+	}
+
 	inline bool StateItem::canArc() const {
 		return m_nStackBack == -1 ? false : (m_lRightNodes[m_lStack[m_nStackBack]].empty() ? true : (RIGHTNODE_POS(m_lRightNodes[m_lStack[m_nStackBack]].back()) != m_nNextWord));
 	}
@@ -356,15 +351,8 @@ namespace twostack {
 	}
 
 	inline bool StateItem::canShiftReduce() const {
-		for (int i = 0; i <= m_nStackBack; ++i) {
-			for (const auto & rn : m_lRightNodes[m_lStack[i]]) {
-				if (RIGHTNODE_POS(rn) == m_nNextWord) {
-					return false;
-				}
-			}
-		}
-		for (int i = 0; i <= m_nSecondStackBack; ++i) {
-			for (const auto & rn : m_lRightNodes[m_lSecondStack[i]]) {
+		for (int i = m_nNextWord - 1; i >= 0; --i) {
+			for (const auto & rn : m_lRightNodes[i]) {
 				if (RIGHTNODE_POS(rn) == m_nNextWord) {
 					return false;
 				}

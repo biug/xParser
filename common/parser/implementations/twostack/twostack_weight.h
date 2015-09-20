@@ -12,182 +12,196 @@
 namespace twostack {
 	class Weight : public WeightBase {
 	public:
+		// uni-gram
+		// st, n0, st2, sst
 		WordMap m_mapSTw;
 		POSTagMap m_mapSTpt;
 		WordMap m_mapST2w;
 		POSTagMap m_mapST2pt;
-		WordMap m_map2STw;
-		POSTagMap m_map2STpt;
+		WordMap m_mapSSTw;
+		POSTagMap m_mapSSTpt;
 		WordMap m_mapN0w;
 		POSTagMap m_mapN0pt;
 
+		// unigram context
+		// st + sti, n0 + n0i
+		WordIntMap m_mapSTiw;
+		TwoWordsIntMap m_mapSTiwSTjw;
+		WordIntMap m_mapN0iw;
+		TwoWordsIntMap m_mapN0iwN0jw;
+		POSTagIntMap m_mapSTipt;
+		POSTagSet2IntMap m_mapSTiptSTjpt;
+		POSTagIntMap m_mapN0ipt;
+		POSTagSet2IntMap m_mapN0iptN0jpt;
+
+		// unigram with label
+		// st, n0
+		WordIntMap m_mapSTwSTLHl;
+		WordIntMap m_mapSTwSTLPl;
+		WordIntMap m_mapSTwSTRHl;
+		WordIntMap m_mapSTwSTRPl;
+		WordIntMap m_mapN0wN0LHl;
+		WordIntMap m_mapN0wN0LPl;
+
+		// unigram with arity
+		// st, n0
+		WordIntMap m_mapSTwSTLHi;
+		WordIntMap m_mapSTwSTLPi;
+		WordIntMap m_mapSTwSTRHi;
+		WordIntMap m_mapSTwSTRPi;
+		WordIntMap m_mapSTwSTHi;
+		WordIntMap m_mapSTwSTPi;
+		WordIntMap m_mapN0wN0LHi;
+		WordIntMap m_mapN0wN0LPi;
+
+		// bi-gram
+		// st + n0
 		TwoWordsMap m_mapSTwN0w;
-		TwoWordsMap m_mapST2wN0w;
-		TwoWordsMap m_map2STwN0w;
 		WordPOSTagMap m_mapSTwN0pt;
 		WordPOSTagMap m_mapSTptN0w;
+		POSTagSet2Map m_mapSTptN0pt;
+		WordWordPOSTagMap m_mapSTwptN0w;
+		WordWordPOSTagMap m_mapSTwN0wpt;
+		WordPOSTagPOSTagMap m_mapSTwptN0pt;
+		WordPOSTagPOSTagMap m_mapSTptN0wpt;
+		WordWordPOSTagPOSTagMap m_mapSTwptN0wpt;
+		// st + n0 + dis
+		TwoWordsIntMap m_mapSTwN0wD;
+		WordPOSTagIntMap m_mapSTwN0ptD;
+		WordPOSTagIntMap m_mapSTptN0wD;
+		POSTagSet2IntMap m_mapSTptN0ptD;
+		// st + n0 + st left/right head/pred
+		TwoWordsIntMap m_mapSTwN0wSTRPi;
+		TwoWordsIntMap m_mapSTwN0wN0LPi;
+
+		// st2 + n0
+		TwoWordsMap m_mapST2wN0w;
 		WordPOSTagMap m_mapST2wN0pt;
 		WordPOSTagMap m_mapST2ptN0w;
-		WordPOSTagMap m_map2STwN0pt;
-		WordPOSTagMap m_map2STptN0w;
-		POSTagSet2Map m_mapSTptN0pt;
 		POSTagSet2Map m_mapST2ptN0pt;
-		POSTagSet2Map m_map2STptN0pt;
+		WordWordPOSTagMap m_mapST2wptN0w;
+		WordWordPOSTagMap m_mapST2wN0wpt;
+		WordPOSTagPOSTagMap m_mapST2wptN0pt;
+		WordPOSTagPOSTagMap m_mapST2ptN0wpt;
+		WordWordPOSTagPOSTagMap m_mapST2wptN0wpt;
+		// st2 + n0 + dis
+		TwoWordsIntMap m_mapST2wN0wD;
+		WordPOSTagIntMap m_mapST2wN0ptD;
+		WordPOSTagIntMap m_mapST2ptN0wD;
+		POSTagSet2IntMap m_mapST2ptN0ptD;
 
-		ThreeWordsMap m_mapSTwSTRHwN0w;
-		ThreeWordsMap m_mapSTwSTRDwN0w;
-		ThreeWordsMap m_mapSTwN0wN0LHw;
-		ThreeWordsMap m_mapSTwN0wN0LDw;
+		// sst + n0
+		TwoWordsMap m_mapSSTwN0w;
+		WordPOSTagMap m_mapSSTwN0pt;
+		WordPOSTagMap m_mapSSTptN0w;
+		POSTagSet2Map m_mapSSTptN0pt;
+		WordWordPOSTagMap m_mapSSTwptN0w;
+		WordWordPOSTagMap m_mapSSTwN0wpt;
+		WordPOSTagPOSTagMap m_mapSSTwptN0pt;
+		WordPOSTagPOSTagMap m_mapSSTptN0wpt;
+		WordWordPOSTagPOSTagMap m_mapSSTwptN0wpt;
+		// sst + n0 + dis
+		TwoWordsIntMap m_mapSSTwN0wD;
+		WordPOSTagIntMap m_mapSSTwN0ptD;
+		WordPOSTagIntMap m_mapSSTptN0wD;
+		POSTagSet2IntMap m_mapSSTptN0ptD;
 
-		ThreeWordsMap m_mapST2wST2RHwN0w;
-		ThreeWordsMap m_mapST2wST2RDwN0w;
-		ThreeWordsMap m_mapST2wN0wN0LHw;
-		ThreeWordsMap m_mapST2wN0wN0LDw;
+		// st + st2
+		TwoWordsMap m_mapSTwST2w;
+		WordPOSTagMap m_mapSTwST2pt;
+		WordPOSTagMap m_mapSTptST2w;
+		POSTagSet2Map m_mapSTptST2pt;
+		WordWordPOSTagMap m_mapSTwptST2w;
+		WordWordPOSTagMap m_mapSTwST2wpt;
+		WordPOSTagPOSTagMap m_mapSTwptST2pt;
+		WordPOSTagPOSTagMap m_mapSTptST2wpt;
+		WordWordPOSTagPOSTagMap m_mapSTwptST2wpt;
 
-		ThreeWordsMap m_map2STw2STRHwN0w;
-		ThreeWordsMap m_map2STw2STRDwN0w;
-		ThreeWordsMap m_map2STwN0wN0LHw;
-		ThreeWordsMap m_map2STwN0wN0LDw;
+		// st + sst
+		TwoWordsMap m_mapSTwSSTw;
+		WordPOSTagMap m_mapSTwSSTpt;
+		WordPOSTagMap m_mapSTptSSTw;
+		POSTagSet2Map m_mapSTptSSTpt;
+		WordWordPOSTagMap m_mapSTwptSSTw;
+		WordWordPOSTagMap m_mapSTwSSTwpt;
+		WordPOSTagPOSTagMap m_mapSTwptSSTpt;
+		WordPOSTagPOSTagMap m_mapSTptSSTwpt;
+		WordWordPOSTagPOSTagMap m_mapSTwptSSTwpt;
 
-		WordWordPOSTagMap m_mapSTwSTRHwN0pt;
-		WordWordPOSTagMap m_mapSTwSTRHptN0w;
-		WordWordPOSTagMap m_mapSTptSTRHwN0w;
+		// tri-gram
+		// st + n0 + st2
+		WordPOSTagPOSTagMap m_mapSTwN0ptST2pt;
+		WordPOSTagPOSTagMap m_mapSTptN0wST2pt;
+		WordPOSTagPOSTagMap m_mapSTptN0ptST2w;
+		POSTagSet3Map m_mapSTptN0ptST2pt;
+		// st + n0 + sst
+		WordPOSTagPOSTagMap m_mapSTwN0ptSSTpt;
+		WordPOSTagPOSTagMap m_mapSTptN0wSSTpt;
+		WordPOSTagPOSTagMap m_mapSTptN0ptSSTw;
+		POSTagSet3Map m_mapSTptN0ptSSTpt;
 
-		WordWordPOSTagMap m_mapST2wST2RHwN0pt;
-		WordWordPOSTagMap m_mapST2wST2RHptN0w;
-		WordWordPOSTagMap m_mapST2ptST2RHwN0w;
+		// st + n0 + st left/right head/pred
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTLHwSTLHl;
+		POSTagSet3IntMap m_mapSTptN0ptSTLHptSTLHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTLPwSTLPl;
+		POSTagSet3IntMap m_mapSTptN0ptSTLPptSTLPl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTRHwSTRHl;
+		POSTagSet3IntMap m_mapSTptN0ptSTRHptSTRHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptSTRPptSTRPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wSTRPptSTRPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptSTRPwSTRPl;
+		POSTagSet3IntMap m_mapSTptN0ptSTRPptSTRPl;
 
-		WordWordPOSTagMap m_map2STw2STRHwN0pt;
-		WordWordPOSTagMap m_map2STw2STRHptN0w;
-		WordWordPOSTagMap m_map2STpt2STRHwN0w;
+		// st + n0 + n0 left head/pred
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptN0LHwN0LHl;
+		POSTagSet3IntMap m_mapSTptN0ptN0LHptN0LHl;
+		WordPOSTagPOSTagIntMap m_mapSTwN0ptN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0wN0LPptN0LPl;
+		WordPOSTagPOSTagIntMap m_mapSTptN0ptN0LPwN0LPl;
+		POSTagSet3IntMap m_mapSTptN0ptN0LPptN0LPl;
 
-		WordWordPOSTagMap m_mapSTwSTRDwN0pt;
-		WordWordPOSTagMap m_mapSTwSTRDptN0w;
-		WordWordPOSTagMap m_mapSTptSTRDwN0w;
+		// quar-gram
+		// st + n0 + st right head + st right pred
+		POSTagSet4Map m_mapSTptN0ptSTRHptSTRPpt;
+		// st + n0 + st left pred + st left pred 2
+		POSTagSet4Map m_mapSTptN0ptSTLPptSTLP2pt;
+		// st + n0 + st right pred + st right pred 2
+		POSTagSet4Map m_mapSTptN0ptSTRPptSTRP2pt;
+		// st + n0 + n0 left pred + n0 left pred 2
+		POSTagSet4Map m_mapSTptN0ptN0LPptN0LP2pt;
 
-		WordWordPOSTagMap m_mapST2wST2RDwN0pt;
-		WordWordPOSTagMap m_mapST2wST2RDptN0w;
-		WordWordPOSTagMap m_mapST2ptST2RDwN0w;
+		WordTagsetMap m_mapSTwSTll;
+		WordTagsetMap m_mapSTwSTrl;
+		WordTagsetMap m_mapN0wN0ll;
+		POSTagTagsetMap m_mapSTptSTll;
+		POSTagTagsetMap m_mapSTptSTrl;
+		POSTagTagsetMap m_mapN0ptN0ll;
+		POSTagSet2TagsetMap m_mapSTptN0ptSTll;
+		POSTagSet2TagsetMap m_mapSTptN0ptSTrl;
+		POSTagSet2TagsetMap m_mapSTptN0ptN0ll;
 
-		WordWordPOSTagMap m_map2STw2STRDwN0pt;
-		WordWordPOSTagMap m_map2STw2STRDptN0w;
-		WordWordPOSTagMap m_map2STpt2STRDwN0w;
-
-		WordWordPOSTagMap m_mapSTwN0wN0LHpt;
-		WordWordPOSTagMap m_mapSTwN0ptN0LHw;
-		WordWordPOSTagMap m_mapSTptN0wN0LHw;
-
-		WordWordPOSTagMap m_mapST2wN0wN0LHpt;
-		WordWordPOSTagMap m_mapST2wN0ptN0LHw;
-		WordWordPOSTagMap m_mapST2ptN0wN0LHw;
-
-		WordWordPOSTagMap m_map2STwN0wN0LHpt;
-		WordWordPOSTagMap m_map2STwN0ptN0LHw;
-		WordWordPOSTagMap m_map2STptN0wN0LHw;
-
-		WordWordPOSTagMap m_mapSTwN0wN0LDpt;
-		WordWordPOSTagMap m_mapSTwN0ptN0LDw;
-		WordWordPOSTagMap m_mapSTptN0wN0LDw;
-
-		WordWordPOSTagMap m_mapST2wN0wN0LDpt;
-		WordWordPOSTagMap m_mapST2wN0ptN0LDw;
-		WordWordPOSTagMap m_mapST2ptN0wN0LDw;
-
-		WordWordPOSTagMap m_map2STwN0wN0LDpt;
-		WordWordPOSTagMap m_map2STwN0ptN0LDw;
-		WordWordPOSTagMap m_map2STptN0wN0LDw;
-
-		WordPOSTagPOSTagMap m_mapSTwSTRHptN0pt;
-		WordPOSTagPOSTagMap m_mapSTptSTRHptN0w;
-		WordPOSTagPOSTagMap m_mapSTptSTRHwN0pt;
-
-		WordPOSTagPOSTagMap m_mapST2wST2RHptN0pt;
-		WordPOSTagPOSTagMap m_mapST2ptST2RHptN0w;
-		WordPOSTagPOSTagMap m_mapST2ptST2RHwN0pt;
-
-		WordPOSTagPOSTagMap m_map2STw2STRHptN0pt;
-		WordPOSTagPOSTagMap m_map2STpt2STRHptN0w;
-		WordPOSTagPOSTagMap m_map2STpt2STRHwN0pt;
-
-		WordPOSTagPOSTagMap m_mapSTwSTRDptN0pt;
-		WordPOSTagPOSTagMap m_mapSTptSTRDptN0w;
-		WordPOSTagPOSTagMap m_mapSTptSTRDwN0pt;
-
-		WordPOSTagPOSTagMap m_mapST2wST2RDptN0pt;
-		WordPOSTagPOSTagMap m_mapST2ptST2RDptN0w;
-		WordPOSTagPOSTagMap m_mapST2ptST2RDwN0pt;
-
-		WordPOSTagPOSTagMap m_map2STw2STRDptN0pt;
-		WordPOSTagPOSTagMap m_map2STpt2STRDptN0w;
-		WordPOSTagPOSTagMap m_map2STpt2STRDwN0pt;
-
-		WordPOSTagPOSTagMap m_mapSTwN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptN0LHw;
-		WordPOSTagPOSTagMap m_mapSTptN0wN0LHpt;
-
-		WordPOSTagPOSTagMap m_mapST2wN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LHw;
-		WordPOSTagPOSTagMap m_mapST2ptN0wN0LHpt;
-
-		WordPOSTagPOSTagMap m_map2STwN0ptN0LHpt;
-		WordPOSTagPOSTagMap m_map2STptN0ptN0LHw;
-		WordPOSTagPOSTagMap m_map2STptN0wN0LHpt;
-
-		WordPOSTagPOSTagMap m_mapSTwN0ptN0LDpt;
-		WordPOSTagPOSTagMap m_mapSTptN0ptN0LDw;
-		WordPOSTagPOSTagMap m_mapSTptN0wN0LDpt;
-
-		WordPOSTagPOSTagMap m_mapST2wN0ptN0LDpt;
-		WordPOSTagPOSTagMap m_mapST2ptN0ptN0LDw;
-		WordPOSTagPOSTagMap m_mapST2ptN0wN0LDpt;
-
-		WordPOSTagPOSTagMap m_map2STwN0ptN0LDpt;
-		WordPOSTagPOSTagMap m_map2STptN0ptN0LDw;
-		WordPOSTagPOSTagMap m_map2STptN0wN0LDpt;
-
-		POSTagSet3Map m_mapSTptSTRHptN0pt;
-		POSTagSet3Map m_mapSTptSTRDptN0pt;
-		POSTagSet3Map m_mapSTptN0ptN0LHpt;
-		POSTagSet3Map m_mapSTptN0ptN0LDpt;
-
-		POSTagSet3Map m_mapST2ptST2RHptN0pt;
-		POSTagSet3Map m_mapST2ptST2RDptN0pt;
-		POSTagSet3Map m_mapST2ptN0ptN0LHpt;
-		POSTagSet3Map m_mapST2ptN0ptN0LDpt;
-
-		POSTagSet3Map m_map2STpt2STRHptN0pt;
-		POSTagSet3Map m_map2STpt2STRDptN0pt;
-		POSTagSet3Map m_map2STptN0ptN0LHpt;
-		POSTagSet3Map m_map2STptN0ptN0LDpt;
-
-		StringMap m_mapSTPOSPath;
-		StringMap m_mapST2POSPath;
-		StringMap m_mapSTFPOSPath;
-		StringMap m_mapST2FPOSPath;
-
-		WordMap m_mapN_2w;
-		POSTagMap m_mapN_2pt;
-		WordMap m_mapN_1w;
-		POSTagMap m_mapN_1pt;
-		WordMap m_mapN1w;
-		POSTagMap m_mapN1pt;
-		WordMap m_mapN2w;
-		POSTagMap m_mapN2pt;
-		TwoWordsMap m_mapN_2wN_1w;
-		TwoWordsMap m_mapN_1wN0w;
-		TwoWordsMap m_mapN0wN1w;
-		TwoWordsMap m_mapN1wN2w;
-		POSTagSet2Map m_mapN_2ptN_1pt;
-		POSTagSet2Map m_mapN_1ptN0pt;
-		POSTagSet2Map m_mapN0ptN1pt;
-		POSTagSet2Map m_mapN1ptN2pt;
-
+		// char feature
+		// for chinese
 		StringMap m_map1CharBefore;
 		StringMap m_map2CharBefore;
 		StringMap m_map3CharBefore;
 		StringMap m_map1CharAfter;
 		StringMap m_map2CharAfter;
 		StringMap m_map3CharAfter;
+
+		// string feature
+		StringMap m_mapSTPOSPath;
+		StringMap m_mapST2POSPath;
+		StringMap m_mapSTFPOSPath;
+		StringMap m_mapST2FPOSPath;
 
 	public:
 		Weight(const std::string & sRead, const std::string & sRecord);

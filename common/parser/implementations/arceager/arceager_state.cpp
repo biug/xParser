@@ -23,7 +23,7 @@ namespace arceager {
 		m_lSibling[left] = m_lDepsL[m_nNextWord];
 		m_lDepsL[m_nNextWord] = left;
 		++m_lDepsNumL[m_nNextWord];
-		m_nLastAction = ENCODE_ACTION(ARC_LEFT, l);
+		m_nLastAction = AL_FIRST + l - 1;;
 	}
 
 	void StateItem::arcRight(const int & l) {
@@ -36,7 +36,7 @@ namespace arceager {
 		m_lDepsR[left] = m_nNextWord++;
 		++m_lDepsNumR[left];
 		clearNext();
-		m_nLastAction = ENCODE_ACTION(ARC_RIGHT, l);
+		m_nLastAction = AR_FIRST + l - 1;
 	}
 
 	void StateItem::print() const {
@@ -76,7 +76,7 @@ namespace arceager {
 	}
 
 	void StateItem::move(const int & action) {
-		switch (DECODE_ACTION(action)) {
+		switch (decodeAction(action)) {
 		case NO_ACTION:
 			return;
 		case SHIFT:
@@ -86,10 +86,10 @@ namespace arceager {
 			reduce();
 			return;
 		case ARC_LEFT:
-			arcLeft(DECODE_LABEL(action));
+			arcLeft(action - AL_FIRST + 1);
 			return;
 		case ARC_RIGHT:
-			arcRight(DECODE_LABEL(action));
+			arcRight(action - AR_FIRST + 1);
 			return;
 		case POP_ROOT:
 			popRoot();
@@ -156,7 +156,7 @@ namespace arceager {
 		if (m_nNextWord == item.m_nNextWord) {
 			top = m_lStack[m_nStackBack];
 			if (item.m_lHeads[top] == m_nNextWord) {
-				return ENCODE_ACTION(ARC_LEFT, item.m_lLabels[top]);
+				return AL_FIRST + item.m_lLabels[top] - 1;
 			}
 			else if (item.m_lHeads[top] != -1) {
 				return REDUCE;
@@ -172,7 +172,7 @@ namespace arceager {
 			}
 			if (item.m_lHeads[top] == m_nNextWord) {
 				if (top == m_lStack[m_nStackBack]) {
-					return ENCODE_ACTION(ARC_LEFT, item.m_lLabels[top]);
+					return AL_FIRST + item.m_lLabels[top] - 1;
 				}
 				else {
 					return REDUCE;
@@ -185,7 +185,7 @@ namespace arceager {
 		else {
 			top = m_lStack[m_nStackBack];
 			if (item.m_lHeads[m_nNextWord] == top) {
-				return ENCODE_ACTION(ARC_RIGHT, item.m_lLabels[m_nNextWord]);
+				return AR_FIRST + item.m_lLabels[m_nNextWord] - 1;
 			}
 			else {
 				return REDUCE;

@@ -105,10 +105,6 @@ namespace arceager {
 		POP_ROOT,
 	};
 
-#define ENCODE_ACTION(A,L)	((A) == ARC_LEFT ? AL_FIRST + (L) - 1 : AR_FIRST + (L) - 1)
-#define DECODE_ACTION(A)	((A) >= AR_FIRST ? ARC_RIGHT : (A) >= AL_FIRST ? ARC_LEFT : (A))
-#define DECODE_LABEL(A)		((A) >= AR_FIRST ? (A) - AR_FIRST + 1 : (A) - AL_FIRST + 1)
-
 #define ENCODE_POSTAG_SET_2(T1, T2)		(((T1) << 8) | (T2))
 #define ENCODE_POSTAG_SET_3(T1, T2, T3)	(((T1) << 16) | ((T2) << 8) | (T3))
 
@@ -140,6 +136,7 @@ namespace arceager {
 	typedef AgendaBeam<StateItem, AGENDA_SIZE> StateAgenda;
 	typedef AgendaBeam<ScoredAction, AGENDA_SIZE> ScoreAgenda;
 
+	int decodeAction(const int & action);
 	void printAction(const int & action);
 }
 

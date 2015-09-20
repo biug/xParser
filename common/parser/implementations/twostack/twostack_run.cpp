@@ -150,16 +150,6 @@ namespace twostack {
 
 		std::cout << "Parsing started" << std::endl;
 
-		AL_MM_FIRST = SHIFT_REDUCE + 1;
-		AL_MM_END = AR_MM_FIRST = (m_bLabelFeature ? AL_MM_FIRST + TDepLabel::count() : AL_MM_FIRST + 1);
-		AR_MM_END = AL_RC_FIRST = (m_bLabelFeature ? AR_MM_FIRST + TDepLabel::count() : AR_MM_FIRST + 1);
-		AL_RC_END = AR_RC_FIRST = (m_bLabelFeature ? AL_RC_FIRST + TDepLabel::count() : AL_RC_FIRST + 1);
-		AR_RC_END = AL_SH_FIRST = (m_bLabelFeature ? AR_RC_FIRST + TDepLabel::count() : AR_RC_FIRST + 1);
-		AL_SH_END = AR_SH_FIRST = (m_bLabelFeature ? AL_SH_FIRST + TDepLabel::count() : AL_SH_FIRST + 1);
-		AR_SH_END = AL_RE_FIRST = (m_bLabelFeature ? AR_SH_FIRST + TDepLabel::count() : AR_SH_FIRST + 1);
-		AL_RE_END = AR_RE_FIRST = (m_bLabelFeature ? AL_RE_FIRST + TDepLabel::count() : AL_RE_FIRST + 1);
-		AR_RE_END = (m_bLabelFeature ? AR_RE_FIRST + TDepLabel::count() : AR_RE_FIRST + 1);
-
 		std::string sSdpFile;
 		std::string sSyntaxTreeFile;
 		if (m_bPathFeature) {
@@ -175,6 +165,17 @@ namespace twostack {
 		std::ifstream treeInput;
 		std::ifstream input(sSdpFile);
 		std::ofstream output(sOutputFile);
+
+		AL_MM_FIRST = SHIFT_REDUCE + 1;
+		AL_MM_END = AR_MM_FIRST = (m_bLabelFeature ? AL_MM_FIRST + TDepLabel::count() : AL_MM_FIRST + 1);
+		AR_MM_END = AL_RC_FIRST = (m_bLabelFeature ? AR_MM_FIRST + TDepLabel::count() : AR_MM_FIRST + 1);
+		AL_RC_END = AR_RC_FIRST = (m_bLabelFeature ? AL_RC_FIRST + TDepLabel::count() : AL_RC_FIRST + 1);
+		AR_RC_END = AL_SH_FIRST = (m_bLabelFeature ? AR_RC_FIRST + TDepLabel::count() : AR_RC_FIRST + 1);
+		AL_SH_END = AR_SH_FIRST = (m_bLabelFeature ? AL_SH_FIRST + TDepLabel::count() : AL_SH_FIRST + 1);
+		AR_SH_END = AL_RE_FIRST = (m_bLabelFeature ? AR_SH_FIRST + TDepLabel::count() : AR_SH_FIRST + 1);
+		AL_RE_END = AR_RE_FIRST = (m_bLabelFeature ? AL_RE_FIRST + TDepLabel::count() : AL_RE_FIRST + 1);
+		AR_RE_END = (m_bLabelFeature ? AR_RE_FIRST + TDepLabel::count() : AR_RE_FIRST + 1);
+
 		if (m_bPathFeature) {
 			treeInput.open(sSyntaxTreeFile);
 		}

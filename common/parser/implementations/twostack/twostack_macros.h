@@ -1,6 +1,7 @@
 #ifndef _TWOSTACK_MACROS_H
 #define _TWOSTACK_MACROS_H
 
+#include "common/token/tagset.h"
 #include "common/parser/agenda.h"
 #include "common/parser/macros_base.h"
 #include "include/learning/perceptron/packed_score.h"
@@ -115,8 +116,24 @@ namespace twostack {
 
 #define ENCODE_POSTAG_SET_2(T1, T2)		(((T1) << 8) | (T2))
 #define ENCODE_POSTAG_SET_3(T1, T2, T3)	(((T1) << 16) | ((T2) << 8) | (T3))
+	inline unsigned int encodePostagSet4(const unsigned int & t1, const unsigned int & t2, const unsigned int & t3, const unsigned int & t4) {
+		return (((t1) << 24) | ((t2) << 16) | ((t3) << 8) | (t4));
+	}
 
-	typedef SetOfLabels<int, long long> SetOfDepLabels;
+	typedef TagSetN<2> Tagset;
+	typedef PackedScoreMap<Tagset, ScoreArray, PackedScoreType, AddScoreType> TagsetMap;
+
+	typedef TriGram<unsigned int> WordTagset;
+	typedef TriGram<unsigned int> POSTagTagset;
+
+	typedef QuarGram<unsigned int> TwoWordsTagset;
+	typedef QuarGram<unsigned int> POSTagSet2Tagset;
+
+	typedef PackedScoreMap<WordTagset, ScoreArray, PackedScoreType, AddScoreType> WordTagsetMap;
+	typedef PackedScoreMap<POSTagTagset, ScoreArray, PackedScoreType, AddScoreType> POSTagTagsetMap;
+
+	typedef PackedScoreMap<TwoWordsTagset, ScoreArray, PackedScoreType, AddScoreType> TwoWordsTagsetMap;
+	typedef PackedScoreMap<POSTagSet2Tagset, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2TagsetMap;
 
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> IntMap;
 	typedef PackedScoreMap<Word, ScoreArray, PackedScoreType, AddScoreType> WordMap;
@@ -126,16 +143,21 @@ namespace twostack {
 	typedef PackedScoreMap<WordPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagMap;
 	typedef PackedScoreMap<WordWordPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagMap;
 	typedef PackedScoreMap<WordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagMap;
-	typedef PackedScoreMap<WordWordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> TwoPOSTaggedWordsMap;
+	typedef PackedScoreMap<WordPOSTagPOSTagInt, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagIntMap;
+	typedef PackedScoreMap<WordWordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagPOSTagMap;
 
-	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
-	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
+	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
+	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
+	typedef PackedScoreMap<UNSIGNED, ScoreArray, PackedScoreType, AddScoreType> POSTagSet4Map;
 
 	typedef PackedScoreMap<std::string, ScoreArray, PackedScoreType, AddScoreType> StringMap;
 	typedef PackedScoreMap<WordInt, ScoreArray, PackedScoreType, AddScoreType> WordIntMap;
 	typedef PackedScoreMap<POSTagInt, ScoreArray, PackedScoreType, AddScoreType> POSTagIntMap;
-	typedef PackedScoreMap<TwoWordsInt, ScoreArray, PackedScoreType, AddScoreType> WordWordIntMap;
-	typedef PackedScoreMap<POSTagSet2Int, ScoreArray, PackedScoreType, AddScoreType> POSTagPOSTagIntMap;
+	typedef PackedScoreMap<TwoWordsInt, ScoreArray, PackedScoreType, AddScoreType> TwoWordsIntMap;
+	typedef PackedScoreMap<WordPOSTagInt, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagIntMap;
+	typedef PackedScoreMap<ThreeWordsInt, ScoreArray, PackedScoreType, AddScoreType> ThreeWordsIntMap;
+	typedef PackedScoreMap<POSTagSet2Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2IntMap;
+	typedef PackedScoreMap<POSTagSet3Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3IntMap;
 
 	class StateItem;
 

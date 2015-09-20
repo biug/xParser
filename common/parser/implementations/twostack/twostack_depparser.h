@@ -23,7 +23,10 @@ namespace twostack {
 		bool m_bLabel;
 
 		static WordPOSTag empty_taggedword;
-		static SetOfDepLabels empty_setoflabels;
+		static WordPOSTag start_taggedword;
+		static WordPOSTag middle_taggedword;
+		static WordPOSTag end_taggedword;
+		static Tagset empty_tagset;
 
 		LCA m_lcaAnalyzer;
 
@@ -46,14 +49,28 @@ namespace twostack {
 		WordPOSTag m_lSentence[MAX_SENTENCE_SIZE];
 		int m_nSentenceLength;
 
-		WordPOSTag word_tag;
-		WordWordPOSTag word_word_tag;
-		WordPOSTagPOSTag word_tag_tag;
+		WordInt word_int;
+		POSTagInt postag_int;
+		WordPOSTag word_postag;
+		WordPOSTagInt word_postag_int;
+		WordWordPOSTag word_word_postag;
+		WordPOSTagPOSTag word_postag_postag;
+		WordPOSTagPOSTagInt word_postag_postag_int;
+		WordWordPOSTagPOSTag word_word_postag_postag;
 		TwoWordsInt word_word_int;
-		TwoWords bi_word;
-		ThreeWords tri_word;
-		Int set_of_2_tags;
-		Int set_of_3_tags;
+		TwoWords two_words;
+		TwoWordsInt two_words_int;
+		ThreeWords three_words;
+		ThreeWordsInt three_words_int;
+		POSTagSet2Int postag_set_2_int;
+		POSTagSet3Int postag_set_3_int;
+		Int set_of_2_postags;
+		Int set_of_3_postags;
+		Int set_of_4_postags;
+		WordTagset word_tagset;
+		POSTagTagset postag_tagset;
+		TwoWordsTagset two_words_tagset;
+		POSTagSet2Tagset postag_set_2_tagset;
 
 		PackedScoreType m_mapPackedScore;
 

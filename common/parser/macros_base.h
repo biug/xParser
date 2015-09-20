@@ -18,6 +18,8 @@
 #define EMPTY_POSTAG	"-EMPTY-"
 #define START_WORD		"-START-"
 #define START_POSTAG	"-START-"
+#define MIDDLE_WORD		"-MIDDLE-"
+#define MIDDLE_POSTAG	"-MIDDLE-"
 #define END_WORD		"-END-"
 #define END_POSTAG		"-END-"
 
@@ -55,7 +57,8 @@
 
 typedef int gtype;
 
-typedef gtype Int;
+typedef unsigned int UNSIGNED;
+typedef int Int;
 typedef gtype Word;
 typedef gtype POSTag;
 

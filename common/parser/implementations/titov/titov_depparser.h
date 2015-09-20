@@ -25,7 +25,7 @@ namespace titov {
 		static WordPOSTag empty_taggedword;
 		static WordPOSTag start_taggedword;
 		static WordPOSTag end_taggedword;
-		static SetOfDepLabels empty_setoflabels;
+		static Tagset empty_tagset;
 
 		LCA m_lcaAnalyzer;
 
@@ -49,6 +49,7 @@ namespace titov {
 		int m_nSentenceLength;
 
 		WordInt word_int;
+		POSTagInt postag_int;
 		WordPOSTag word_postag;
 		WordPOSTagInt word_postag_int;
 		WordWordPOSTag word_word_postag;
@@ -65,6 +66,10 @@ namespace titov {
 		Int set_of_2_postags;
 		Int set_of_3_postags;
 		Int set_of_4_postags;
+		WordTagset word_tagset;
+		POSTagTagset postag_tagset;
+		TwoWordsTagset two_words_tagset;
+		POSTagSet2Tagset postag_set_2_tagset;
 
 		PackedScoreType m_mapPackedScore;
 

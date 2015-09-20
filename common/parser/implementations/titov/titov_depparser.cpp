@@ -15,7 +15,7 @@ namespace titov {
 	WordPOSTag DepParser::empty_taggedword = WordPOSTag();
 	WordPOSTag DepParser::start_taggedword = WordPOSTag();
 	WordPOSTag DepParser::end_taggedword = WordPOSTag();
-	SetOfDepLabels DepParser::empty_setoflabels = SetOfDepLabels();
+	Tagset DepParser::empty_tagset = Tagset();
 
 	DepParser::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, const bool & bChar, const bool & bPath, const bool & bLabel, int nState) :
 		DepParserBase(sFeatureInput, nState),
@@ -26,9 +26,8 @@ namespace titov {
 		m_Weight = new Weight(sFeatureInput, sFeatureOut);
 
 		DepParser::empty_taggedword.refer(TWord::code(EMPTY_WORD), TPOSTag::code(EMPTY_POSTAG));
-		DepParser::empty_taggedword.refer(TWord::code(START_WORD), TPOSTag::code(START_POSTAG));
-		DepParser::empty_taggedword.refer(TWord::code(END_WORD), TPOSTag::code(END_POSTAG));
-		empty_setoflabels.add(0);
+		DepParser::start_taggedword.refer(TWord::code(START_WORD), TPOSTag::code(START_POSTAG));
+		DepParser::end_taggedword.refer(TWord::code(END_WORD), TPOSTag::code(END_POSTAG));
 
 		m_tDecodeTime = 0;
 		m_tGetScoreTime = 0;
@@ -142,7 +141,7 @@ namespace titov {
 			}
 
 #ifdef _DEBUG
-			std::cout << "step : " << step++ << std::endl;
+			std::cout << "step : " << step << std::endl;
 			m_pGenerated->bestUnsortItem().print();
 #endif
 
@@ -157,11 +156,6 @@ namespace titov {
 				if (m_pGenerated->size() == 0) {
 					break;
 				}
-
-#ifdef _DEBUG
-				std::cout << "step : " << step++ << std::endl;
-				m_pGenerated->bestUnsortItem().print();
-#endif
 
 				std::swap(m_pGenerated, m_pGenerator);
 			}
@@ -321,10 +315,10 @@ namespace titov {
 		const int & strh_index = st_index == -1 ? -1 : item.rightHead(st_index);
 		const int & strp_index = st_index == -1 ? -1 : item.rightPred(st_index);
 		const int & st2_index = item.stackBack() <= 0 ? -1 : item.stackSubTop();
-		const int & st2lh_index = st2_index == -1 ? -1 : item.leftHead(st2_index);
-		const int & st2lp_index = st2_index == -1 ? -1 : item.leftPred(st2_index);
-		const int & st2rh_index = st2_index == -1 ? -1 : item.rightHead(st2_index);
-		const int & st2rp_index = st2_index == -1 ? -1 : item.rightPred(st2_index);
+//		const int & st2lh_index = st2_index == -1 ? -1 : item.leftHead(st2_index);
+//		const int & st2lp_index = st2_index == -1 ? -1 : item.leftPred(st2_index);
+//		const int & st2rh_index = st2_index == -1 ? -1 : item.rightHead(st2_index);
+//		const int & st2rp_index = st2_index == -1 ? -1 : item.rightPred(st2_index);
 		const int & n0_index = item.size() < m_nSentenceLength ? item.size() : -1;
 		const int & n0lp_index = n0_index == -1 ? -1 : item.leftPred(n0_index);
 		const int & n0lh_index = n0_index == -1 ? -1 : item.leftHead(n0_index);
@@ -343,10 +337,10 @@ namespace titov {
 		const WordPOSTag & strh_word_postag = strh_index == -1 ? empty_taggedword : m_lSentence[strh_index];
 		const WordPOSTag & strp_word_postag = strp_index == -1 ? empty_taggedword : m_lSentence[strp_index];
 		const WordPOSTag & st2_word_postag = st2_index == -1 ? start_taggedword : m_lSentence[st2_index];
-		const WordPOSTag & st2lh_word_postag = st2lh_index == -1 ? empty_taggedword : m_lSentence[st2lh_index];
-		const WordPOSTag & st2lp_word_postag = st2lp_index == -1 ? empty_taggedword : m_lSentence[st2lp_index];
-		const WordPOSTag & st2rh_word_postag = st2rh_index == -1 ? empty_taggedword : m_lSentence[st2rh_index];
-		const WordPOSTag & st2rp_word_postag = st2rp_index == -1 ? empty_taggedword : m_lSentence[st2rp_index];
+//		const WordPOSTag & st2lh_word_postag = st2lh_index == -1 ? empty_taggedword : m_lSentence[st2lh_index];
+//		const WordPOSTag & st2lp_word_postag = st2lp_index == -1 ? empty_taggedword : m_lSentence[st2lp_index];
+//		const WordPOSTag & st2rh_word_postag = st2rh_index == -1 ? empty_taggedword : m_lSentence[st2rh_index];
+//		const WordPOSTag & st2rp_word_postag = st2rp_index == -1 ? empty_taggedword : m_lSentence[st2rp_index];
 		const WordPOSTag & n0_word_postag = n0_index == -1 ? end_taggedword : m_lSentence[n0_index];
 		const WordPOSTag & n0lh_word_postag = n0lh_index == -1 ? empty_taggedword : m_lSentence[n0lh_index];
 		const WordPOSTag & n0lp_word_postag = n0lp_index == -1 ? empty_taggedword : m_lSentence[n0lp_index];
@@ -361,13 +355,15 @@ namespace titov {
 
 		const Word & st_word = st_word_postag.first();
 		const POSTag & st_postag = st_word_postag.second();
+		const Tagset & st_llabelset = st_index == -1 ? empty_tagset : item.leftPredLabelSet(st_index);
+		const Tagset & st_rlabelset = st_index == -1 ? empty_tagset : item.rightPredLabelSet(st_index);
 		const Word & stlh_word = stlh_word_postag.first();
 		const POSTag & stlh_postag = stlh_word_postag.second();
 		const int & stlh_label = st_index == -1 ? 0 : item.leftHeadLabel(st_index);
 		const int & stlh_arity = st_index == -1 ? -1 : item.leftHeadArity(st_index);
 		const Word & stlp_word = stlp_word_postag.first();
 		const POSTag & stlp_postag = stlp_word_postag.second();
-		const POSTag & stlp2_postag = st_index == -1 ? empty_taggedword.second() : m_lSentence[item.leftSubPred(st_index)].second();
+		const POSTag & stlp2_postag = (st_index == -1 || item.leftSubPred(st_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(st_index)].second();
 		const int & stlp_label = st_index == -1 ? 0 : item.leftPredLabel(st_index);
 		const int & stlp_arity = st_index == -1 ? -1 : item.leftPredArity(st_index);
 		const Word & strh_word = strh_word_postag.first();
@@ -376,36 +372,39 @@ namespace titov {
 		const int & strh_arity = st_index == -1 ? -1 : item.rightHeadArity(st_index);
 		const Word & strp_word = strp_word_postag.first();
 		const POSTag & strp_postag = strp_word_postag.second();
-		const POSTag & strp2_postag = st_index == -1 ? empty_taggedword.second() : m_lSentence[item.rightSubPred(st_index)].second();
+		const POSTag & strp2_postag = (st_index == -1 || item.rightSubPred(st_index) == -1) ? empty_taggedword.second() : m_lSentence[item.rightSubPred(st_index)].second();
 		const int & strp_label = st_index == -1 ? 0 : item.rightPredLabel(st_index);
 		const int & strp_arity = st_index == -1 ? -1 : item.rightPredArity(st_index);
 		const Word & st2_word = st2_word_postag.first();
 		const POSTag & st2_postag = st2_word_postag.second();
-		const Word & st2lh_word = st2lh_word_postag.first();
-		const POSTag & st2lh_postag = st2lh_word_postag.second();
-		const int & st2lh_label = st2_index == -1 ? 0 : item.leftHeadLabel(st2_index);
-		const int & st2lh_arity = st2_index == -1 ? -1 : item.leftHeadArity(st2_index);
-		const Word & st2lp_word = st2lp_word_postag.first();
-		const POSTag & st2lp_postag = st2lp_word_postag.second();
-		const int & st2lp_label = st2_index == -1 ? 0 : item.leftPredLabel(st2_index);
-		const int & st2lp_arity = st2_index == -1 ? -1 : item.leftPredArity(st2_index);
-		const Word & st2rh_word = st2rh_word_postag.first();
-		const POSTag & st2rh_postag = st2rh_word_postag.second();
-		const int & st2rh_label = st2_index == -1 ? 0 : item.rightHeadLabel(st2_index);
-		const int & st2rh_arity = st2_index == -1 ? -1 : item.rightHeadArity(st2_index);
-		const Word & st2rp_word = st2rp_word_postag.first();
-		const POSTag & st2rp_postag = st2rp_word_postag.second();
-		const int & st2rp_label = st2_index == -1 ? 0 : item.rightPredLabel(st2_index);
-		const int & st2rp_arity = st2_index == -1 ? -1 : item.rightPredArity(st2_index);
+//		const Word & st2lh_word = st2lh_word_postag.first();
+//		const POSTag & st2lh_postag = st2lh_word_postag.second();
+//		const int & st2lh_label = st2_index == -1 ? 0 : item.leftHeadLabel(st2_index);
+//		const int & st2lh_arity = st2_index == -1 ? -1 : item.leftHeadArity(st2_index);
+//		const Word & st2lp_word = st2lp_word_postag.first();
+//		const POSTag & st2lp_postag = st2lp_word_postag.second();
+		const POSTag & st2lp2_postag = (st2_index == -1 || item.leftSubPred(st2_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(st2_index)].second();
+//		const int & st2lp_label = st2_index == -1 ? 0 : item.leftPredLabel(st2_index);
+//		const int & st2lp_arity = st2_index == -1 ? -1 : item.leftPredArity(st2_index);
+//		const Word & st2rh_word = st2rh_word_postag.first();
+//		const POSTag & st2rh_postag = st2rh_word_postag.second();
+//		const int & st2rh_label = st2_index == -1 ? 0 : item.rightHeadLabel(st2_index);
+//		const int & st2rh_arity = st2_index == -1 ? -1 : item.rightHeadArity(st2_index);
+//		const Word & st2rp_word = st2rp_word_postag.first();
+//		const POSTag & st2rp_postag = st2rp_word_postag.second();
+//		const POSTag & st2rp2_postag = (st2_index == -1 || item.rightSubPred(st2_index) == -1) ? empty_taggedword.second() : m_lSentence[item.rightSubPred(st2_index)].second();
+//		const int & st2rp_label = st2_index == -1 ? 0 : item.rightPredLabel(st2_index);
+//		const int & st2rp_arity = st2_index == -1 ? -1 : item.rightPredArity(st2_index);
 		const Word & n0_word = n0_word_postag.first();
 		const POSTag & n0_postag = n0_word_postag.second();
+		const Tagset & n0_llabelset = n0_index == -1 ? empty_tagset : item.leftPredLabelSet(n0_index);
 		const Word & n0lh_word = n0lh_word_postag.first();
 		const POSTag & n0lh_postag = n0lh_word_postag.second();
 		const int & n0lh_label = n0_index == -1 ? 0 : item.leftHeadLabel(n0_index);
 		const int & n0lh_arity = n0_index == -1 ? -1 : item.leftHeadArity(n0_index);
 		const Word & n0lp_word = n0lp_word_postag.first();
 		const POSTag & n0lp_postag = n0lp_word_postag.second();
-		const POSTag & n0lp2_postag = n0_index == -1 ? empty_taggedword.second() : m_lSentence[item.leftSubPred(n0_index)].second();
+		const POSTag & n0lp2_postag = (n0_index == -1 || item.leftSubPred(n0_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(n0_index)].second();
 		const int & n0lp_label = n0_index == -1 ? 0 : item.leftPredLabel(n0_index);
 		const int & n0lp_arity = n0_index == -1 ? -1 : item.leftPredArity(n0_index);
 		const Word & stl2_word = stl2_word_postag.first();
@@ -438,66 +437,66 @@ namespace titov {
 
 		// unigram context
 		// st + sti, n0 + n0i
-		two_words_int.refer(st_word, stl2_word, -2);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, stl1_word, -1);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, str1_word, 1);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, str2_word, 2);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(st_word, stl2_word, stl1_word, -1);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(st_word, stl1_word, str1_word, 0);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(st_word, str1_word, str2_word, 1);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(n0_word, n0l2_word, -2);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(n0_word, n0l1_word, -1);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(n0_word, n0r1_word, 1);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(n0_word, n0r2_word, 2);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(n0_word, n0l2_word, n0l1_word, -1);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(n0_word, n0l1_word, n0r1_word, 0);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		three_words_int.refer(n0_word, n0r1_word, n0r2_word, 1);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, three_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(stl2_word, -2);
+		cweight->m_mapSTiw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(stl1_word, -1);
+		cweight->m_mapSTiw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(str1_word, 1);
+		cweight->m_mapSTiw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(str2_word, 2);
+		cweight->m_mapSTiw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(stl2_word, stl1_word, -1);
+		cweight->m_mapSTiwSTjw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(stl1_word, str1_word, 0);
+		cweight->m_mapSTiwSTjw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(str1_word, str2_word, 1);
+		cweight->m_mapSTiwSTjw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(n0l2_word, -2);
+		cweight->m_mapN0iw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(n0l1_word, -1);
+		cweight->m_mapN0iw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(n0r1_word, 1);
+		cweight->m_mapN0iw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(n0r2_word, 2);
+		cweight->m_mapN0iw.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(n0l2_word, n0l1_word, -1);
+		cweight->m_mapN0iwN0jw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(n0l1_word, n0r1_word, 0);
+		cweight->m_mapN0iwN0jw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
+		two_words_int.refer(n0r1_word, n0r2_word, 1);
+		cweight->m_mapN0iwN0jw.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 
-		postag_set_2_int.refer(st_postag, stl2_postag, -2);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(st_postag, stl1_postag, -1);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(st_postag, str1_postag, 1);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(st_postag, str2_postag, 2);
-		cweight->m_mapSTwSTiw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st_postag, stl2_postag, stl1_postag, -1);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st_postag, stl1_postag, str1_postag, 0);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st_postag, str1_postag, str2_postag, 1);
-		cweight->m_mapSTwSTiwSTjw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(n0_postag, n0l2_postag, -2);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(n0_postag, n0l1_postag, -1);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(n0_postag, n0r1_postag, 1);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_2_int.refer(n0_postag, n0r2_postag, 2);
-		cweight->m_mapN0wN0iw.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(n0_postag, n0l2_postag, n0l1_postag, -1);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(n0_postag, n0l1_postag, n0r1_postag, 0);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(n0_postag, n0r1_postag, n0r2_postag, 1);
-		cweight->m_mapN0wN0iwN0jw.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(stl2_postag, -2);
+		cweight->m_mapSTipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(stl1_postag, -1);
+		cweight->m_mapSTipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(str1_postag, 1);
+		cweight->m_mapSTipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(str2_postag, 2);
+		cweight->m_mapSTipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(stl2_postag, stl1_postag, -1);
+		cweight->m_mapSTiptSTjpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(stl1_postag, str1_postag, 0);
+		cweight->m_mapSTiptSTjpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(str1_postag, str2_postag, 1);
+		cweight->m_mapSTiptSTjpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(n0l2_postag, -2);
+		cweight->m_mapN0ipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(n0l1_postag, -1);
+		cweight->m_mapN0ipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(n0r1_postag, 1);
+		cweight->m_mapN0ipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_int.refer(n0r2_postag, 2);
+		cweight->m_mapN0ipt.getOrUpdateScore(m_mapPackedScore, postag_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(n0l2_postag, n0l1_postag, -1);
+		cweight->m_mapN0iptN0jpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(n0l1_postag, n0r1_postag, 0);
+		cweight->m_mapN0iptN0jpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_int.refer(n0r1_postag, n0r2_postag, 1);
+		cweight->m_mapN0iptN0jpt.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
 
 		// unigram with label
-		// st, n0, st2
+		// st, n0
 		if (m_bLabel) {
 			word_int.refer(st_word, stlh_label);
 			cweight->m_mapSTwSTLHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
@@ -507,14 +506,6 @@ namespace titov {
 			cweight->m_mapSTwSTRHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 			word_int.refer(st_word, strp_label);
 			cweight->m_mapSTwSTRPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-			word_int.refer(st2_word, st2lh_label);
-			cweight->m_mapST2wST2LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-			word_int.refer(st2_word, st2lp_label);
-			cweight->m_mapST2wST2LPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-			word_int.refer(st2_word, st2rh_label);
-			cweight->m_mapST2wST2RHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-			word_int.refer(st2_word, st2rp_label);
-			cweight->m_mapST2wST2RPl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 			word_int.refer(n0_word, n0lh_label);
 			cweight->m_mapN0wN0LHl.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 			word_int.refer(n0_word, n0lp_label);
@@ -522,7 +513,7 @@ namespace titov {
 		}
 
 		// unigram with arity
-		// st, n0, st2
+		// st, n0
 		word_int.refer(st_word, stlh_arity);
 		cweight->m_mapSTwSTLHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_int.refer(st_word, stlp_arity);
@@ -531,14 +522,10 @@ namespace titov {
 		cweight->m_mapSTwSTRHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_int.refer(st_word, strp_arity);
 		cweight->m_mapSTwSTRPi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2lh_arity);
-		cweight->m_mapST2wST2LHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2lp_arity);
-		cweight->m_mapST2wST2LPi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2rh_arity);
-		cweight->m_mapST2wST2RHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_int.refer(st2_word, st2rp_arity);
-		cweight->m_mapST2wST2RPi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(st_word, stlh_arity + strh_arity);
+		cweight->m_mapSTwSTHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
+		word_int.refer(st_word, stlp_arity + strp_arity);
+		cweight->m_mapSTwSTPi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_int.refer(n0_word, n0lh_arity);
 		cweight->m_mapN0wN0LHi.getOrUpdateScore(m_mapPackedScore, word_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_int.refer(n0_word, n0lp_arity);
@@ -565,7 +552,7 @@ namespace titov {
 		word_word_postag_postag.refer(st_word, n0_word, st_postag, n0_postag);
 		cweight->m_mapSTwptN0wpt.getOrUpdateScore(m_mapPackedScore, word_word_postag_postag, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + dis
-		dis = encodeLinkDistanceOrDirection(st_index, n0_index, false);
+		dis = encodeLinkDistanceOrDirection(st_index, n0_index == -1 ? m_nSentenceLength : n0_index, false);
 		two_words_int.refer(st_word, n0_word, dis);
 		cweight->m_mapSTwN0wD.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_postag_int.refer(st_word, n0_postag, dis);
@@ -575,16 +562,8 @@ namespace titov {
 		postag_set_2_int.refer(st_postag, n0_postag, dis);
 		cweight->m_mapSTptN0ptD.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + st left/right head/pred
-		two_words_int.refer(st_word, n0_word, stlh_arity);
-		cweight->m_mapSTwN0wSTLHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, n0_word, stlp_arity);
-		cweight->m_mapSTwN0wSTLPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, n0_word, strh_arity);
-		cweight->m_mapSTwN0wSTRHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 		two_words_int.refer(st_word, n0_word, strp_arity);
 		cweight->m_mapSTwN0wSTRPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st_word, n0_word, n0lh_arity);
-		cweight->m_mapSTwN0wN0LHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 		two_words_int.refer(st_word, n0_word, n0lp_arity);
 		cweight->m_mapSTwN0wN0LPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 
@@ -608,7 +587,7 @@ namespace titov {
 		word_word_postag_postag.refer(st2_word, n0_word, st2_postag, n0_postag);
 		cweight->m_mapST2wptN0wpt.getOrUpdateScore(m_mapPackedScore, word_word_postag_postag, m_nScoreIndex, amount, m_nTrainingRound);
 		// st2 + n0 + dis
-		dis = encodeLinkDistanceOrDirection(st2_index, n0_index, false);
+		dis = encodeLinkDistanceOrDirection(st2_index, n0_index == -1 ? m_nSentenceLength : n0_index, false);
 		two_words_int.refer(st2_word, n0_word, dis);
 		cweight->m_mapST2wN0wD.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 		word_postag_int.refer(st2_word, n0_postag, dis);
@@ -617,19 +596,6 @@ namespace titov {
 		cweight->m_mapST2ptN0wD.getOrUpdateScore(m_mapPackedScore, word_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
 		postag_set_2_int.refer(st2_postag, n0_postag, dis);
 		cweight->m_mapST2ptN0ptD.getOrUpdateScore(m_mapPackedScore, postag_set_2_int, m_nScoreIndex, amount, m_nTrainingRound);
-		// st2 + n0 + st2 left/right head/pred
-		two_words_int.refer(st2_word, n0_word, st2lh_arity);
-		cweight->m_mapST2wN0wST2LHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st2_word, n0_word, st2lp_arity);
-		cweight->m_mapST2wN0wST2LPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st2_word, n0_word, st2rh_arity);
-		cweight->m_mapST2wN0wST2RHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st2_word, n0_word, st2rp_arity);
-		cweight->m_mapST2wN0wST2RPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st2_word, n0_word, n0lh_arity);
-		cweight->m_mapST2wN0wN0LHi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
-		two_words_int.refer(st2_word, n0_word, n0lp_arity);
-		cweight->m_mapST2wN0wN0LPi.getOrUpdateScore(m_mapPackedScore, two_words_int, m_nScoreIndex, amount, m_nTrainingRound);
 
 		// st + st2
 		two_words.refer(st_word, st2_word);
@@ -714,74 +680,39 @@ namespace titov {
 		postag_set_3_int.refer(st_postag, n0_postag, n0lp_postag, n0lp_label);
 		cweight->m_mapSTptN0ptN0LPptN0LPl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
 
-		// st2 + n0 + st2 left/right head/pred
-		word_postag_postag_int.refer(st2_word, st2lh_postag, n0_postag, st2lh_label);
-		cweight->m_mapST2wN0ptST2LHptST2LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, st2lh_postag, st2lh_label);
-		cweight->m_mapST2ptN0wST2LHptST2LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2lh_word, st2_postag, n0_postag, st2lh_label);
-		cweight->m_mapST2ptN0ptST2LHwST2LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, st2lh_postag, n0_postag, st2lh_label);
-		cweight->m_mapST2ptN0ptST2LHptST2LHl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2_word, st2lp_postag, n0_postag, st2lp_label);
-		cweight->m_mapST2wN0ptST2LPptST2LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, st2lp_postag, st2lp_label);
-		cweight->m_mapST2ptN0wST2LPptST2LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2lp_word, st2_postag, n0_postag, st2lp_label);
-		cweight->m_mapST2ptN0ptST2LPwST2LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, st2lp_postag, n0_postag, st2lp_label);
-		cweight->m_mapST2ptN0ptST2LPptST2LPl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2_word, st2rh_postag, n0_postag, st2rh_label);
-		cweight->m_mapST2wN0ptST2RHptST2RHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, st2rh_postag, st2rh_label);
-		cweight->m_mapST2ptN0wST2RHptST2RHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2rh_word, st2_postag, n0_postag, st2rh_label);
-		cweight->m_mapST2ptN0ptST2RHwST2RHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, st2rh_postag, n0_postag, st2rh_label);
-		cweight->m_mapST2ptN0ptST2RHptST2RHl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2_word, st2rp_postag, n0_postag, st2rp_label);
-		cweight->m_mapST2wN0ptST2RPptST2RPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, st2rp_postag, st2rp_label);
-		cweight->m_mapST2ptN0wST2RPptST2RPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2rp_word, st2_postag, n0_postag, st2rp_label);
-		cweight->m_mapST2ptN0ptST2RPwST2RPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, st2rp_postag, n0_postag, st2rp_label);
-		cweight->m_mapST2ptN0ptST2RPptST2RPl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-
-		// st2 + n0 + n0 left head/pred
-		word_postag_postag_int.refer(st2_word, n0_postag, n0lh_postag, n0lh_label);
-		cweight->m_mapST2wN0ptN0LHptN0LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, n0lh_postag, n0lh_label);
-		cweight->m_mapST2ptN0wN0LHptN0LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0lh_word, st2_postag, n0_postag, n0lh_label);
-		cweight->m_mapST2ptN0ptN0LHwN0LHl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, n0_postag, n0lh_postag, n0lh_label);
-		cweight->m_mapST2ptN0ptN0LHptN0LHl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(st2_word, n0_postag, n0lp_postag, n0lp_label);
-		cweight->m_mapST2wN0ptN0LPptN0LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0_word, st2_postag, n0lp_postag, n0lp_label);
-		cweight->m_mapST2ptN0wN0LPptN0LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		word_postag_postag_int.refer(n0lp_word, st2_postag, n0_postag, n0lp_label);
-		cweight->m_mapST2ptN0ptN0LPwN0LPl.getOrUpdateScore(m_mapPackedScore, word_postag_postag_int, m_nScoreIndex, amount, m_nTrainingRound);
-		postag_set_3_int.refer(st2_postag, n0_postag, n0lp_postag, n0lp_label);
-		cweight->m_mapST2ptN0ptN0LPptN0LPl.getOrUpdateScore(m_mapPackedScore, postag_set_3_int, m_nScoreIndex, amount, m_nTrainingRound);
-
 		// quar-gram
 		// st + n0 + st left head + st left pred
-		set_of_4_postags = ENCODE_POSTAG_SET_4(st_postag, stlh_postag, stlp_postag, n0_postag);
-		cweight->m_mapSTptN0ptSTLHptSTLPpt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + st right head + st right pred
-		set_of_4_postags = ENCODE_POSTAG_SET_4(st_postag, strh_postag, strp_postag, n0_postag);
+		set_of_4_postags = encodePostagSet4(st_postag, strh_postag, strp_postag, n0_postag);
 		cweight->m_mapSTptN0ptSTRHptSTRPpt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + st left pred + st left pred 2
-		set_of_4_postags = ENCODE_POSTAG_SET_4(st_postag, stlp_postag, stlp2_postag, n0_postag);
+		set_of_4_postags = encodePostagSet4(st_postag, stlp_postag, stlp2_postag, n0_postag);
 		cweight->m_mapSTptN0ptSTLPptSTLP2pt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + st right pred + st right pred 2
-		set_of_4_postags = ENCODE_POSTAG_SET_4(st_postag, strp_postag, strp2_postag, n0_postag);
+		set_of_4_postags = encodePostagSet4(st_postag, strp_postag, strp2_postag, n0_postag);
 		cweight->m_mapSTptN0ptSTRPptSTRP2pt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
 		// st + n0 + n0 left pred + n0 left pred 2
-		set_of_4_postags = ENCODE_POSTAG_SET_4(st_postag, n0_postag, n0lp_postag, n0lp2_postag);
+		set_of_4_postags = encodePostagSet4(st_postag, n0_postag, n0lp_postag, n0lp2_postag);
 		cweight->m_mapSTptN0ptN0LPptN0LP2pt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
+
+		word_tagset.refer(st_word, st_llabelset.bits(0), st_llabelset.bits(1));
+		cweight->m_mapSTwSTll.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		word_tagset.refer(st_word, st_rlabelset.bits(0), st_rlabelset.bits(1));
+		cweight->m_mapSTwSTrl.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		word_tagset.refer(n0_word, n0_llabelset.bits(0), n0_llabelset.bits(1));
+		cweight->m_mapN0wN0ll.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_tagset.refer(st_postag, st_llabelset.bits(0), st_llabelset.bits(1));
+		cweight->m_mapSTptSTll.getOrUpdateScore(m_mapPackedScore, postag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_tagset.refer(st_postag, st_rlabelset.bits(0), st_rlabelset.bits(1));
+		cweight->m_mapSTptSTrl.getOrUpdateScore(m_mapPackedScore, postag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_tagset.refer(n0_postag, n0_llabelset.bits(0), n0_llabelset.bits(1));
+		cweight->m_mapN0ptN0ll.getOrUpdateScore(m_mapPackedScore, postag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_tagset.refer(st_postag, n0_postag, st_llabelset.bits(0), st_llabelset.bits(1));
+		cweight->m_mapSTptN0ptSTll.getOrUpdateScore(m_mapPackedScore, postag_set_2_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_tagset.refer(st_postag, n0_postag, st_rlabelset.bits(0), st_rlabelset.bits(1));
+		cweight->m_mapSTptN0ptSTrl.getOrUpdateScore(m_mapPackedScore, postag_set_2_tagset, m_nScoreIndex, amount, m_nTrainingRound);
+		postag_set_2_tagset.refer(st_postag, n0_postag, n0_llabelset.bits(0), n0_llabelset.bits(1));
+		cweight->m_mapSTptN0ptN0ll.getOrUpdateScore(m_mapPackedScore, postag_set_2_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 
 		if (m_bChar) {
 			cweight->m_map1CharBefore.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);

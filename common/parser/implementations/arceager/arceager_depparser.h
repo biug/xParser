@@ -97,20 +97,21 @@ namespace arceager {
 	extern int AL_FIRST;
 	extern int AR_FIRST;
 
+	extern int AL_END;
+	extern int AR_END;
+
 	inline void DepParser::reduce(const tscore & score) {
 		m_abScores.insertItem(ScoredAction(REDUCE, score + m_mapPackedScore[REDUCE]));
 	}
 
 	inline void DepParser::arcLeft(const tscore & score) {
-		for (int l = TDepLabel::START, max_label = TDepLabel::count(); l < max_label; ++l) {
-			int action = ENCODE_ACTION(ARC_LEFT, l);
+		for (int action = AL_FIRST; action < AL_END; ++action) {
 			m_abScores.insertItem(ScoredAction(action, score + m_mapPackedScore[action]));
 		}
 	}
 
 	inline void DepParser::arcRight(const tscore & score) {
-		for (int l = TDepLabel::START, max_label = TDepLabel::count(); l < max_label; ++l) {
-			int action = ENCODE_ACTION(ARC_RIGHT, l);
+		for (int action = AR_FIRST; action < AR_END; ++action) {
 			m_abScores.insertItem(ScoredAction(action, score + m_mapPackedScore[action]));
 		}
 	}

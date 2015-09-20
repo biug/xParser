@@ -12,7 +12,6 @@
 namespace titov {
 	class Weight : public WeightBase {
 	public:
-
 		// uni-gram
 		// st, n0, st2
 		WordMap m_mapSTw;
@@ -24,38 +23,32 @@ namespace titov {
 
 		// unigram context
 		// st + sti, n0 + n0i
-		TwoWordsIntMap m_mapSTwSTiw;
-		ThreeWordsIntMap m_mapSTwSTiwSTjw;
-		TwoWordsIntMap m_mapN0wN0iw;
-		ThreeWordsIntMap m_mapN0wN0iwN0jw;
-		POSTagSet2IntMap m_mapSTptSTipt;
-		POSTagSet3IntMap m_mapSTptSTiptSTjpt;
-		POSTagSet2IntMap m_mapN0ptN0ipt;
-		POSTagSet3IntMap m_mapN0ptN0iptN0jpt;
+		WordIntMap m_mapSTiw;
+		TwoWordsIntMap m_mapSTiwSTjw;
+		WordIntMap m_mapN0iw;
+		TwoWordsIntMap m_mapN0iwN0jw;
+		POSTagIntMap m_mapSTipt;
+		POSTagSet2IntMap m_mapSTiptSTjpt;
+		POSTagIntMap m_mapN0ipt;
+		POSTagSet2IntMap m_mapN0iptN0jpt;
 
 		// unigram with label
-		// st, n0, st2
+		// st, n0
 		WordIntMap m_mapSTwSTLHl;
 		WordIntMap m_mapSTwSTLPl;
 		WordIntMap m_mapSTwSTRHl;
 		WordIntMap m_mapSTwSTRPl;
-		WordIntMap m_mapST2wST2LHl;
-		WordIntMap m_mapST2wST2LPl;
-		WordIntMap m_mapST2wST2RHl;
-		WordIntMap m_mapST2wST2RPl;
 		WordIntMap m_mapN0wN0LHl;
 		WordIntMap m_mapN0wN0LPl;
 
 		// unigram with arity
-		// st, n0, st2
+		// st, n0
 		WordIntMap m_mapSTwSTLHi;
 		WordIntMap m_mapSTwSTLPi;
 		WordIntMap m_mapSTwSTRHi;
 		WordIntMap m_mapSTwSTRPi;
-		WordIntMap m_mapST2wST2LHi;
-		WordIntMap m_mapST2wST2LPi;
-		WordIntMap m_mapST2wST2RHi;
-		WordIntMap m_mapST2wST2RPi;
+		WordIntMap m_mapSTwSTHi;
+		WordIntMap m_mapSTwSTPi;
 		WordIntMap m_mapN0wN0LHi;
 		WordIntMap m_mapN0wN0LPi;
 
@@ -76,11 +69,7 @@ namespace titov {
 		WordPOSTagIntMap m_mapSTptN0wD;
 		POSTagSet2IntMap m_mapSTptN0ptD;
 		// st + n0 + st left/right head/pred
-		TwoWordsIntMap m_mapSTwN0wSTLHi;
-		TwoWordsIntMap m_mapSTwN0wSTLPi;
-		TwoWordsIntMap m_mapSTwN0wSTRHi;
 		TwoWordsIntMap m_mapSTwN0wSTRPi;
-		TwoWordsIntMap m_mapSTwN0wN0LHi;
 		TwoWordsIntMap m_mapSTwN0wN0LPi;
 
 		// st2 + n0
@@ -98,13 +87,6 @@ namespace titov {
 		WordPOSTagIntMap m_mapST2wN0ptD;
 		WordPOSTagIntMap m_mapST2ptN0wD;
 		POSTagSet2IntMap m_mapST2ptN0ptD;
-		// st2 + n0 + st2 left/right head/pred
-		TwoWordsIntMap m_mapST2wN0wST2LHi;
-		TwoWordsIntMap m_mapST2wN0wST2LPi;
-		TwoWordsIntMap m_mapST2wN0wST2RHi;
-		TwoWordsIntMap m_mapST2wN0wST2RPi;
-		TwoWordsIntMap m_mapST2wN0wN0LHi;
-		TwoWordsIntMap m_mapST2wN0wN0LPi;
 
 		// st + st2
 		TwoWordsMap m_mapSTwST2w;
@@ -152,37 +134,7 @@ namespace titov {
 		WordPOSTagPOSTagIntMap m_mapSTptN0ptN0LPwN0LPl;
 		POSTagSet3IntMap m_mapSTptN0ptN0LPptN0LPl;
 
-		// st + n0 + st left/right head/pred
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2LHptST2LHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2LHptST2LHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2LHwST2LHl;
-		POSTagSet3IntMap m_mapST2ptN0ptST2LHptST2LHl;
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2LPptST2LPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2LPptST2LPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2LPwST2LPl;
-		POSTagSet3IntMap m_mapST2ptN0ptST2LPptST2LPl;
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2RHptST2RHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2RHptST2RHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2RHwST2RHl;
-		POSTagSet3IntMap m_mapST2ptN0ptST2RHptST2RHl;
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptST2RPptST2RPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wST2RPptST2RPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptST2RPwST2RPl;
-		POSTagSet3IntMap m_mapST2ptN0ptST2RPptST2RPl;
-
-		// st + n0 + n0 left head/pred
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptN0LHwN0LHl;
-		POSTagSet3IntMap m_mapST2ptN0ptN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap m_mapST2wN0ptN0LPptN0LPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0wN0LPptN0LPl;
-		WordPOSTagPOSTagIntMap m_mapST2ptN0ptN0LPwN0LPl;
-		POSTagSet3IntMap m_mapST2ptN0ptN0LPptN0LPl;
-
 		// quar-gram
-		// st + n0 + st left head + st left pred
-		POSTagSet4Map m_mapSTptN0ptSTLHptSTLPpt;
 		// st + n0 + st right head + st right pred
 		POSTagSet4Map m_mapSTptN0ptSTRHptSTRPpt;
 		// st + n0 + st left pred + st left pred 2
@@ -191,6 +143,16 @@ namespace titov {
 		POSTagSet4Map m_mapSTptN0ptSTRPptSTRP2pt;
 		// st + n0 + n0 left pred + n0 left pred 2
 		POSTagSet4Map m_mapSTptN0ptN0LPptN0LP2pt;
+
+		WordTagsetMap m_mapSTwSTll;
+		WordTagsetMap m_mapSTwSTrl;
+		WordTagsetMap m_mapN0wN0ll;
+		POSTagTagsetMap m_mapSTptSTll;
+		POSTagTagsetMap m_mapSTptSTrl;
+		POSTagTagsetMap m_mapN0ptN0ll;
+		POSTagSet2TagsetMap m_mapSTptN0ptSTll;
+		POSTagSet2TagsetMap m_mapSTptN0ptSTrl;
+		POSTagSet2TagsetMap m_mapSTptN0ptN0ll;
 
 		// char feature
 		// for chinese

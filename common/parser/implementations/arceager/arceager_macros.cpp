@@ -50,11 +50,23 @@ namespace arceager {
 		return true;
 	}
 
-	int AL_FIRST = POP_ROOT + 1;
-	int AR_FIRST;
+	int AL_FIRST, AR_FIRST;
+	int AL_END, AR_END;
+
+	int decodeAction(const int & action) {
+		if (action < AL_FIRST) {
+			return action;
+		}
+		else if (action < AR_FIRST) {
+			return ARC_LEFT;
+		}
+		else {
+			return ARC_RIGHT;
+		}
+	}
 
 	void printAction(const int & action) {
-		switch (DECODE_ACTION(action)) {
+		switch (decodeAction(action)) {
 		case REDUCE:
 			std::cout << "reduce" << std::endl;
 			break;
@@ -65,10 +77,10 @@ namespace arceager {
 			std::cout << "pop root" << std::endl;
 			break;
 		case ARC_LEFT:
-			std::cout << "arc left " << DECODE_LABEL(action) << std::endl;
+			std::cout << "arc left " << (action - AL_FIRST + 1) << std::endl;
 			break;
 		case ARC_RIGHT:
-			std::cout << "arc right " << DECODE_LABEL(action) << std::endl;
+			std::cout << "arc right " << (action - AR_FIRST + 1) << std::endl;
 			break;
 		case NO_ACTION:
 			std::cout << "no action" << std::endl;

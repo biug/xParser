@@ -14,34 +14,49 @@ namespace twostack {
 	void StateItem::arcLeft(const int & l) {
 		const int & left = m_lStack[m_nStackBack];
 		//add new head for left and add label
-		m_lSubHeadR[left] = m_lHeadR[left];
 		m_lHeadR[left] = m_nNextWord;
-		m_lSubHeadLabelR[left] = m_lHeadLabelR[left];
 		m_lHeadLabelR[left] = l;
 		++m_lHeadRNum[left];
 		//sibling is the previous child of buffer seek
-		m_lSubPredL[m_nNextWord] = m_lPredL[m_nNextWord];
-		//add child for buffer seek
-		m_lPredL[m_nNextWord] = left;
-		m_lSubPredLabelL[m_nNextWord] = m_lPredLabelL[m_nNextWord];
-		m_lPredLabelL[m_nNextWord] = l;
+		int & buffer_left_pred = m_lPredL[m_nNextWord];
+		if (buffer_left_pred == -1) {
+			buffer_left_pred = left;
+			m_lPredLabelL[m_nNextWord] = l;
+		}
+		else if (left < buffer_left_pred) {
+			m_lSubPredL[m_nNextWord] = buffer_left_pred;
+			m_lSubPredLabelL[m_nNextWord] = m_lPredLabelL[m_nNextWord];
+			buffer_left_pred = left;
+			m_lPredLabelL[m_nNextWord] = l;
+		}
+		else {
+			int & sub_buffer_left_pred = m_lSubPredL[m_nNextWord];
+			if (sub_buffer_left_pred == -1 || left < sub_buffer_left_pred) {
+				sub_buffer_left_pred = left;
+				m_lSubPredLabelL[m_nNextWord] = l;
+			}
+		}
 		++m_lPredLNum[m_nNextWord];
+		m_lPredLabelSetL[m_nNextWord].add(l);
 		//add right arcs for stack seek
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_LEFT));
 	}
 
 	void StateItem::arcRight(const int & l) {
 		const int & left = m_lStack[m_nStackBack];
-		m_lSubHeadL[m_nNextWord] = m_lHeadL[m_nNextWord];
-		m_lHeadL[m_nNextWord] = left;
-		m_lSubHeadLabelL[m_nNextWord] = m_lHeadLabelL[m_nNextWord];
-		m_lHeadLabelL[m_nNextWord] = l;
+		//sibling is the previous child of buffer seek
+		int & buffer_left_head = m_lHeadL[m_nNextWord];
+		if (buffer_left_head == -1 || left < buffer_left_head) {
+			buffer_left_head = left;
+			m_lHeadLabelL[m_nNextWord] = l;
+		}
 		++m_lHeadLNum[m_nNextWord];
 		m_lSubPredR[left] = m_lPredR[left];
 		m_lPredR[left] = m_nNextWord;
 		m_lSubPredLabelR[left] = m_lPredLabelR[left];
 		m_lPredLabelR[left] = l;
 		++m_lPredRNum[left];
+		m_lPredLabelSetR[left].add(l);
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_RIGHT));
 	}
 
@@ -101,11 +116,9 @@ namespace twostack {
 
 	void StateItem::clearNext() {
 		m_lHeadL[m_nNextWord] = -1;
-		m_lSubHeadL[m_nNextWord] = -1;
 		m_lHeadLabelL[m_nNextWord] = 0;
 		m_lHeadLNum[m_nNextWord] = 0;
 		m_lHeadR[m_nNextWord] = -1;
-		m_lSubHeadR[m_nNextWord] = -1;
 		m_lHeadLabelR[m_nNextWord] = 0;
 		m_lHeadRNum[m_nNextWord] = 0;
 		m_lPredL[m_nNextWord] = -1;
@@ -118,6 +131,8 @@ namespace twostack {
 		m_lPredLabelR[m_nNextWord] = 0;
 		m_lSubPredLabelR[m_nNextWord] = 0;
 		m_lPredRNum[m_nNextWord] = 0;
+		m_lPredLabelSetL[m_nNextWord].clear();
+		m_lPredLabelSetR[m_nNextWord].clear();
 		m_lRightNodes[m_nNextWord].clear();
 	}
 
@@ -179,19 +194,8 @@ namespace twostack {
 	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & direction, const int & label) {
 		if (m_nNextWord < graph.size()) {
 			bool left_empty = true;
-			for (int i = 0; i <= m_nStackBack; ++i) {
-				for (const auto & rn : GRAPHNODE_RIGHTNODES(graph[m_lStack[i]])) {
-					if (RIGHTNODE_POS(rn) == m_nNextWord) {
-						left_empty = false;
-						break;
-					}
-				}
-				if (!left_empty) {
-					break;
-				}
-			}
-			for (int i = 0; i <= m_nSecondStackBack; ++i) {
-				for (const auto & rn : GRAPHNODE_RIGHTNODES(graph[m_lSecondStack[i]])) {
+			for (int i = m_nNextWord - 1; i >= 0; --i) {
+				for (const auto & rn : GRAPHNODE_RIGHTNODES(graph[i])) {
 					if (RIGHTNODE_POS(rn) == m_nNextWord) {
 						left_empty = false;
 						break;
@@ -204,25 +208,6 @@ namespace twostack {
 			if (left_empty && GRAPHNODE_RIGHTNODES(graph[m_nNextWord]).size() == 0) {
 				shiftReduce();
 				return true;
-			}
-		}
-		for (int i = m_nStackBack - 1; i >= 0; --i) {
-			const DependencyGraphNode & node = graph[m_lStack[i]];
-			const int & seek = seeks[m_lStack[i]];
-			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
-				switch (direction) {
-				case GRAPH_LEFT:
-					arcLeftMem(label);
-					return true;
-				case 0:
-					mem();
-					return true;
-				case GRAPH_RIGHT:
-					arcRightMem(label);
-					return true;
-				default:
-					return false;
-				}
 			}
 		}
 		if (m_nStackBack >= 0) {
@@ -251,6 +236,25 @@ namespace twostack {
 			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
 				++seek;
 				return extractOneStandard(seeks, graph, RIGHTNODE_DIRECTION(rnwl), RIGHTNODE_LABEL(rnwl));
+			}
+		}
+		for (int i = m_nStackBack - 1; i >= 0; --i) {
+			const DependencyGraphNode & node = graph[m_lStack[i]];
+			const int & seek = seeks[m_lStack[i]];
+			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
+				switch (direction) {
+				case GRAPH_LEFT:
+					arcLeftMem(label);
+					return true;
+				case 0:
+					mem();
+					return true;
+				case GRAPH_RIGHT:
+					arcRightMem(label);
+					return true;
+				default:
+					return false;
+				}
 			}
 		}
 		if (m_nSecondStackBack >= 0) {
@@ -295,27 +299,11 @@ namespace twostack {
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
-		if (m_nNextWord != item.m_nNextWord) {
+		if (m_nActionBack != item.m_nActionBack) {
 			return false;
 		}
-		if (m_nStackBack != item.m_nStackBack) {
-			return false;
-		}
-		if (m_nSecondStackBack != item.m_nSecondStackBack) {
-			return false;
-		}
-		for (int i = 0; i <= m_nStackBack; ++i) {
-			if (m_lStack[i] != item.m_lStack[i]) {
-				return false;
-			}
-		}
-		for (int i = 0; i <= m_nSecondStackBack; ++i) {
-			if (m_lSecondStack[i] != item.m_lSecondStack[i]) {
-				return false;
-			}
-		}
-		for (int i = 0; i <= m_nNextWord; ++i) {
-			if (m_lRightNodes[i] != item.m_lRightNodes[i]) {
+		for (int i = m_nActionBack; i >= 0; --i) {
+			if (m_lActionList[i] != item.m_lActionList[i]) {
 				return false;
 			}
 		}
@@ -347,14 +335,10 @@ namespace twostack {
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 
 		memcpy(m_lHeadL, item.m_lHeadL, len);
-		memcpy(m_lSubHeadL, item.m_lSubHeadL, len);
 		memcpy(m_lHeadLabelL, item.m_lHeadLabelL, len);
-		memcpy(m_lSubHeadLabelL, item.m_lSubHeadLabelL, len);
 		memcpy(m_lHeadLNum, item.m_lHeadLNum, len);
 		memcpy(m_lHeadR, item.m_lHeadR, len);
-		memcpy(m_lSubHeadR, item.m_lSubHeadR, len);
 		memcpy(m_lHeadLabelR, item.m_lHeadLabelR, len);
-		memcpy(m_lSubHeadLabelR, item.m_lSubHeadLabelR, len);
 		memcpy(m_lHeadRNum, item.m_lHeadRNum, len);
 		memcpy(m_lPredL, item.m_lPredL, len);
 		memcpy(m_lSubPredL, item.m_lSubPredL, len);
@@ -370,6 +354,8 @@ namespace twostack {
 		for (int index = 0; index <= m_nNextWord; ++index) {
 			m_lRightNodes[index].clear();
 			m_lRightNodes[index].insert(m_lRightNodes[index].end(), item.m_lRightNodes[index].begin(), item.m_lRightNodes[index].end());
+			m_lPredLabelSetL[index] = item.m_lPredLabelSetL[index];
+			m_lPredLabelSetR[index] = item.m_lPredLabelSetR[index];
 		}
 
 		return *this;

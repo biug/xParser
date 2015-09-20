@@ -2,6 +2,7 @@
 #define _TITOV_STATE_H
 
 #include "titov_macros.h"
+#include "common/token/tagset.h"
 #include "common/token/deplabel.h"
 
 namespace titov {
@@ -45,6 +46,9 @@ namespace titov {
 		int m_lPredLabelR[MAX_SENTENCE_SIZE];
 		int m_lSubPredLabelR[MAX_SENTENCE_SIZE];
 		int m_lPredRNum[MAX_SENTENCE_SIZE];
+
+		Tagset m_lPredLabelSetL[MAX_SENTENCE_SIZE];
+		Tagset m_lPredLabelSetR[MAX_SENTENCE_SIZE];
 
 		std::vector<RightNodeWithLabel> m_lRightNodes[MAX_SENTENCE_SIZE];
 
@@ -90,6 +94,8 @@ namespace titov {
 		const int & leftPredArity(const int & index) const;
 		const int & rightHeadArity(const int & index) const;
 		const int & rightPredArity(const int & index) const;
+		const Tagset & leftPredLabelSet(const int & index) const;
+		const Tagset & rightPredLabelSet(const int & index) const;
 
 		const int & size() const;
 		const int & stackBack() const;
@@ -277,6 +283,14 @@ namespace titov {
 
 	inline const int & StateItem::rightPredArity(const int & index) const {
 		return m_lPredRNum[index];
+	}
+
+	inline const Tagset & StateItem::leftPredLabelSet(const int & index) const {
+		return m_lPredLabelSetL[index];
+	}
+
+	inline const Tagset & StateItem::rightPredLabelSet(const int & index) const {
+		return m_lPredLabelSetR[index];
 	}
 
 	inline bool StateItem::canArc() const {

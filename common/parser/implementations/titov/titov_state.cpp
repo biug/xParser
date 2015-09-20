@@ -37,6 +37,7 @@ namespace titov {
 			}
 		}
 		++m_lPredLNum[m_nNextWord];
+		m_lPredLabelSetL[m_nNextWord].add(l);
 		//add right arcs for stack seek
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_LEFT));
 	}
@@ -55,6 +56,7 @@ namespace titov {
 		m_lSubPredLabelR[left] = m_lPredLabelR[left];
 		m_lPredLabelR[left] = l;
 		++m_lPredRNum[left];
+		m_lPredLabelSetR[left].add(l);
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_RIGHT));
 	}
 
@@ -131,6 +133,8 @@ namespace titov {
 		m_lPredLabelR[m_nNextWord] = 0;
 		m_lSubPredLabelR[m_nNextWord] = 0;
 		m_lPredRNum[m_nNextWord] = 0;
+		m_lPredLabelSetL[m_nNextWord].clear();
+		m_lPredLabelSetR[m_nNextWord].clear();
 		m_lRightNodes[m_nNextWord].clear();
 	}
 
@@ -286,7 +290,9 @@ namespace titov {
 	bool StateItem::extractOracle(const DependencyGraph & graph) {
 		int rightNodeSeeks[MAX_SENTENCE_SIZE];
 		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
-		while (extractOneStandard(rightNodeSeeks, graph))
+		while (extractOneStandard(rightNodeSeeks, graph)) {
+//			printAction(m_lActionList[m_nActionBack]);
+		}
 			;
 		if (*this == graph) {
 			return true;
@@ -349,6 +355,8 @@ namespace titov {
 		for (int index = 0; index <= m_nNextWord; ++index) {
 			m_lRightNodes[index].clear();
 			m_lRightNodes[index].insert(m_lRightNodes[index].end(), item.m_lRightNodes[index].begin(), item.m_lRightNodes[index].end());
+			m_lPredLabelSetL[index] = item.m_lPredLabelSetL[index];
+			m_lPredLabelSetR[index] = item.m_lPredLabelSetR[index];
 		}
 
 		return *this;

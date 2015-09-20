@@ -8,8 +8,11 @@
 #include "arceager_depparser.h"
 
 namespace arceager {
-	extern int AR_FIRST;
 	extern int AL_FIRST;
+	extern int AR_FIRST;
+
+	extern int AL_END;
+	extern int AR_END;
 
 	Run::Run() = default;
 
@@ -33,7 +36,9 @@ namespace arceager {
 			}
 		}
 		input.close();
-		AR_FIRST = AL_FIRST + TDepLabel::count();
+		AL_FIRST = POP_ROOT + 1;
+		AL_END = AR_FIRST = AL_FIRST + TDepLabel::count();
+		AR_END = AR_FIRST + TDepLabel::count();
 		input.open(sInputFile);
 		if (input) {
 			while (input >> ref_sent) {
@@ -57,6 +62,11 @@ namespace arceager {
 		std::unique_ptr<DepParser> parser(new DepParser(sFeatureFile, sFeatureFile, ParserState::PARSE));
 		std::ifstream input(sInputFile);
 		std::ofstream output(sOutputFile);
+
+		AL_FIRST = POP_ROOT + 1;
+		AL_END = AR_FIRST = AL_FIRST + TDepLabel::count();
+		AR_END = AR_FIRST + TDepLabel::count();
+
 		if (input) {
 			while (input >> sentence) {
 				if (sentence.size() < MAX_SENTENCE_SIZE) {
@@ -90,7 +100,9 @@ namespace arceager {
 			}
 		}
 		input.close();
-		AR_FIRST = AL_FIRST + TDepLabel::count();
+		AL_FIRST = POP_ROOT + 1;
+		AL_END = AR_FIRST = AL_FIRST + TDepLabel::count();
+		AR_END = AR_FIRST + TDepLabel::count();
 		input.open(sInputFile);
 		if (input) {
 			while (input >> ref_sent) {
