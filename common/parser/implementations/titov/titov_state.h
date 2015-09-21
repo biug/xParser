@@ -76,12 +76,8 @@ namespace titov {
 		const int & stack(const int & index) const;
 		const int & leftHead(const int & index) const;
 		const int & rightHead(const int & index) const;
-		const int & leftSubHead(const int & index) const;
-		const int & rightSubHead(const int & index) const;
 		const int & leftHeadLabel(const int & index) const;
 		const int & rightHeadLabel(const int & index) const;
-		const int & leftSubHeadLabel(const int & index) const;
-		const int & rightSubHeadLabel(const int & index) const;
 		const int & leftPred(const int & index) const;
 		const int & rightPred(const int & index) const;
 		const int & leftSubPred(const int & index) const;

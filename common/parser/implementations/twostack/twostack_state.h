@@ -86,12 +86,8 @@ namespace twostack {
 		const int & secondStack(const int & index) const;
 		const int & leftHead(const int & index) const;
 		const int & rightHead(const int & index) const;
-		const int & leftSubHead(const int & index) const;
-		const int & rightSubHead(const int & index) const;
 		const int & leftHeadLabel(const int & index) const;
 		const int & rightHeadLabel(const int & index) const;
-		const int & leftSubHeadLabel(const int & index) const;
-		const int & rightSubHeadLabel(const int & index) const;
 		const int & leftPred(const int & index) const;
 		const int & rightPred(const int & index) const;
 		const int & leftSubPred(const int & index) const;
@@ -351,14 +347,8 @@ namespace twostack {
 	}
 
 	inline bool StateItem::canShiftReduce() const {
-		for (int i = m_nNextWord - 1; i >= 0; --i) {
-			for (const auto & rn : m_lRightNodes[i]) {
-				if (RIGHTNODE_POS(rn) == m_nNextWord) {
-					return false;
-				}
-			}
-		}
-		return true;
+		// remove shift-reduce
+		return false;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

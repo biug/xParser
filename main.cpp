@@ -75,6 +75,7 @@ int main(int argc, char * argv[]) {
 
 	if (strcmp(argv[1], "goldtest") == 0) {
 		run->goldtest(argv[3], argv[4]);
+		std::cout << TDepLabel::getTokenizer();
 	}
 	else if (strcmp(argv[1], "train") == 0) {
 

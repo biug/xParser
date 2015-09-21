@@ -299,6 +299,9 @@ namespace titov {
 	}
 
 	bool StateItem::operator==(const DependencyGraph & graph) const {
+		if (m_nNextWord != graph.size()) {
+			return false;
+		}
 		for (int i = 0; i < m_nNextWord; ++i) {
 			if (m_lRightNodes[i] != GRAPHNODE_RIGHTNODES(graph[i])) {
 				return false;
