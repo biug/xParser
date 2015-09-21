@@ -22,7 +22,7 @@ protected:
 public:
 	DepParserBase(const std::string & sFeaturePath, int nState) :
 		m_Weight(nullptr), m_nState(nState), m_nTotalErrors(0), m_nScoreIndex(nState == ParserState::TRAIN ? ScoreType::eNonAverage : ScoreType::eAverage), m_nTrainingRound(0) {}
-	virtual ~DepParserBase() = default;
+	virtual ~DepParserBase() {};
 
 	virtual void decode() = 0;
 	virtual void decodeArcs() = 0;
