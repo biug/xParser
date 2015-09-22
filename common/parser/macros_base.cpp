@@ -1,8 +1,8 @@
 #include <map>
 #include <set>
 #include <stack>
+#include <fstream>
 #include <sstream>
-#include <iostream>
 #include <algorithm>
 
 #include "macros_base.h"
