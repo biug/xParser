@@ -28,39 +28,6 @@ namespace titov {
 
 	Run::~Run() = default;
 
-	void clearLabel(DependencyGraph & graph) {
-		for (auto & node : graph) for (auto & rn : GRAPHNODE_RIGHTNODES(node)) RIGHTNODE_LABEL(rn) = 1;
-	}
-
-	void addSyntaxTree(std::ifstream & input, DependencyGraph & graph) {
-		int i = 0;
-		std::string line;
-		while (true) {
-			std::getline(input, line);
-			if (line.empty()) {
-				break;
-			}
-			if (line.find("#") == 0) {
-				continue;
-			}
-			std::string token;
-			std::istringstream iss(line);
-			iss >> token >> GRAPHNODE_TREEHEAD(graph[i]) >> GRAPHNODE_TREELABEL(graph[i]);
-			if (GRAPHNODE_TREEHEAD(graph[i]) == 0) {
-				GRAPHNODE_TREEHEAD(graph[i]) = graph.size() - 1;
-			}
-			else {
-				--GRAPHNODE_TREEHEAD(graph[i]);
-			}
-#ifdef _DEBUG
-			std::cout << GRAPHNODE_TREEHEAD(graph[i]) << " -> " << i << std::endl;
-#endif
-			++i;
-		}
-		GRAPHNODE_TREEHEAD(graph.back()) = -1;
-		GRAPHNODE_TREELABEL(graph.back()) = ROOT_DEPLABEL;
-	}
-
 	void Run::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
 		int nRound = 0;
 		DependencyGraph ref_sent;
@@ -127,7 +94,7 @@ namespace titov {
 		input.open(sSdpFile);
 		if (input) {
 			while (input >> ref_sent) {
-				if (!m_bLabelFeature) clearLabel(ref_sent);
+				if (!m_bLabelFeature) clearGraphLabel(ref_sent);
 				if (m_bPathFeature) addSyntaxTree(treeInput, ref_sent);
 				parser->train(ref_sent, ++nRound);
 			}
@@ -174,7 +141,7 @@ namespace titov {
 		}
 		if (input) {
 			while (input >> sentence) {
-				if (!m_bLabelFeature) clearLabel(sentence);
+				if (!m_bLabelFeature) clearGraphLabel(sentence);
 				if (m_bPathFeature) addSyntaxTree(treeInput, sentence);
 
 				if (sentence.size() < MAX_SENTENCE_SIZE) {

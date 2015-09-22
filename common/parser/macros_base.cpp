@@ -2,6 +2,7 @@
 #include <set>
 #include <stack>
 #include <sstream>
+#include <iostream>
 #include <algorithm>
 
 #include "macros_base.h"
@@ -24,6 +25,39 @@ int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir) {
 		diff = -diff;
 	}
 	return diff;
+}
+
+void clearGraphLabel(DependencyGraph & graph) {
+	for (auto & node : graph) for (auto & rn : GRAPHNODE_RIGHTNODES(node)) RIGHTNODE_LABEL(rn) = 1;
+}
+
+void addSyntaxTree(std::ifstream & input, DependencyGraph & graph) {
+	int i = 0;
+	std::string line;
+	while (true) {
+		std::getline(input, line);
+		if (line.empty()) {
+			break;
+		}
+		if (line.find("#") == 0 && line.find("\t") == std::string::npos) {
+			continue;
+		}
+		std::string token;
+		std::istringstream iss(line);
+		iss >> token >> GRAPHNODE_TREEHEAD(graph[i]) >> GRAPHNODE_TREELABEL(graph[i]);
+		if (GRAPHNODE_TREEHEAD(graph[i]) == 0) {
+			GRAPHNODE_TREEHEAD(graph[i]) = graph.size() - 1;
+		}
+		else {
+			--GRAPHNODE_TREEHEAD(graph[i]);
+		}
+#ifdef _DEBUG
+		std::cout << GRAPHNODE_TREEHEAD(graph[i]) << " -> " << i << std::endl;
+#endif
+		++i;
+	}
+	GRAPHNODE_TREEHEAD(graph.back()) = -1;
+	GRAPHNODE_TREELABEL(graph.back()) = ROOT_DEPLABEL;
 }
 
 std::string nCharPrev(const Sentence & sent, int index, int n) {

@@ -116,6 +116,10 @@ int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir);
 std::string nCharPrev(const Sentence & sent, int index, int n);
 std::string nCharNext(const Sentence & sent, int index, int n);
 
+void clearGraphLabel(DependencyGraph & graph);
+
+void addSyntaxTree(std::ifstream & input, DependencyGraph & graph);
+
 std::istream & operator>>(std::istream & input, Sentence & sentence);
 std::istream & operator>>(std::istream & input, DependencyTree & tree);
 std::istream & operator>>(std::istream & input, DependencyGraph & graph);
