@@ -109,14 +109,6 @@ namespace nirve {
 
 		std::cout << "Parsing started" << std::endl;
 
-		AL_SW_FIRST = SHIFT_REDUCE + 1;
-		AL_SW_END = AR_SW_FIRST = (m_bLabelFeature ? AL_SW_FIRST + TDepLabel::count() : AL_SW_FIRST + 1);
-		AR_SW_END = AL_SH_FIRST = (m_bLabelFeature ? AR_SW_FIRST + TDepLabel::count() : AR_SW_FIRST + 1);
-		AL_SH_END = AR_SH_FIRST = (m_bLabelFeature ? AL_SH_FIRST + TDepLabel::count() : AL_SH_FIRST + 1);
-		AR_SH_END = AL_RE_FIRST = (m_bLabelFeature ? AR_SH_FIRST + TDepLabel::count() : AR_SH_FIRST + 1);
-		AL_RE_END = AR_RE_FIRST = (m_bLabelFeature ? AL_RE_FIRST + TDepLabel::count() : AL_RE_FIRST + 1);
-		AR_RE_END = (m_bLabelFeature ? AR_RE_FIRST + TDepLabel::count() : AR_RE_FIRST + 1);
-
 		std::string sSdpFile;
 		std::string sSyntaxTreeFile;
 		if (m_bPathFeature) {
@@ -132,6 +124,15 @@ namespace nirve {
 		std::ifstream treeInput;
 		std::ifstream input(sSdpFile);
 		std::ofstream output(sOutputFile);
+
+		AL_SW_FIRST = SHIFT_REDUCE + 1;
+		AL_SW_END = AR_SW_FIRST = (m_bLabelFeature ? AL_SW_FIRST + TDepLabel::count() : AL_SW_FIRST + 1);
+		AR_SW_END = AL_SH_FIRST = (m_bLabelFeature ? AR_SW_FIRST + TDepLabel::count() : AR_SW_FIRST + 1);
+		AL_SH_END = AR_SH_FIRST = (m_bLabelFeature ? AL_SH_FIRST + TDepLabel::count() : AL_SH_FIRST + 1);
+		AR_SH_END = AL_RE_FIRST = (m_bLabelFeature ? AR_SH_FIRST + TDepLabel::count() : AR_SH_FIRST + 1);
+		AL_RE_END = AR_RE_FIRST = (m_bLabelFeature ? AL_RE_FIRST + TDepLabel::count() : AL_RE_FIRST + 1);
+		AR_RE_END = (m_bLabelFeature ? AR_RE_FIRST + TDepLabel::count() : AR_RE_FIRST + 1);
+
 		if (m_bPathFeature) {
 			treeInput.open(sSyntaxTreeFile);
 		}
