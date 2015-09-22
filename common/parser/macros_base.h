@@ -55,6 +55,16 @@
 #define GRAPHNODE_RIGHTNODEPOS(X,I)		(std::get<0>(std::get<2>(X)[I]))
 #define GRAPHNODE_RIGHTNODELABEL(X,I)	(std::get<1>(std::get<2>(X)[I]))
 
+#define CONLLGRAPHNODE_WORD(X)				(std::get<0>(std::get<0>(X)))
+#define CONLLGRAPHNODE_POSTAG(X)			(std::get<1>(std::get<0>(X)))
+#define CONLLGRAPHNODE_POSTAGGEDWORD(X)		(std::get<0>(X))
+#define CONLLGRAPHNODE_TREEHEAD(X)			(std::get<0>(std::get<1>(X)))
+#define CONLLGRAPHNODE_TREELABEL(X)			(std::get<1>(std::get<1>(X)))
+#define CONLLGRAPHNODE_RIGHTNODES(X)		(std::get<2>(X))
+#define CONLLGRAPHNODE_RIGHTNODE(X,I)		(std::get<2>(X)[I])
+#define CONLLGRAPHNODE_RIGHTNODEPOS(X,I)	(std::get<0>(std::get<2>(X)[I]))
+#define CONLLGRAPHNODE_RIGHTNODELABEL(X,I)	(std::get<1>(std::get<2>(X)[I]))
+
 typedef int gtype;
 
 typedef unsigned int UNSIGNED;
@@ -112,20 +122,27 @@ typedef std::tuple<int, int, int> RightNodeWithLabel;
 typedef std::tuple<POSTaggedWord, HeadWithLabel, std::vector<RightNodeWithLabel>> DependencyGraphNode;
 typedef std::vector<DependencyGraphNode> DependencyGraph;
 
+typedef std::tuple<int, int> RightNodeWithCombineLabel;
+typedef std::tuple<POSTaggedWord, HeadWithLabel, std::vector<RightNodeWithCombineLabel>> DependencyCONLLGraphNode;
+typedef std::vector<DependencyCONLLGraphNode> DependencyCONLLGraph;
+
 int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir);
 std::string nCharPrev(const Sentence & sent, int index, int n);
 std::string nCharNext(const Sentence & sent, int index, int n);
 
 void clearGraphLabel(DependencyGraph & graph);
+void clearCONLLGraphLabel(DependencyCONLLGraph & graph);
 
 void addSyntaxTree(std::ifstream & input, DependencyGraph & graph);
 
 std::istream & operator>>(std::istream & input, Sentence & sentence);
 std::istream & operator>>(std::istream & input, DependencyTree & tree);
 std::istream & operator>>(std::istream & input, DependencyGraph & graph);
+std::istream & operator>>(std::istream & input, DependencyCONLLGraphNode & graph);
 
 std::ostream & operator<<(std::ostream & output, const Sentence & sentence);
 std::ostream & operator<<(std::ostream & output, const DependencyTree & tree);
 std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph);
+std::ostream & operator<<(std::ostream & output, const DependencyCONLLGraphNode & graph);
 
 #endif

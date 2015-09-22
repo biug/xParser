@@ -31,6 +31,10 @@ void clearGraphLabel(DependencyGraph & graph) {
 	for (auto & node : graph) for (auto & rn : GRAPHNODE_RIGHTNODES(node)) RIGHTNODE_LABEL(rn) = 1;
 }
 
+void clearCONLLGraphLabel(DependencyCONLLGraph & graph) {
+	for (auto & node : graph) for (auto & rn : CONLLGRAPHNODE_RIGHTNODES(node)) RIGHTNODE_LABEL(rn) = 1;
+}
+
 void addSyntaxTree(std::ifstream & input, DependencyGraph & graph) {
 	int i = 0;
 	std::string line;
@@ -208,6 +212,79 @@ std::istream & operator>>(std::istream & input, DependencyGraph & graph) {
 	}
 	for (auto & node : graph) {
 		std::sort(GRAPHNODE_RIGHTNODES(node).begin(), GRAPHNODE_RIGHTNODES(node).end(), [](const RightNodeWithLabel & rn1, const RightNodeWithLabel & rn2) { return RIGHTNODE_POS(rn1) < RIGHTNODE_POS(rn2); });
+	}
+	return input;
+}
+
+std::istream & operator>>(std::istream & input, DependencyCONLLGraph & graph) {
+	graph.clear();
+	ttoken line, token;
+	std::vector<int> heads;
+	std::map<int, int> heads_inverse;
+	std::vector<std::vector<std::string>> lines;
+	while (true) {
+		std::getline(input, line);
+		if (line.empty()) {
+			break;
+		}
+		if (line[0] == '#') {
+			continue;
+		}
+		DependencyCONLLGraphNode node;
+		std::istringstream iss(line);
+		std::vector<std::string> tokens;
+		iss >> token >> CONLLGRAPHNODE_WORD(node) >> token >> CONLLGRAPHNODE_POSTAG(node) >> token >> token >> token;
+		iss >> CONLLGRAPHNODE_TREELABEL(node) >> CONLLGRAPHNODE_TREEHEAD(node) >> token;
+		iss >> token;
+		if (token != "_") {
+			heads_inverse[lines.size()] = heads.size();
+			heads.push_back(lines.size());
+		}
+		while (iss >> token) {
+			tokens.push_back(token);
+		}
+		lines.push_back(tokens);
+		graph.push_back(node);
+	}
+	if (lines.size() == 0) {
+		return input;
+	}
+
+	heads_inverse[lines.size()] = heads.size();
+	heads.push_back(lines.size());
+	std::vector<std::tuple<int, int, int, std::string>> vecArcs;
+	for (int i = 0; i < lines.size(); ++i) {
+		DependencyCONLLGraphNode & node = graph[i];
+		const std::vector<std::string> & tokens = lines[i];
+		for (int j = 0; j < tokens.size(); ++j) {
+			if (tokens[j] != "_" && heads[j] != i) {
+				vecArcs.push_back(std::tuple<int, int, int, std::string>(std::min(i, heads[j]), std::max(i, heads[j]), i < heads[j] ? GRAPH_LEFT : GRAPH_RIGHT, tokens[j]));
+			}
+		}
+	}
+	std::sort(vecArcs.begin(), vecArcs.end(),
+			[](const std::tuple<int, int, int, std::string> & a1, const std::tuple<int, int, int, std::string> & a2) {
+				return std::get<0>(a1) != std::get<0>(a2) ?
+						std::get<0>(a1) < std::get<0>(a2) :
+						(std::get<1>(a1) != std::get<1>(a2) ?
+							std::get<1>(a1) < std::get<1>(a2) :
+							std::get<2>(a1) < std::get<2>(a2));
+			});
+	for (int i = 0; i < vecArcs.size(); ++i) {
+		DependencyCONLLGraphNode & node = graph[std::get<0>(vecArcs[i])];
+		if (i + 1 < vecArcs.size() && std::get<0>(vecArcs[i]) == std::get<0>(vecArcs[i + 1]) && std::get<1>(vecArcs[i]) == std::get<1>(vecArcs[i + 1])) {
+			CONLLGRAPHNODE_RIGHTNODES(node).push_back(
+					RightNodeWithCombineLabel(
+							std::get<1>(vecArcs[i]),
+							TDepLabel::code("both" + std::get<3>(vecArcs[i]) + "||" + std::get<3>(vecArcs[i + 1]))));
+			++i;
+		}
+		else {
+			CONLLGRAPHNODE_RIGHTNODES(node).push_back(
+					RightNodeWithCombineLabel(
+							std::get<1>(vecArcs[i]),
+							TDepLabel::code((std::get<2>(vecArcs[i]) == GRAPH_LEFT ? "left" : "right") + std::get<3>(vecArcs[i]))));
+		}
 	}
 	return input;
 }
