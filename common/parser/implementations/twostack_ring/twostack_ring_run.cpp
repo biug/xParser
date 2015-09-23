@@ -1,5 +1,6 @@
 #include <ctime>
 #include <memory>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <iostream>

@@ -1,3 +1,6 @@
+#ifndef _NIRVE_RUN_H
+#define _NIRVE_RUN_H
+
 #include "common/parser/run_base.h"
 
 namespace nirve {
@@ -15,3 +18,5 @@ namespace nirve {
 		void goldtest(const std::string & sInputFile, const std::string & sFeatureInput) const override;
 	};
 }
+
+#endif

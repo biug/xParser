@@ -11,6 +11,7 @@
 #include "common/parser/implementations/twostack/twostack_run.h"
 #include "common/parser/implementations/titov_ring/titov_ring_run.h"
 #include "common/parser/implementations/nirve_ring/nirve_ring_run.h"
+#include "common/parser/implementations/twostack_ring/twostack_ring_run.h"
 
 #include "common/parser/implementations/eisner/eisner_run.h"
 #include "common/parser/implementations/eisnergc/eisnergc_run.h"
@@ -48,7 +49,7 @@ int main(int argc, char * argv[]) {
 		run.reset(new emptyeisnergc3rd::Run());
 	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nirve") == 0
-			|| strcmp(argv[2], "titov_ring") == 0 || strcmp(argv[2], "nirve_ring") == 0) {
+			|| strcmp(argv[2], "titov_ring") == 0 || strcmp(argv[2], "nirve_ring") == 0 || strcmp(argv[2], "twostack_ring") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bLabel = false;
@@ -79,6 +80,9 @@ int main(int argc, char * argv[]) {
 		}
 		else if (strcmp(argv[2], "nirve_ring") == 0) {
 			run.reset(new nirve_ring::Run(bChar, bPath, bLabel));
+		}
+		else if (strcmp(argv[2], "twostack_ring") == 0) {
+			run.reset(new twostack_ring::Run(bChar, bPath, bLabel));
 		}
 	}
 

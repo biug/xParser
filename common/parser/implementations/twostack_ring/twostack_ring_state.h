@@ -146,25 +146,25 @@ extern int A_RE_END;
 	inline void StateItem::arcMem(const int & label) {
 		arc(label);
 		mem();
-		m_lActionList[m_nActionBack] = AL_MM_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = A_MM_FIRST + label - 1;
 	}
 
 	inline void StateItem::arcRecall(const int & label) {
 		arc(label);
 		recall();
-		m_lActionList[m_nActionBack] = AL_RC_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = A_RC_FIRST + label - 1;
 	}
 
 	inline void StateItem::arcShift(const int & label) {
 		arc(label);
 		shift();
-		m_lActionList[m_nActionBack] = AL_SH_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = A_SH_FIRST + label - 1;
 	}
 
 	inline void StateItem::arcReduce(const int & label) {
 		arc(label);
 		reduce();
-		m_lActionList[m_nActionBack] = AL_RE_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = A_RE_FIRST + label - 1;
 	}
 
 	inline const tscore & StateItem::getScore() const {
@@ -293,12 +293,12 @@ extern int A_RE_END;
 
 	inline bool StateItem::canMem() const {
 		const int & action = m_lActionList[m_nActionBack];
-		return action != RECALL && (action < AL_RC_FIRST || action >= AR_RC_END) && m_nStackBack >= 0;
+		return action != RECALL && (action < A_RC_FIRST || action >= A_RC_END) && m_nStackBack >= 0;
 	}
 
 	inline bool StateItem::canRecall() const {
 		const int & action = m_lActionList[m_nActionBack];
-		return action != MEM && (action < AL_MM_FIRST || action >= AR_MM_END) && m_nSecondStackBack >= 0;
+		return action != MEM && (action < A_MM_FIRST || action >= A_MM_END) && m_nSecondStackBack >= 0;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

@@ -236,6 +236,8 @@ std::istream & operator>>(std::istream & input, DependencyCONLLGraph & graph) {
 		std::vector<std::string> tokens;
 		iss >> token >> CONLLGRAPHNODE_WORD(node) >> token >> CONLLGRAPHNODE_POSTAG(node) >> token >> token >> token;
 		iss >> CONLLGRAPHNODE_TREELABEL(node) >> CONLLGRAPHNODE_TREEHEAD(node) >> token;
+		// head minus 1
+		--CONLLGRAPHNODE_TREEHEAD(node);
 		iss >> token;
 		if (token != "_") {
 			heads_inverse[lines.size()] = heads.size();
