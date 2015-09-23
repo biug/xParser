@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "titov_ring_state.h"
+#include "twostack_ring_state.h"
 #include "common/token/deplabel.h"
 
-namespace titov_ring {
+namespace twostack_ring {
 
 	extern std::vector<int> g_vecLabelMap;
 
@@ -73,6 +73,11 @@ namespace titov_ring {
 			std::cout << " " << m_lStack[i];
 		}
 		std::cout << std::endl;
+		std::cout << "second stack(" << m_nSecondStackBack + 1 << ") :";
+		for (int i = 0; i <= m_nSecondStackBack; ++i) {
+			std::cout << " " << m_lSecondStack[i];
+		}
+		std::cout << std::endl;
 		std::cout << "buffer top : " << m_nNextWord << std::endl;
 		std::cout << "arcs :" << std::endl;
 		for (int i = 0; i < m_nNextWord; ++i) {
@@ -84,13 +89,6 @@ namespace titov_ring {
 				std::cout << std::endl;
 			}
 		}
-		std::cout << "last action : ";
-		printAction(m_lActionList[m_nActionBack]);
-		std::cout << "action size : " << m_nActionBack << std::endl;
-		std::cout << "action list : " << std::endl;
-		for (int i = 0; i <= m_nActionBack; ++i) {
-			printAction(m_lActionList[i]);
-		}
 		std::cout << "score : " << m_nScore << std::endl;
 		std::cout << std::endl;
 	}
@@ -100,7 +98,7 @@ namespace titov_ring {
 		for (int i = 0; i <= m_nActionBack; ++i) {
 			item.move(m_lActionList[i]);
 		}
-		if (item != *this) {
+		if (item != *this || m_nSecondStackBack != -1 || m_nStackBack != -1) {
 			std::cout << "origin" << std::endl;
 			this->print();
 			std::cout << "correct" << std::endl;
@@ -113,6 +111,7 @@ namespace titov_ring {
 		m_nNextWord = 0;
 		//reset stack seek
 		m_nStackBack = -1;
+		m_nSecondStackBack = -1;
 		//reset score
 		m_nScore = 0;
 		//reset action
@@ -150,14 +149,20 @@ namespace titov_ring {
 		case REDUCE:
 			reduce();
 			return;
-		case SWAP:
-			swap();
+		case MEM:
+			mem();
+			return;
+		case RECALL:
+			recall();
 			return;
 		case SHIFT:
 			shift();
 			return;
-		case A_SW:
-			arcSwap(action - A_SW_FIRST + 1);
+		case A_MM:
+			arcMem(action - A_MM_FIRST + 1);
+			return;
+		case A_RC:
+			arcRecall(action - A_RC_FIRST + 1);
 			return;
 		case A_SH:
 			arcShift(action - A_SH_FIRST + 1);
@@ -172,14 +177,13 @@ namespace titov_ring {
 		int i = 0;
 		tree.clear();
 		for (const auto & token : sent) {
-			tree.push_back(DependencyCONLLGraphNode(CONLLGRAPHNODE_POSTAGGEDWORD(token), HeadWithLabel(-1, NULL_LABEL), m_lRightNodes[i]));
+			tree.push_back(DependencyCONLLGraphNode(TREENODE_POSTAGGEDWORD(token), HeadWithLabel(-1, NULL_LABEL), m_lRightNodes[i]));
 			++i;
 		}
 	}
 
 	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyCONLLGraph & graph, const int & label) {
 		// remove shift-reduce
-
 		if (m_nStackBack >= 0) {
 			int & seek = seeks[m_lStack[m_nStackBack]];
 			const DependencyCONLLGraphNode & node = graph[m_lStack[m_nStackBack]];
@@ -198,37 +202,33 @@ namespace titov_ring {
 				}
 			}
 			const RightNodeWithCombineLabel & rnwl = CONLLGRAPHNODE_RIGHTNODE(node, seek);
-			if (COMBINERIGHTNODE_POS(rnwl) == m_nNextWord) {
+			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
 				++seek;
 				return extractOneStandard(seeks, graph, COMBINERIGHTNODE_LABEL(rnwl));
 			}
-			else if (m_nStackBack >= 1) {
-				int & seek2 = seeks[m_lStack[m_nStackBack - 1]];
-				const DependencyCONLLGraphNode & node2 = graph[m_lStack[m_nStackBack - 1]];
-				int size2 = CONLLGRAPHNODE_RIGHTNODES(node2).size();
-				if (seek < size && seek2 < size2) {
-					const RightNodeWithCombineLabel & rnwl2 = CONLLGRAPHNODE_RIGHTNODE(node2, seek2);
-					if (COMBINERIGHTNODE_POS(rnwl) > COMBINERIGHTNODE_POS(rnwl2)) {
-						switch (label) {
-						case 0:
-							swap();
-							return true;
-						default:
-							arcSwap(label);
-							return true;
-						}
-					}
+		}
+		for (int i = m_nStackBack - 1; i >= 0; --i) {
+			const DependencyCONLLGraphNode & node = graph[m_lStack[i]];
+			const int & seek = seeks[m_lStack[i]];
+			if (seek < CONLLGRAPHNODE_RIGHTNODES(node).size() && CONLLGRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
+				switch (label) {
+				case 0:
+					mem();
+					return true;
+				default:
+					arcMem(label);
+					return true;
 				}
-				else if (seek < size) {
-					switch (label) {
-					case 0:
-						swap();
-						return true;
-					default:
-						arcSwap(label);
-						return true;
-					}
-				}
+			}
+		}
+		if (m_nSecondStackBack >= 0) {
+			switch (label) {
+			case 0:
+				recall();
+				return true;
+			default:
+				arcRecall(label);
+				return true;
 			}
 		}
 		if (m_nNextWord < graph.size()) {
@@ -247,16 +247,9 @@ namespace titov_ring {
 	bool StateItem::extractOracle(const DependencyCONLLGraph & graph) {
 		int rightNodeSeeks[MAX_SENTENCE_SIZE];
 		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
-		while (extractOneStandard(rightNodeSeeks, graph)) {
-//			printAction(m_lActionList[m_nActionBack]);
-		}
+		while (extractOneStandard(rightNodeSeeks, graph))
 			;
-		if (*this == graph) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return *this == graph;
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
@@ -285,6 +278,7 @@ namespace titov_ring {
 
 	StateItem & StateItem::operator=(const StateItem & item) {
 		m_nStackBack = item.m_nStackBack;
+		m_nSecondStackBack = item.m_nSecondStackBack;
 		m_nActionBack = item.m_nActionBack;
 		m_nNextWord = item.m_nNextWord;
 		m_nScore = item.m_nScore;
@@ -292,6 +286,9 @@ namespace titov_ring {
 		size_t len = sizeof(int) * (m_nNextWord + 1);
 		if (m_nStackBack >= 0) {
 			memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
+		}
+		if (m_nSecondStackBack >= 0) {
+			memcpy(m_lSecondStack, item.m_lSecondStack, sizeof(int) * (m_nSecondStackBack + 1));
 		}
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 

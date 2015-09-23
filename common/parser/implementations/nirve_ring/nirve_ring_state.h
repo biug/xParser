@@ -1,11 +1,10 @@
-#ifndef _TITOV_RING_STATE_H
-#define _TITOV_RING_STATE_H
+#ifndef _NIRVE_RING_STATE_H
+#define _NIRVE_RING_STATE_H
 
-#include "titov_ring_macros.h"
-#include "common/token/tagset.h"
+#include "nirve_ring_macros.h"
 #include "common/token/deplabel.h"
 
-namespace titov_ring {
+namespace nirve_ring {
 
 	extern int A_SW_FIRST;
 	extern int A_SH_FIRST;
@@ -18,12 +17,16 @@ namespace titov_ring {
 	class StateItem {
 	private:
 		int m_nStackBack;
+		int m_nShiftBufferBack;
 		int m_nNextWord;
 		int m_nActionBack;
 		tscore m_nScore;
 		int m_lActionList[MAX_SENTENCE_SIZE << MAX_SENTENCE_BITS];
 
+		bool  m_bCanSwap;
+
 		int m_lStack[MAX_SENTENCE_SIZE];
+		int m_lShiftBuffer[MAX_SENTENCE_SIZE];
 		int m_lHeadL[MAX_SENTENCE_SIZE];	//heads for every node
 		int m_lHeadLabelL[MAX_SENTENCE_SIZE];	//label for every node
 		int m_lHeadLNum[MAX_SENTENCE_SIZE];
@@ -86,6 +89,7 @@ namespace titov_ring {
 		const int & stackBack() const;
 		const int & stackTop() const;
 		const int & stackSubTop() const;
+		const int & bufferTop() const;
 		const int & actionBack() const;
 
 		void print() const;
@@ -111,20 +115,29 @@ namespace titov_ring {
 		StateItem & operator=(const StateItem & i);
 	};
 
-	inline void StateItem::swap() {
-		std::swap(m_lStack[m_nStackBack], m_lStack[m_nStackBack - 1]);
-		m_lActionList[++m_nActionBack] = SWAP;
-	}
-
 	inline void StateItem::shift() {
-		m_lStack[++m_nStackBack] = m_nNextWord++;
+		if (m_nShiftBufferBack == -1) {
+			m_lStack[++m_nStackBack] = m_nNextWord++;
+			m_bCanSwap = true;
+			clearNext();
+		}
+		else {
+			m_lStack[++m_nStackBack] = m_lShiftBuffer[m_nShiftBufferBack--];
+			m_bCanSwap = false;
+		}
 		m_lActionList[++m_nActionBack] = SHIFT;
-		clearNext();
 	}
 
 	inline void StateItem::reduce() {
 		--m_nStackBack;
 		m_lActionList[++m_nActionBack] = REDUCE;
+	}
+
+	inline void StateItem::swap() {
+		m_lShiftBuffer[++m_nShiftBufferBack] = m_lStack[m_nStackBack - 1];
+		m_lStack[m_nStackBack - 1] = m_lStack[m_nStackBack];
+		--m_nStackBack;
+		m_lActionList[++m_nActionBack] = SWAP;
 	}
 
 	inline void StateItem::arcSwap(const int & label) {
@@ -167,6 +180,10 @@ namespace titov_ring {
 
 	inline const int & StateItem::stackSubTop() const {
 		return m_lStack[m_nStackBack - 1];
+	}
+
+	inline const int & StateItem::bufferTop() const {
+		return m_nShiftBufferBack == -1 ? m_nNextWord : m_lShiftBuffer[m_nShiftBufferBack];
 	}
 
 	inline const int & StateItem::actionBack() const {
@@ -258,8 +275,7 @@ namespace titov_ring {
 	}
 
 	inline bool StateItem::canSwap() const {
-		const int & action = m_lActionList[m_nActionBack];
-		return action != SWAP && (action < A_SW_FIRST || action >= A_SW_END) && m_nStackBack > 0;
+		return m_nStackBack > 0 && m_bCanSwap;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

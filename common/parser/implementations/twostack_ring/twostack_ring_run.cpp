@@ -1,21 +1,22 @@
 #include <ctime>
 #include <memory>
-#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
 #include "common/token/deplabel.h"
-#include "titov_ring_run.h"
-#include "titov_ring_depparser.h"
+#include "twostack_ring_run.h"
+#include "twostack_ring_depparser.h"
 
-namespace titov_ring {
+namespace twostack_ring {
 
-	extern int A_SW_FIRST;
+	extern int A_MM_FIRST;
+	extern int A_RC_FIRST;
 	extern int A_SH_FIRST;
 	extern int A_RE_FIRST;
 
-	extern int A_SW_END;
+	extern int A_MM_END;
+	extern int A_RC_END;
 	extern int A_SH_END;
 	extern int A_RE_END;
 
@@ -36,7 +37,23 @@ namespace titov_ring {
 
 		std::unique_ptr<DepParser> parser(new DepParser(sFeatureInput, sFeatureOutput, m_bCharFeature, m_bPathFeature, m_bLabelFeature, ParserState::TRAIN));
 		
-		std::ifstream input(sInputFile);
+		std::string sSdpFile;
+		std::string sSyntaxTreeFile;
+		if (m_bPathFeature) {
+			int split = sInputFile.find("#");
+			sSdpFile = sInputFile.substr(0, split);
+			sSyntaxTreeFile = sInputFile.substr(split + 1);
+		}
+		else {
+			sSdpFile = sInputFile;
+		}
+
+#ifdef _DEBUG
+		std::cout << "sdp file is " << sSdpFile << std::endl;
+		std::cout << "tree file is " << sSyntaxTreeFile << std::endl;
+#endif
+
+		std::ifstream input(sSdpFile);
 		if (input) {
 			while (input >> ref_sent)
 				;
@@ -44,8 +61,14 @@ namespace titov_ring {
 		input.close();
 		std::cout << "pre load complete." << std::endl;
 
-		A_SW_FIRST = REDUCE + 1;
-		A_SW_END = A_SH_FIRST = (m_bLabelFeature ? A_SW_FIRST + TDepLabel::count() : A_SW_FIRST + 1);
+#ifdef _DEBUG
+		std::cout << "DepLabels Total ";
+		std::cout << TDepLabel::getTokenizer();
+#endif
+
+		A_MM_FIRST = REDUCE + 1;
+		A_MM_END = A_RC_FIRST = (m_bLabelFeature ? A_MM_FIRST + TDepLabel::count() : A_MM_FIRST + 1);
+		A_RC_END = A_SH_FIRST = (m_bLabelFeature ? A_RC_FIRST + TDepLabel::count() : A_RC_FIRST + 1);
 		A_SH_END = A_RE_FIRST = (m_bLabelFeature ? A_SH_FIRST + TDepLabel::count() : A_SH_FIRST + 1);
 		A_RE_END = (m_bLabelFeature ? A_RE_FIRST + TDepLabel::count() : A_RE_FIRST + 1);
 
@@ -78,7 +101,17 @@ namespace titov_ring {
 			}
 		}
 
-		input.open(sInputFile);
+#ifdef _DEBUG
+		std::cout << "arc_mm_first = " << A_MM_FIRST << std::endl;
+		std::cout << "arc_rc_first = " << A_RC_FIRST << std::endl;
+		std::cout << "arc_sh_first = " << A_SH_FIRST << std::endl;
+		std::cout << "arc_re_first = " << A_RE_FIRST << std::endl;
+#endif
+		std::ifstream treeInput;
+		if (m_bPathFeature) {
+			treeInput.open(sSyntaxTreeFile);
+		}
+		input.open(sSdpFile);
 		if (input) {
 			while (input >> ref_sent) {
 				if (!m_bLabelFeature) clearCONLLGraphLabel(ref_sent);
@@ -98,13 +131,25 @@ namespace titov_ring {
 
 		std::cout << "Parsing started" << std::endl;
 
+		std::string sSdpFile;
+		std::string sSyntaxTreeFile;
+		if (m_bPathFeature) {
+			int split = sInputFile.find("#");
+			sSdpFile = sInputFile.substr(0, split);
+			sSyntaxTreeFile = sInputFile.substr(split + 1);
+		}
+		else {
+			sSdpFile = sInputFile;
+		}
+
 		std::unique_ptr<DepParser> parser(new DepParser(sFeatureFile, sFeatureFile, m_bCharFeature, m_bPathFeature, m_bLabelFeature, ParserState::PARSE));
 		std::ifstream treeInput;
-		std::ifstream input(sInputFile);
+		std::ifstream input(sSdpFile);
 		std::ofstream output(sOutputFile);
 
-		A_SW_FIRST = REDUCE + 1;
-		A_SW_END = A_SH_FIRST = (m_bLabelFeature ? A_SW_FIRST + TDepLabel::count() : A_SW_FIRST + 1);
+		A_MM_FIRST = REDUCE + 1;
+		A_MM_END = A_RC_FIRST = (m_bLabelFeature ? A_MM_FIRST + TDepLabel::count() : A_MM_FIRST + 1);
+		A_RC_END = A_SH_FIRST = (m_bLabelFeature ? A_RC_FIRST + TDepLabel::count() : A_RC_FIRST + 1);
 		A_SH_END = A_RE_FIRST = (m_bLabelFeature ? A_SH_FIRST + TDepLabel::count() : A_SH_FIRST + 1);
 		A_RE_END = (m_bLabelFeature ? A_RE_FIRST + TDepLabel::count() : A_RE_FIRST + 1);
 
@@ -137,6 +182,9 @@ namespace titov_ring {
 			}
 		}
 
+		if (m_bPathFeature) {
+			treeInput.open(sSyntaxTreeFile);
+		}
 		if (input) {
 			while (input >> sentence) {
 				if (!m_bLabelFeature) clearCONLLGraphLabel(sentence);
@@ -170,8 +218,9 @@ namespace titov_ring {
 		input.close();
 		std::cout << "pre load complete." << std::endl;
 
-		A_SW_FIRST = REDUCE + 1;
-		A_SW_END = A_SH_FIRST = A_SW_FIRST + TDepLabel::count();
+		A_MM_FIRST = REDUCE + 1;
+		A_MM_END = A_RC_FIRST = A_MM_FIRST + TDepLabel::count();
+		A_RC_END = A_SH_FIRST = A_RC_FIRST + TDepLabel::count();
 		A_SH_END = A_RE_FIRST = A_SH_FIRST + TDepLabel::count();
 		A_RE_END = A_RE_FIRST + TDepLabel::count();
 

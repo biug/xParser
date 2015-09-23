@@ -1,29 +1,33 @@
-#ifndef _TITOV_RING_STATE_H
-#define _TITOV_RING_STATE_H
+#ifndef _TWOSTACK_RING_STATE_H
+#define _TWOSTACK_RING_STATE_H
 
-#include "titov_ring_macros.h"
+#include "twostack_ring_macros.h"
 #include "common/token/tagset.h"
 #include "common/token/deplabel.h"
 
-namespace titov_ring {
+namespace twostack_ring {
 
-	extern int A_SW_FIRST;
-	extern int A_SH_FIRST;
-	extern int A_RE_FIRST;
+extern int A_MM_FIRST;
+extern int A_RC_FIRST;
+extern int A_SH_FIRST;
+extern int A_RE_FIRST;
 
-	extern int A_SW_END;
-	extern int A_SH_END;
-	extern int A_RE_END;
+extern int A_MM_END;
+extern int A_RC_END;
+extern int A_SH_END;
+extern int A_RE_END;
 
 	class StateItem {
 	private:
 		int m_nStackBack;
+		int m_nSecondStackBack;
 		int m_nNextWord;
 		int m_nActionBack;
 		tscore m_nScore;
 		int m_lActionList[MAX_SENTENCE_SIZE << MAX_SENTENCE_BITS];
 
 		int m_lStack[MAX_SENTENCE_SIZE];
+		int m_lSecondStack[MAX_SENTENCE_SIZE];
 		int m_lHeadL[MAX_SENTENCE_SIZE];	//heads for every node
 		int m_lHeadLabelL[MAX_SENTENCE_SIZE];	//label for every node
 		int m_lHeadLNum[MAX_SENTENCE_SIZE];
@@ -53,8 +57,10 @@ namespace titov_ring {
 		void arc(const int & l);
 		void shift();
 		void reduce();
-		void swap();
-		void arcSwap(const int & l);
+		void mem();
+		void recall();
+		void arcMem(const int & l);
+		void arcRecall(const int & l);
 		void arcReduce(const int & l);
 		void arcShift(const int & l);
 
@@ -63,6 +69,7 @@ namespace titov_ring {
 
 		const int & action(const int & index) const;
 		const int & stack(const int & index) const;
+		const int & secondStack(const int & index) const;
 		const int & leftHead(const int & index) const;
 		const int & rightHead(const int & index) const;
 		const int & leftHeadLabel(const int & index) const;
@@ -82,18 +89,22 @@ namespace titov_ring {
 		const Tagset & leftPredLabelSet(const int & index) const;
 		const Tagset & rightPredLabelSet(const int & index) const;
 
+
 		const int & size() const;
 		const int & stackBack() const;
+		const int & secondStackBack() const;
 		const int & stackTop() const;
 		const int & stackSubTop() const;
+		const int & secondStackTop() const;
 		const int & actionBack() const;
 
 		void print() const;
 		void check() const;
-		bool extractOneStandard(int (&seeks)[MAX_SENTENCE_SIZE], const DependencyCONLLGraph & graph, const int & label = 0);
+		bool extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyCONLLGraph & graph, const int & label = 0);
 		bool extractOracle(const DependencyCONLLGraph & graph);
 
-		bool canSwap() const;
+		bool canMem() const;
+		bool canRecall() const;
 		bool canArc() const;
 
 		void clear();
@@ -111,11 +122,6 @@ namespace titov_ring {
 		StateItem & operator=(const StateItem & i);
 	};
 
-	inline void StateItem::swap() {
-		std::swap(m_lStack[m_nStackBack], m_lStack[m_nStackBack - 1]);
-		m_lActionList[++m_nActionBack] = SWAP;
-	}
-
 	inline void StateItem::shift() {
 		m_lStack[++m_nStackBack] = m_nNextWord++;
 		m_lActionList[++m_nActionBack] = SHIFT;
@@ -127,22 +133,38 @@ namespace titov_ring {
 		m_lActionList[++m_nActionBack] = REDUCE;
 	}
 
-	inline void StateItem::arcSwap(const int & label) {
+	inline void StateItem::mem() {
+		m_lSecondStack[++m_nSecondStackBack] = m_lStack[m_nStackBack--];
+		m_lActionList[++m_nActionBack] = MEM;
+	}
+
+	inline void StateItem::recall() {
+		m_lStack[++m_nStackBack] = m_lSecondStack[m_nSecondStackBack--];
+		m_lActionList[++m_nActionBack] = RECALL;
+	}
+
+	inline void StateItem::arcMem(const int & label) {
 		arc(label);
-		swap();
-		m_lActionList[m_nActionBack] = A_SW_FIRST + label - 1;
+		mem();
+		m_lActionList[m_nActionBack] = AL_MM_FIRST + label - 1;
+	}
+
+	inline void StateItem::arcRecall(const int & label) {
+		arc(label);
+		recall();
+		m_lActionList[m_nActionBack] = AL_RC_FIRST + label - 1;
 	}
 
 	inline void StateItem::arcShift(const int & label) {
 		arc(label);
 		shift();
-		m_lActionList[m_nActionBack] = A_SH_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = AL_SH_FIRST + label - 1;
 	}
 
 	inline void StateItem::arcReduce(const int & label) {
 		arc(label);
 		reduce();
-		m_lActionList[m_nActionBack] = A_RE_FIRST + label - 1;
+		m_lActionList[m_nActionBack] = AL_RE_FIRST + label - 1;
 	}
 
 	inline const tscore & StateItem::getScore() const {
@@ -161,12 +183,20 @@ namespace titov_ring {
 		return m_nStackBack;
 	}
 
+	inline const int & StateItem::secondStackBack() const {
+		return m_nSecondStackBack;
+	}
+
 	inline const int & StateItem::stackTop() const {
 		return m_lStack[m_nStackBack];
 	}
 
 	inline const int & StateItem::stackSubTop() const {
 		return m_lStack[m_nStackBack - 1];
+	}
+
+	inline const int & StateItem::secondStackTop() const {
+		return m_lSecondStack[m_nSecondStackBack];
 	}
 
 	inline const int & StateItem::actionBack() const {
@@ -179,6 +209,10 @@ namespace titov_ring {
 
 	inline const int & StateItem::stack(const int & index) const {
 		return m_lStack[index];
+	}
+
+	inline const int & StateItem::secondStack(const int & index) const {
+		return m_lSecondStack[index];
 	}
 
 	inline const int & StateItem::leftHead(const int & index) const {
@@ -254,12 +288,17 @@ namespace titov_ring {
 	}
 
 	inline bool StateItem::canArc() const {
-		return m_nStackBack == -1 ? false : (m_lRightNodes[m_lStack[m_nStackBack]].empty() ? true : (RIGHTNODE_POS(m_lRightNodes[m_lStack[m_nStackBack]].back()) != m_nNextWord));
+		return m_nStackBack == -1 ? false : (m_lRightNodes[m_lStack[m_nStackBack]].empty() ? true : (COMBINERIGHTNODE_POS(m_lRightNodes[m_lStack[m_nStackBack]].back()) != m_nNextWord));
 	}
 
-	inline bool StateItem::canSwap() const {
+	inline bool StateItem::canMem() const {
 		const int & action = m_lActionList[m_nActionBack];
-		return action != SWAP && (action < A_SW_FIRST || action >= A_SW_END) && m_nStackBack > 0;
+		return action != RECALL && (action < AL_RC_FIRST || action >= AR_RC_END) && m_nStackBack >= 0;
+	}
+
+	inline bool StateItem::canRecall() const {
+		const int & action = m_lActionList[m_nActionBack];
+		return action != MEM && (action < AL_MM_FIRST || action >= AR_MM_END) && m_nSecondStackBack >= 0;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

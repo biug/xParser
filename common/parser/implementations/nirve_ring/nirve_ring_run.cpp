@@ -6,10 +6,10 @@
 #include <iostream>
 
 #include "common/token/deplabel.h"
-#include "titov_ring_run.h"
-#include "titov_ring_depparser.h"
+#include "nirve_ring_run.h"
+#include "nirve_ring_depparser.h"
 
-namespace titov_ring {
+namespace nirve_ring {
 
 	extern int A_SW_FIRST;
 	extern int A_SH_FIRST;
@@ -169,6 +169,8 @@ namespace titov_ring {
 		}
 		input.close();
 		std::cout << "pre load complete." << std::endl;
+		std::cout << "DepLabels Total ";
+		std::cout << TDepLabel::getTokenizer();
 
 		A_SW_FIRST = REDUCE + 1;
 		A_SW_END = A_SH_FIRST = A_SW_FIRST + TDepLabel::count();
@@ -222,5 +224,7 @@ namespace titov_ring {
 		std::cout << "Done." << std::endl;
 
 		std::cout << "Training has finished successfully. Total time taken is: " << difftime(time_end, time_begin) << "s" << std::endl;
+
+		std::cout << TPOSTag::getTokenizer();
 	}
 }

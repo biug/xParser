@@ -1,6 +1,7 @@
 #include <map>
 #include <set>
 #include <stack>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -276,14 +277,14 @@ std::istream & operator>>(std::istream & input, DependencyCONLLGraph & graph) {
 			CONLLGRAPHNODE_RIGHTNODES(node).push_back(
 					RightNodeWithCombineLabel(
 							std::get<1>(vecArcs[i]),
-							TDepLabel::code("both" + std::get<3>(vecArcs[i]) + "||" + std::get<3>(vecArcs[i + 1]))));
+							TDepLabel::code(ENCODE_TWOWAY_LABEL(std::get<3>(vecArcs[i]), std::get<3>(vecArcs[i + 1])))));
 			++i;
 		}
 		else {
 			CONLLGRAPHNODE_RIGHTNODES(node).push_back(
 					RightNodeWithCombineLabel(
 							std::get<1>(vecArcs[i]),
-							TDepLabel::code((std::get<2>(vecArcs[i]) == GRAPH_LEFT ? "left" : "right") + std::get<3>(vecArcs[i]))));
+							TDepLabel::code((std::get<2>(vecArcs[i]) == GRAPH_LEFT ? ENCODE_LEFT_LABEL(std::get<3>(vecArcs[i])) : ENCODE_RIGHT_LABEL(std::get<3>(vecArcs[i]))))));
 		}
 	}
 	return input;
@@ -364,6 +365,73 @@ std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph) 
 			}
 			else {
 				output << "\t" << "_";
+			}
+		}
+		output << std::endl;
+		++i;
+	}
+	output << std::endl;
+	return output;
+}
+
+std::ostream & operator<<(std::ostream & output, const DependencyCONLLGraph & graph) {
+	std::set<int> heads_set;
+	std::vector<std::vector<std::tuple<int, std::string>>> heads_for_nodes;
+	int i = 0;
+	for (const auto & node : graph) {
+		heads_for_nodes.push_back(std::vector<std::tuple<int, std::string>>());
+		for (const auto & rn : CONLLGRAPHNODE_RIGHTNODES(node)) {
+			const std::string & label = TDepLabel::key(COMBINERIGHTNODE_LABEL(rn));
+			if (IS_LEFT_LABEL(label)) {
+				heads_set.insert(COMBINERIGHTNODE_POS(rn));
+			}
+			else if (IS_RIGHT_LABEL(label)) {
+				heads_set.insert(i);
+			}
+			else if (IS_TWOWAY_LABEL(label)) {
+				heads_set.insert(COMBINERIGHTNODE_POS(rn));
+				heads_set.insert(i);
+			}
+		}
+		++i;
+	}
+	i = 0;
+	std::map<int, int> heads_inverse;
+	for (const auto & head : heads_set) {
+		heads_inverse[head] = i++;
+	}
+	i = 0;
+	for (const auto & node : graph) {
+		for (const auto & rn : CONLLGRAPHNODE_RIGHTNODES(node)) {
+			const std::string & label = TDepLabel::key(COMBINERIGHTNODE_LABEL(rn));
+			if (IS_LEFT_LABEL(label)) {
+				heads_for_nodes[i].push_back(std::tuple<int, std::string>(heads_inverse[RIGHTNODE_POS(rn)], DECODE_LEFT_LABEL(label)));
+			}
+			else if (IS_RIGHT_LABEL(label)) {
+				heads_for_nodes[COMBINERIGHTNODE_POS(rn)].push_back(std::tuple<int, std::string>(heads_inverse[i], DECODE_RIGHT_LABEL(label)));
+			}
+			else if (IS_TWOWAY_LABEL(label)) {
+				// left label
+				heads_for_nodes[i].push_back(std::tuple<int, std::string>(heads_inverse[RIGHTNODE_POS(rn)], DECODE_TWOWAY_LEFT_LABEL(label)));
+				// right label
+				heads_for_nodes[COMBINERIGHTNODE_POS(rn)].push_back(std::tuple<int, std::string>(heads_inverse[i], DECODE_TWOWAY_RIGHT_LABEL(label)));
+			}
+		}
+		++i;
+	}
+	i = 0;
+	for (const auto & node : graph) {
+		if (GRAPHNODE_WORD(node) == ROOT_WORD) {
+			break;
+		}
+		output << (i + 1) << " " << CONLLGRAPHNODE_WORD(node) << " " << CONLLGRAPHNODE_WORD(node) << " " << CONLLGRAPHNODE_POSTAG(node) << " " << CONLLGRAPHNODE_POSTAG(node) << " _ _ _ _ _ ";
+		output << (heads_set.find(i) != heads_set.end() ? CONLLGRAPHNODE_WORD(node) : "_");
+		for (int j = 0, k = 0; j < heads_set.size(); ++j) {
+			if (k < heads_for_nodes[i].size() && std::get<0>(heads_for_nodes[i][k]) == j) {
+				output << " " << std::get<1>(heads_for_nodes[i][k++]);
+			}
+			else {
+				output << " " << "_";
 			}
 		}
 		output << std::endl;

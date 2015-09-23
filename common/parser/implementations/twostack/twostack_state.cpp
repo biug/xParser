@@ -313,8 +313,12 @@ namespace twostack {
 		m_nScore = item.m_nScore;
 
 		size_t len = sizeof(int) * (m_nNextWord + 1);
-		memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
-		memcpy(m_lSecondStack, item.m_lSecondStack, sizeof(int) * (m_nSecondStackBack + 1));
+		if (m_nStackBack >= 0) {
+			memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
+		}
+		if (m_nSecondStackBack >= 0) {
+			memcpy(m_lSecondStack, item.m_lSecondStack, sizeof(int) * (m_nSecondStackBack + 1));
+		}
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 
 		memcpy(m_lHeadL, item.m_lHeadL, len);

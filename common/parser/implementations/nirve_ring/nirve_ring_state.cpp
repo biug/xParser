@@ -1,9 +1,11 @@
 #include <cstring>
 
-#include "nirve_state.h"
+#include "nirve_ring_state.h"
 #include "common/token/deplabel.h"
 
-namespace nirve {
+namespace nirve_ring {
+
+	extern std::vector<int> g_vecLabelMap;
 
 	StateItem::StateItem() {
 		clear();
@@ -11,53 +13,57 @@ namespace nirve {
 
 	StateItem::~StateItem() = default;
 
-	void StateItem::arcLeft(const int & l) {
+	void StateItem::arc(const int & l) {
 		const int & left = m_lStack[m_nStackBack];
-		//add new head for left and add label
-		m_lHeadR[left] = m_nNextWord;
-		m_lHeadLabelR[left] = l;
-		++m_lHeadRNum[left];
-		//sibling is the previous child of buffer seek
-		int & buffer_left_pred = m_lPredL[m_nNextWord];
-		if (buffer_left_pred == -1) {
-			buffer_left_pred = left;
-			m_lPredLabelL[m_nNextWord] = l;
-		}
-		else if (left < buffer_left_pred) {
-			m_lSubPredL[m_nNextWord] = buffer_left_pred;
-			m_lSubPredLabelL[m_nNextWord] = m_lPredLabelL[m_nNextWord];
-			buffer_left_pred = left;
-			m_lPredLabelL[m_nNextWord] = l;
-		}
-		else {
-			int & sub_buffer_left_pred = m_lSubPredL[m_nNextWord];
-			if (sub_buffer_left_pred == -1 || left < sub_buffer_left_pred) {
-				sub_buffer_left_pred = left;
-				m_lSubPredLabelL[m_nNextWord] = l;
+		// detect arc label
+		const int & labelId = g_vecLabelMap[l];
+		int leftLabel = LEFT_LABEL_ID(labelId);
+		int rightLabel = RIGHT_LABEL_ID(labelId);
+		// arc left
+		if (leftLabel != 0) {
+			//add new head for left and add label
+			m_lHeadR[left] = m_nNextWord;
+			m_lHeadLabelR[left] = leftLabel;
+			++m_lHeadRNum[left];
+			int & buffer_left_pred = m_lPredL[m_nNextWord];
+			if (buffer_left_pred == -1) {
+				buffer_left_pred = left;
+				m_lPredLabelL[m_nNextWord] = leftLabel;
 			}
+			else if (left < buffer_left_pred) {
+				m_lSubPredL[m_nNextWord] = buffer_left_pred;
+				m_lSubPredLabelL[m_nNextWord] = m_lPredLabelL[m_nNextWord];
+				buffer_left_pred = left;
+				m_lPredLabelL[m_nNextWord] = leftLabel;
+			}
+			else {
+				int & sub_buffer_left_pred = m_lSubPredL[m_nNextWord];
+				if (sub_buffer_left_pred == -1 || left < sub_buffer_left_pred) {
+					sub_buffer_left_pred = left;
+					m_lSubPredLabelL[m_nNextWord] = leftLabel;
+				}
+			}
+			++m_lPredLNum[m_nNextWord];
+			m_lPredLabelSetL[m_nNextWord].add(leftLabel);
 		}
-		++m_lPredLNum[m_nNextWord];
-		m_lPredLabelSetL[m_nNextWord].add(l);
+		// arc right
+		if (rightLabel != 0) {
+			//sibling is the previous child of buffer seek
+			int & buffer_left_head = m_lHeadL[m_nNextWord];
+			if (buffer_left_head == -1 || left < buffer_left_head) {
+				buffer_left_head = left;
+				m_lHeadLabelL[m_nNextWord] = rightLabel;
+			}
+			++m_lHeadLNum[m_nNextWord];
+			m_lSubPredR[left] = m_lPredR[left];
+			m_lPredR[left] = m_nNextWord;
+			m_lSubPredLabelR[left] = m_lPredLabelR[left];
+			m_lPredLabelR[left] = rightLabel;
+			++m_lPredRNum[left];
+			m_lPredLabelSetR[left].add(rightLabel);
+		}
 		//add right arcs for stack seek
-		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_LEFT));
-	}
-
-	void StateItem::arcRight(const int & l) {
-		const int & left = m_lStack[m_nStackBack];
-		//sibling is the previous child of buffer seek
-		int & buffer_left_head = m_lHeadL[m_nNextWord];
-		if (buffer_left_head == -1 || left < buffer_left_head) {
-			buffer_left_head = left;
-			m_lHeadLabelL[m_nNextWord] = l;
-		}
-		++m_lHeadLNum[m_nNextWord];
-		m_lSubPredR[left] = m_lPredR[left];
-		m_lPredR[left] = m_nNextWord;
-		m_lSubPredLabelR[left] = m_lPredLabelR[left];
-		m_lPredLabelR[left] = l;
-		++m_lPredRNum[left];
-		m_lPredLabelSetR[left].add(l);
-		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l, GRAPH_RIGHT));
+		m_lRightNodes[left].push_back(RightNodeWithCombineLabel(m_nNextWord, l));
 	}
 
 	void StateItem::print() const {
@@ -78,7 +84,7 @@ namespace nirve {
 			if (m_lRightNodes[i].size() > 0) {
 				std::cout << i;
 				for (const auto & rn : m_lRightNodes[i]) {
-					std::cout << (RIGHTNODE_DIRECTION(rn) == GRAPH_LEFT ? " <-" : " ->") << "(" << TDepLabel::key(RIGHTNODE_LABEL(rn)) << ")" << RIGHTNODE_POS(rn);
+					std::cout.flush();
 				}
 				std::cout << std::endl;
 			}
@@ -152,35 +158,23 @@ namespace nirve {
 		case SHIFT:
 			shift();
 			return;
-		case SHIFT_REDUCE:
-			shiftReduce();
+		case A_SW:
+			arcSwap(action - A_SW_FIRST + 1);
 			return;
-		case AL_SW:
-			arcLeftSwap(action - AL_SW_FIRST + 1);
+		case A_SH:
+			arcShift(action - A_SH_FIRST + 1);
 			return;
-		case AR_SW:
-			arcRightSwap(action - AR_SW_FIRST + 1);
-			return;
-		case AL_SH:
-			arcLeftShift(action - AL_SH_FIRST + 1);
-			return;
-		case AR_SH:
-			arcRightShift(action - AR_SH_FIRST + 1);
-			return;
-		case AL_RE:
-			arcLeftReduce(action - AL_RE_FIRST + 1);
-			return;
-		case AR_RE:
-			arcRightReduce(action - AR_RE_FIRST + 1);
+		case A_RE:
+			arcReduce(action - A_RE_FIRST + 1);
 			return;
 		}
 	}
 
-	void StateItem::generateGraph(const DependencyGraph & sent, DependencyGraph & tree) const {
+	void StateItem::generateGraph(const DependencyCONLLGraph & sent, DependencyCONLLGraph & tree) const {
 		int i = 0;
 		tree.clear();
 		for (const auto & token : sent) {
-			tree.push_back(DependencyGraphNode(TREENODE_POSTAGGEDWORD(token), HeadWithLabel(-1, NULL_LABEL), m_lRightNodes[i]));
+			tree.push_back(DependencyCONLLGraphNode(CONLLGRAPHNODE_POSTAGGEDWORD(token), HeadWithLabel(-1, NULL_LABEL), m_lRightNodes[i]));
 			++i;
 		}
 	}
@@ -201,80 +195,69 @@ namespace nirve {
 		then we shift | 3 | and arc, get 3 - 5
 		then we shift | 4 | and arc, get 4 - 5
 	*/
-	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & direction, const int & label) {
+	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyCONLLGraph & graph, const int & label) {
 		// remove shift-reduce
 		// reduce or draw arc
 		if (m_nStackBack >= 0) {
 			int & seek = seeks[m_lStack[m_nStackBack]];
-			const DependencyGraphNode & node = graph[m_lStack[m_nStackBack]];
-			int size = GRAPHNODE_RIGHTNODES(node).size();
-			while (seek < size && GRAPHNODE_RIGHTNODEPOS(node, seek) < m_nNextWord) {
+			const DependencyCONLLGraphNode & node = graph[m_lStack[m_nStackBack]];
+			int size = CONLLGRAPHNODE_RIGHTNODES(node).size();
+			while (seek < size && CONLLGRAPHNODE_RIGHTNODEPOS(node, seek) < m_nNextWord) {
 				++seek;
 			}
 			if (seek >= size) {
-				switch (direction) {
-				case GRAPH_LEFT:
-					arcLeftReduce(label);
-					return true;
+				switch (label) {
 				case 0:
 					reduce();
 					return true;
-				case GRAPH_RIGHT:
-					arcRightReduce(label);
-					return true;
 				default:
-					return false;
+					arcReduce(label);
+					return true;
 				}
 			}
-			const RightNodeWithLabel & rnwl = GRAPHNODE_RIGHTNODE(node, seek);
-			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
+			const RightNodeWithCombineLabel & rnwl = CONLLGRAPHNODE_RIGHTNODE(node, seek);
+			if (COMBINERIGHTNODE_POS(rnwl) == m_nNextWord) {
 				++seek;
-				return extractOneStandard(seeks, graph, RIGHTNODE_DIRECTION(rnwl), RIGHTNODE_LABEL(rnwl));
+				return extractOneStandard(seeks, graph, COMBINERIGHTNODE_LABEL(rnwl));
 			}
 		}
 		// swap after reduce/arc
 		for (int i = m_nStackBack - 1; i >= 0; --i) {
-			const DependencyGraphNode & node = graph[m_lStack[i]];
+			const DependencyCONLLGraphNode & node = graph[m_lStack[i]];
 			const int & seek = seeks[m_lStack[i]];
-			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
-				switch (direction) {
-				case GRAPH_LEFT:
-					arcLeftSwap(label);
-					return true;
+			if (seek < CONLLGRAPHNODE_RIGHTNODES(node).size() && CONLLGRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
+				switch (label) {
 				case 0:
 					swap();
 					return true;
-				case GRAPH_RIGHT:
-					arcRightSwap(label);
-					return true;
 				default:
-					return false;
+					arcSwap(label);
+					return true;
 				}
 			}
 		}
 		// shfit after swap
 		if (m_nShiftBufferBack >= 0 || bufferTop() < graph.size()) {
-			switch (direction) {
-			case GRAPH_LEFT:
-				arcLeftShift(label);
-				return true;
+			switch (label) {
 			case 0:
 				shift();
 				return true;
-			case GRAPH_RIGHT:
-				arcRightShift(label);
-				return true;
 			default:
-				return false;
+				arcShift(label);
+				return true;
 			}
 		}
 		return false;
 	}
 
-	bool StateItem::extractOracle(const DependencyGraph & graph) {
+	bool StateItem::extractOracle(const DependencyCONLLGraph & graph) {
 		int rightNodeSeeks[MAX_SENTENCE_SIZE];
 		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
 		while (extractOneStandard(rightNodeSeeks, graph))
+		{
+//			printAction(m_lActionList[m_nActionBack]);
+//			print();
+		}
 			;
 		if (*this == graph) {
 			return true;
@@ -296,12 +279,12 @@ namespace nirve {
 		return true;
 	}
 
-	bool StateItem::operator==(const DependencyGraph & graph) const {
+	bool StateItem::operator==(const DependencyCONLLGraph & graph) const {
 		if (m_nNextWord != graph.size()) {
 			return false;
 		}
 		for (int i = 0; i < m_nNextWord; ++i) {
-			if (m_lRightNodes[i] != GRAPHNODE_RIGHTNODES(graph[i])) {
+			if (m_lRightNodes[i] != CONLLGRAPHNODE_RIGHTNODES(graph[i])) {
 				return false;
 			}
 		}

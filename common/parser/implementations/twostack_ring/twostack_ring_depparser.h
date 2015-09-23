@@ -1,15 +1,15 @@
-#ifndef _TITOV_RING_DEPPARSER_H
-#define _TITOV_RING_DEPPARSER_H
+#ifndef _TWOSTACK_RING_DEPPARSER_H
+#define _TWOSTACK_RING_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "titov_ring_state.h"
-#include "titov_ring_weight.h"
+#include "twostack_ring_state.h"
+#include "twostack_ring_weight.h"
 #include "common/parser/depparser_base.h"
 #include "include/learning/tree/lca.h"
 
-namespace titov_ring {
+namespace twostack_ring {
 
 	class DepParser : public DepParserBase {
 	private:
@@ -24,6 +24,7 @@ namespace titov_ring {
 
 		static WordPOSTag empty_taggedword;
 		static WordPOSTag start_taggedword;
+		static WordPOSTag middle_taggedword;
 		static WordPOSTag end_taggedword;
 		static Tagset empty_tagset;
 
@@ -65,7 +66,7 @@ namespace titov_ring {
 		POSTagSet3Int postag_set_3_int;
 		Int set_of_2_postags;
 		Int set_of_3_postags;
-		UNSIGNED set_of_4_postags;
+		Int set_of_4_postags;
 		WordTagset word_tagset;
 		POSTagTagset postag_tagset;
 		TwoWordsTagset two_words_tagset;
@@ -83,11 +84,14 @@ namespace titov_ring {
 		void getOrUpdateStackScore(const StateItem & item, const AddScoreType & amount);
 		void updateScoreForState(const StateItem & from, const StateItem & output, const int & start_action_index, const int & amount);
 
-		void swap(const tscore & score);
-		void shift(const tscore & score);
+		void mem(const tscore & score);
+		void recall(const tscore & score);
 		void reduce(const tscore & score);
+		void shift(const tscore & score);
+		void shiftReduce(const tscore & score);
 
-		void arcSwap(const tscore & score);
+		void arcMem(const tscore & score);
+		void arcRecall(const tscore & score);
 		void arcShift(const tscore & score);
 		void arcReduce(const tscore & score);
 
@@ -113,28 +117,40 @@ namespace titov_ring {
 		}
 	};
 
-	extern int A_SW_FIRST;
+	extern int A_MM_FIRST;
+	extern int A_RC_FIRST;
 	extern int A_SH_FIRST;
 	extern int A_RE_FIRST;
 
-	extern int A_SW_END;
+	extern int A_MM_END;
+	extern int A_RC_END;
 	extern int A_SH_END;
 	extern int A_RE_END;
-	
-	inline void DepParser::swap(const tscore & score) {
-		m_abScores.insertItem(ScoredAction(SWAP, score + m_mapPackedScore[SWAP]));
+
+	inline void DepParser::reduce(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(REDUCE, score + m_mapPackedScore[REDUCE]));
 	}
 
 	inline void DepParser::shift(const tscore & score) {
 		m_abScores.insertItem(ScoredAction(SHIFT, score + m_mapPackedScore[SHIFT]));
 	}
 
-	inline void DepParser::reduce(const tscore & score) {
-		m_abScores.insertItem(ScoredAction(REDUCE, score + m_mapPackedScore[REDUCE]));
+	inline void DepParser::mem(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(MEM, score + m_mapPackedScore[MEM]));
 	}
 
-	inline void DepParser::arcSwap(const tscore & score) {
-		for (int action = A_SW_FIRST; action < A_SW_END; ++action) {
+	inline void DepParser::recall(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(RECALL, score + m_mapPackedScore[RECALL]));
+	}
+
+	inline void DepParser::arcMem(const tscore & score) {
+		for (int action = A_MM_FIRST; action < A_MM_END; ++action) {
+			m_abScores.insertItem(ScoredAction(action, score + m_mapPackedScore[action]));
+		}
+	}
+
+	inline void DepParser::arcRecall(const tscore & score) {
+		for (int action = A_RC_FIRST; action < A_RC_END; ++action) {
 			m_abScores.insertItem(ScoredAction(action, score + m_mapPackedScore[action]));
 		}
 	}

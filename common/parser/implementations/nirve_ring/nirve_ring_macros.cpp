@@ -2,9 +2,9 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "titov_ring_macros.h"
+#include "nirve_ring_macros.h"
 
-std::istream & operator>>(std::istream & is, titov_ring::ScoreArray & s) {
+std::istream & operator>>(std::istream & is, nirve_ring::ScoreArray & s) {
 	ttoken token;
 	int index;
 	cscore cs;
@@ -21,7 +21,7 @@ std::istream & operator>>(std::istream & is, titov_ring::ScoreArray & s) {
 	return is;
 }
 
-std::ostream & operator<<(std::ostream & os, const titov_ring::ScoreArray & s) {
+std::ostream & operator<<(std::ostream & os, const nirve_ring::ScoreArray & s) {
 	bool start = false;
 	for (const auto & score : s.getScores()) {
 		if (!score.second.zero()) {
@@ -39,7 +39,7 @@ std::ostream & operator<<(std::ostream & os, const titov_ring::ScoreArray & s) {
 	return os;
 }
 
-namespace titov_ring {
+namespace nirve_ring {
 
 	int A_SW_FIRST, A_SH_FIRST, A_RE_FIRST;
 	int A_SW_END, A_SH_END, A_RE_END;
