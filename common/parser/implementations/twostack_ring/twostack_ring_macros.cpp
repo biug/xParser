@@ -44,6 +44,8 @@ namespace twostack_ring {
 	int A_MM_FIRST, A_RC_FIRST, A_SH_FIRST, A_RE_FIRST;
 	int A_MM_END, A_RC_END, A_SH_END, A_RE_END;
 
+	std::vector<int> g_vecLabelMap;
+
 	bool ScoreArray::zero() const {
 		for (const auto & score : m_mapScores) {
 			if (!score.second.zero()) {

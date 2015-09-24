@@ -13,7 +13,7 @@ environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.releas
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/CPATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/CPLUS_INCLUDE_PATH/delimiter=;
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/CPLUS_INCLUDE_PATH/operation=replace
-environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/CPLUS_INCLUDE_PATH/value=E\:\\MinGW\\MinGW\\include\\c++\\5.1.0;E\:\\MinGW\\MinGW\\include\\c++\\5.1.0\\mingw32;E\:\\MinGW\\MinGW\\include\\c++\\5.1.0\\backward;E\:\\MinGW\\MinGW\\include
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/CPLUS_INCLUDE_PATH/value=E\:\\MinGW\\MinGW\\include\\c++\\5.1.0;E\:\\MinGW\\MinGW\\include\\c++\\5.1.0\\x86_64-w64-mingw32;E\:\\MinGW\\MinGW\\include\\c++\\5.1.0\\backward;E\:\\MinGW\\MinGW\\include
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/C_INCLUDE_PATH/delimiter=;
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/C_INCLUDE_PATH/operation=replace
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.mingw.exe.release.37664949/C_INCLUDE_PATH/value=E\:\\MinGW\\MinGW\\include

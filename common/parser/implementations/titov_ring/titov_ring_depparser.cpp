@@ -787,12 +787,19 @@ namespace titov_ring {
 		cweight->m_mapST2ptN0ptN0LPptN0LP2pt.getOrUpdateScore(m_mapPackedScore, set_of_4_postags, m_nScoreIndex, amount, m_nTrainingRound);
 
 		if (m_bChar) {
-			cweight->m_map1CharBefore.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map2CharBefore.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map3CharBefore.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map1CharAfter.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map2CharAfter.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map3CharAfter.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map1CharBeforeST.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharBeforeST.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharBeforeST.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map1CharAfterST.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharAfterST.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharAfterST.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+
+			cweight->m_map1CharBeforeN0.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharBeforeN0.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharBeforeN0.getOrUpdateScore(m_mapPackedScore, nCharPrev(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map1CharAfterN0.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharAfterN0.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharAfterN0.getOrUpdateScore(m_mapPackedScore, nCharNext(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
 		}
 
 		if (m_bPath) {

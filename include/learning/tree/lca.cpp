@@ -177,7 +177,7 @@ void LCA::loadPath(DependencyTree & tree) {
 	POSPath.clear();
 	FPOSPath.clear();
 	LabelPath.clear();
-	if (tree.size() == 0) {
+	if (tree.size() <= 1) {
 		return;
 	}
 

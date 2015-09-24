@@ -292,12 +292,18 @@ namespace nirve_ring {
 
 		// char feature
 		// for chinese
-		StringMap m_map1CharBefore;
-		StringMap m_map2CharBefore;
-		StringMap m_map3CharBefore;
-		StringMap m_map1CharAfter;
-		StringMap m_map2CharAfter;
-		StringMap m_map3CharAfter;
+		StringMap m_map1CharBeforeST;
+		StringMap m_map2CharBeforeST;
+		StringMap m_map3CharBeforeST;
+		StringMap m_map1CharAfterST;
+		StringMap m_map2CharAfterST;
+		StringMap m_map3CharAfterST;
+		StringMap m_map1CharBeforeN0;
+		StringMap m_map2CharBeforeN0;
+		StringMap m_map3CharBeforeN0;
+		StringMap m_map1CharAfterN0;
+		StringMap m_map2CharAfterN0;
+		StringMap m_map3CharAfterN0;
 
 		// string feature
 		StringMap m_mapSTPOSPath;

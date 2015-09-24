@@ -288,12 +288,18 @@ namespace nirve_ring {
 
 		// char feature
 		// for chinese
-		m_map1CharBefore("m_map1CharBefore"),
-		m_map2CharBefore("m_map2CharBefore"),
-		m_map3CharBefore("m_map3CharBefore"),
-		m_map1CharAfter("m_map1CharAfter"),
-		m_map2CharAfter("m_map2CharAfter"),
-		m_map3CharAfter("m_map3CharAfter"),
+		m_map1CharBeforeST("m_map1CharBeforeST"),
+		m_map2CharBeforeST("m_map2CharBeforeST"),
+		m_map3CharBeforeST("m_map3CharBeforeST"),
+		m_map1CharAfterST("m_map1CharAfterST"),
+		m_map2CharAfterST("m_map2CharAfterST"),
+		m_map3CharAfterST("m_map3CharAfterST"),
+		m_map1CharBeforeN0("m_map1CharBeforeN0"),
+		m_map2CharBeforeN0("m_map2CharBeforeN0"),
+		m_map3CharBeforeN0("m_map3CharBeforeN0"),
+		m_map1CharAfterN0("m_map1CharAfterN0"),
+		m_map2CharAfterN0("m_map2CharAfterN0"),
+		m_map3CharAfterN0("m_map3CharAfterN0"),
 
 		// string feature
 		m_mapSTPOSPath("m_mapSTPOSPath"),
@@ -608,12 +614,18 @@ namespace nirve_ring {
 
 		// char feature
 		// for chinese
-		input >> m_map1CharBefore;
-		input >> m_map2CharBefore;
-		input >> m_map3CharBefore;
-		input >> m_map1CharAfter;
-		input >> m_map2CharAfter;
-		input >> m_map3CharAfter;
+		input >> m_map1CharBeforeST;
+		input >> m_map2CharBeforeST;
+		input >> m_map3CharBeforeST;
+		input >> m_map1CharAfterST;
+		input >> m_map2CharAfterST;
+		input >> m_map3CharAfterST;
+		input >> m_map1CharBeforeN0;
+		input >> m_map2CharBeforeN0;
+		input >> m_map3CharBeforeN0;
+		input >> m_map1CharAfterN0;
+		input >> m_map2CharAfterN0;
+		input >> m_map3CharAfterN0;
 
 		// string feature
 		input >> m_mapSTPOSPath;
@@ -923,12 +935,18 @@ namespace nirve_ring {
 
 		// char feature
 		// for chinese
-		output << m_map1CharBefore;
-		output << m_map2CharBefore;
-		output << m_map3CharBefore;
-		output << m_map1CharAfter;
-		output << m_map2CharAfter;
-		output << m_map3CharAfter;
+		output << m_map1CharBeforeST;
+		output << m_map2CharBeforeST;
+		output << m_map3CharBeforeST;
+		output << m_map1CharAfterST;
+		output << m_map2CharAfterST;
+		output << m_map3CharAfterST;
+		output << m_map1CharBeforeN0;
+		output << m_map2CharBeforeN0;
+		output << m_map3CharBeforeN0;
+		output << m_map1CharAfterN0;
+		output << m_map2CharAfterN0;
+		output << m_map3CharAfterN0;
 
 		// string feature
 		output << m_mapSTPOSPath;
@@ -1223,12 +1241,18 @@ namespace nirve_ring {
 
 		// char feature
 		// for chinese
-		m_map1CharBefore.computeAverage(round);
-		m_map2CharBefore.computeAverage(round);
-		m_map3CharBefore.computeAverage(round);
-		m_map1CharAfter.computeAverage(round);
-		m_map2CharAfter.computeAverage(round);
-		m_map3CharAfter.computeAverage(round);
+		m_map1CharBeforeST.computeAverage(round);
+		m_map2CharBeforeST.computeAverage(round);
+		m_map3CharBeforeST.computeAverage(round);
+		m_map1CharAfterST.computeAverage(round);
+		m_map2CharAfterST.computeAverage(round);
+		m_map3CharAfterST.computeAverage(round);
+		m_map1CharBeforeN0.computeAverage(round);
+		m_map2CharBeforeN0.computeAverage(round);
+		m_map3CharBeforeN0.computeAverage(round);
+		m_map1CharAfterN0.computeAverage(round);
+		m_map2CharAfterN0.computeAverage(round);
+		m_map3CharAfterN0.computeAverage(round);
 
 		// string feature
 		m_mapSTPOSPath.computeAverage(round);

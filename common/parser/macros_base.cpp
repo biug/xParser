@@ -85,7 +85,7 @@ std::string nCharPrev(const Sentence & sent, int index, int n) {
 		--index;
 	}
 	while (n--) {
-		str = "(N)" + str;
+		str = "(P)" + str;
 	}
 	return str;
 }
@@ -235,10 +235,7 @@ std::istream & operator>>(std::istream & input, DependencyCONLLGraph & graph) {
 		std::istringstream iss(line);
 		std::vector<std::string> tokens;
 		iss >> token >> CONLLGRAPHNODE_WORD(node) >> token >> CONLLGRAPHNODE_POSTAG(node) >> token >> token >> token;
-		iss >> CONLLGRAPHNODE_TREELABEL(node) >> CONLLGRAPHNODE_TREEHEAD(node) >> token;
-		// head minus 1
-		--CONLLGRAPHNODE_TREEHEAD(node);
-		iss >> token;
+		iss >> CONLLGRAPHNODE_TREELABEL(node) >> CONLLGRAPHNODE_TREEHEAD(node) >> token >> token;
 		if (token != "_") {
 			heads_inverse[lines.size()] = heads.size();
 			heads.push_back(lines.size());
@@ -423,9 +420,6 @@ std::ostream & operator<<(std::ostream & output, const DependencyCONLLGraph & gr
 	}
 	i = 0;
 	for (const auto & node : graph) {
-		if (GRAPHNODE_WORD(node) == ROOT_WORD) {
-			break;
-		}
 		output << (i + 1) << " " << CONLLGRAPHNODE_WORD(node) << " " << CONLLGRAPHNODE_WORD(node) << " " << CONLLGRAPHNODE_POSTAG(node) << " " << CONLLGRAPHNODE_POSTAG(node) << " _ _ _ _ _ ";
 		output << (heads_set.find(i) != heads_set.end() ? CONLLGRAPHNODE_WORD(node) : "_");
 		for (int j = 0, k = 0; j < heads_set.size(); ++j) {
