@@ -4,14 +4,10 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "common/token/supertag.h"
 #include "include/learning//tree/lca.h"
 #include "common/parser/implementations/arceager/arceager_run.h"
-#include "common/parser/implementations/titov/titov_run.h"
-#include "common/parser/implementations/nirve/nirve_run.h"
-#include "common/parser/implementations/twostack/twostack_run.h"
-#include "common/parser/implementations/titov_ring/titov_ring_run.h"
-#include "common/parser/implementations/nirve_ring/nirve_ring_run.h"
-#include "common/parser/implementations/twostack_ring/twostack_ring_run.h"
+#include "common/parser/implementations/graphbased/nivre/nivre_run.h"
 
 #include "common/parser/implementations/eisner/eisner_run.h"
 #include "common/parser/implementations/eisnergc/eisnergc_run.h"
@@ -48,12 +44,11 @@ int main(int argc, char * argv[]) {
 	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
 		run.reset(new emptyeisnergc3rd::Run());
 	}
-	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nirve") == 0
-			|| strcmp(argv[2], "titov_ring") == 0 || strcmp(argv[2], "nirve_ring") == 0 || strcmp(argv[2], "twostack_ring") == 0) {
+	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0) {
 		bool bChar = false;
 		bool bPath = false;
-		bool bLabel = false;
-		if (strcmp(argv[1], "goldtest") != 0 && argc > 6) {
+		bool bSuperTag = false;
+		if (argc > 6) {
 			for (int a = 6; a < argc; ++a) {
 				if (strcmp(argv[a], "char") == 0) {
 					bChar = true;
@@ -61,34 +56,20 @@ int main(int argc, char * argv[]) {
 				else if (strcmp(argv[a], "path") == 0) {
 					bPath = true;
 				}
-				else if (strcmp(argv[a], "label") == 0) {
-					bLabel = true;
+				else if (strcmp(argv[a], "supertag") == 0) {
+					bSuperTag = true;
 				}
 			}
 		}
-		if (strcmp(argv[2], "titov") == 0) {
-			run.reset(new titov::Run(bChar, bPath, bLabel));
-		}
-		else if (strcmp(argv[2], "twostack") == 0) {
-			run.reset(new twostack::Run(bChar, bPath, bLabel));
-		}
-		else if (strcmp(argv[2], "nirve") == 0) {
-			run.reset(new nirve::Run(bChar, bPath, bLabel));
-		}
-		else if (strcmp(argv[2], "titov_ring") == 0) {
-			run.reset(new titov_ring::Run(bChar, bPath, bLabel));
-		}
-		else if (strcmp(argv[2], "nirve_ring") == 0) {
-			run.reset(new nirve_ring::Run(bChar, bPath, bLabel));
-		}
-		else if (strcmp(argv[2], "twostack_ring") == 0) {
-			run.reset(new twostack_ring::Run(bChar, bPath, bLabel));
+		if (strcmp(argv[2], "nivre") == 0) {
+			run.reset(new nivre::Run(bChar, bPath, bSuperTag));
 		}
 	}
 
 	if (strcmp(argv[1], "goldtest") == 0) {
 		run->goldtest(argv[3], argv[4]);
 		std::cout << TDepLabel::getTokenizer();
+		std::cout << TSuperTag::getTokenizer();
 	}
 	else if (strcmp(argv[1], "train") == 0) {
 

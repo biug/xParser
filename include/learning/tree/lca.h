@@ -50,7 +50,6 @@ public:
 
 	std::vector<std::vector<std::string>> POSPath;
 	std::vector<std::vector<std::string>> FPOSPath;
-	std::vector<std::vector<std::string>> LabelPath;
 
 	void loadPath(DependencyTree & tree);
 

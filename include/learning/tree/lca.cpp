@@ -176,7 +176,6 @@ void LCA::loadPath(DependencyTree & tree) {
 
 	POSPath.clear();
 	FPOSPath.clear();
-	LabelPath.clear();
 	if (tree.size() <= 1) {
 		return;
 	}
@@ -197,7 +196,6 @@ void LCA::loadPath(DependencyTree & tree) {
 	for (int i = 0, n = tree.size(); i < n; ++i) {
 		POSPath.push_back(std::vector<std::string>());
 		FPOSPath.push_back(std::vector<std::string>());
-		LabelPath.push_back(std::vector<std::string>());
 		for (int j = 0; j < n; ++j) {
 			int si = i, sj = j;
 			int r = query(si, sj);
@@ -234,7 +232,6 @@ void LCA::loadPath(DependencyTree & tree) {
 			}
 			POSPath[i].push_back(std::min(left_dep, right_dep) <= 2 ? lp + rp : LCA::NONE);
 			FPOSPath[i].push_back(std::min(left_dep, right_dep) <= 2 ? lfp + rfp : LCA::NONE);
-			LabelPath[i].push_back(std::min(left_dep, right_dep) <= 2 ? ll + rl : LCA::NONE);
 
 #ifdef _DEBUG
 			std::cout << i << " and " << j << " lca is " << r << std::endl;

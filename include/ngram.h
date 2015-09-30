@@ -86,21 +86,23 @@ public:
 	std::size_t m_nHash;
 
 public:
+	BiGram() : gram1(0), gram2(0), m_nHash(0) {}
+
 	BiGram(const BiGram<KEY_TYPE> & bigram) : gram1(bigram.gram1), gram2(bigram.gram2), m_nHash(bigram.m_nHash) {}
 
-	BiGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0) : gram1(_gram1), gram2(_gram2) {
+	BiGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2) : gram1(_gram1), gram2(_gram2) {
 		computeHash();
 	}
 
 	~BiGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram2 = 0) {
+	void referLast(const KEY_TYPE & _gram2) {
 		gram2 = _gram2;
 		computeHash();
 	}
@@ -152,22 +154,24 @@ public:
 	std::size_t m_nHash;
 
 public:
+	TriGram() : gram1(0), gram2(0), gram3(0), m_nHash(0) {}
+
 	TriGram(const TriGram<KEY_TYPE> & trigram) : gram1(trigram.gram1), gram2(trigram.gram2), gram3(trigram.gram3), m_nHash(trigram.m_nHash) {}
 
-	TriGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0) : gram1(_gram1), gram2(_gram2), gram3(_gram3) {
+	TriGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3) : gram1(_gram1), gram2(_gram2), gram3(_gram3) {
 		computeHash();
 	}
 
 	~TriGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		gram3 = _gram3;
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram3 = 0) {
+	void referLast(const KEY_TYPE & _gram3) {
 		gram3 = _gram3;
 		computeHash();
 	}
@@ -225,15 +229,17 @@ public:
 	std::size_t m_nHash;
 
 public:
+	QuarGram() : gram1(0), gram2(0), gram3(0), gram4(0), m_nHash(0) {}
+
 	QuarGram(const QuarGram<KEY_TYPE> & quargram) : gram1(quargram.gram1), gram2(quargram.gram2), gram3(quargram.gram3), gram4(quargram.gram4), m_nHash(quargram.m_nHash) {}
 
-	QuarGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4) {
+	QuarGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4) {
 		computeHash();
 	}
 
 	~QuarGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		gram3 = _gram3;
@@ -241,7 +247,7 @@ public:
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram4 = 0) {
+	void referLast(const KEY_TYPE & _gram4) {
 		gram4 = _gram4;
 		computeHash();
 	}
@@ -305,15 +311,17 @@ public:
 	std::size_t m_nHash;
 
 public:
+	QuinGram() : gram1(0), gram2(0), gram3(0), gram4(0), gram5(0), m_nHash(0) {}
+
 	QuinGram(const QuinGram<KEY_TYPE> & quingram) : gram1(quingram.gram1), gram2(quingram.gram2), gram3(quingram.gram3), gram4(quingram.gram4), gram5(quingram.gram5), m_nHash(quingram.m_nHash) {}
 
-	QuinGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5) {
+	QuinGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5) {
 		computeHash();
 	}
 
 	~QuinGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		gram3 = _gram3;
@@ -322,7 +330,7 @@ public:
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram5 = 0) {
+	void referLast(const KEY_TYPE & _gram5) {
 		gram5 = _gram5;
 		computeHash();
 	}
@@ -392,15 +400,17 @@ public:
 	std::size_t m_nHash;
 
 public:
+	HexaGram() : gram1(0), gram2(0), gram3(0), gram4(0), gram5(0), gram6(0), m_nHash(0) {}
+
 	HexaGram(const HexaGram<KEY_TYPE> & hexagram) : gram1(hexagram.gram1), gram2(hexagram.gram2), gram3(hexagram.gram3), gram4(hexagram.gram4), gram5(hexagram.gram5), gram6(hexagram.gram6), m_nHash(hexagram.m_nHash) {}
 
-	HexaGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0, const KEY_TYPE & _gram6 = 0) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5), gram6(_gram6) {
+	HexaGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5, const KEY_TYPE & _gram6) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5), gram6(_gram6) {
 		computeHash();
 	}
 
 	~HexaGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0, const KEY_TYPE & _gram6 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5, const KEY_TYPE & _gram6) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		gram3 = _gram3;
@@ -410,7 +420,7 @@ public:
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram6 = 0) {
+	void referLast(const KEY_TYPE & _gram6) {
 		gram6 = _gram6;
 		computeHash();
 	}
@@ -464,13 +474,13 @@ public:
 public:
 	SeptGram(const SeptGram<KEY_TYPE> & septgram) : gram1(septgram.gram1), gram2(septgram.gram2), gram3(septgram.gram3), gram4(septgram.gram4), gram5(septgram.gram5), gram6(septgram.gram6), gram7(septgram.gram7), m_nHash(septgram.m_nHash) {}
 
-	SeptGram(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0, const KEY_TYPE & _gram6 = 0, const KEY_TYPE & _gram7 = 0) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5), gram6(_gram6), gram7(_gram7) {
+	SeptGram(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5, const KEY_TYPE & _gram6, const KEY_TYPE & _gram7) : gram1(_gram1), gram2(_gram2), gram3(_gram3), gram4(_gram4), gram5(_gram5), gram6(_gram6), gram7(_gram7) {
 		computeHash();
 	}
 
 	~SeptGram() = default;
 
-	void refer(const KEY_TYPE & _gram1 = 0, const KEY_TYPE & _gram2 = 0, const KEY_TYPE & _gram3 = 0, const KEY_TYPE & _gram4 = 0, const KEY_TYPE & _gram5 = 0, const KEY_TYPE & _gram6 = 0, const KEY_TYPE & _gram7 = 0) {
+	void refer(const KEY_TYPE & _gram1, const KEY_TYPE & _gram2, const KEY_TYPE & _gram3, const KEY_TYPE & _gram4, const KEY_TYPE & _gram5, const KEY_TYPE & _gram6, const KEY_TYPE & _gram7) {
 		gram1 = _gram1;
 		gram2 = _gram2;
 		gram3 = _gram3;
@@ -481,7 +491,7 @@ public:
 		computeHash();
 	}
 
-	void referLast(const KEY_TYPE & _gram7 = 0) {
+	void referLast(const KEY_TYPE & _gram7) {
 		gram7 = _gram7;
 		computeHash();
 	}
