@@ -159,10 +159,8 @@ namespace twostack {
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
-		//auto time_start = GetTickCount();
 		memset(m_lPackedScore, 0, sizeof(m_lPackedScore));
 		getOrUpdateFeatureScore(item, AddScoreType(ACTION_START, 0));
-		//m_tGetScoreTime += GetTickCount() - time_start;
 	}
 
 	template<class RET_TYPE>
@@ -182,10 +180,14 @@ namespace twostack {
 
 			if (iGenerator->size() < m_nSentenceLength) {
 				if (iGenerator->canArc()) {
-					arcMem(score);
-					arcRecall(score);
 					arcReduce(score);
 					arcShift(score, iGenerator->size());
+					if (iGenerator->canMem()) {
+						arcMem(score);
+					}
+					if (iGenerator->canRecall()) {
+						arcRecall(score);
+					}
 				}
 				shift(score, iGenerator->size());
 			}

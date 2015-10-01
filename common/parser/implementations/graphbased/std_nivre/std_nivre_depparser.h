@@ -1,14 +1,14 @@
-#ifndef _NIVRE_DEPPARSER_H
-#define _NIVRE_DEPPARSER_H
+#ifndef _STD_NIVRE_DEPPARSER_H
+#define _STD_NIVRE_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "nivre_state.h"
-#include "nivre_weight.h"
+#include "std_nivre_state.h"
+#include "std_nivre_weight.h"
 #include "common/parser/implementations/graphbased/graphdepparser_base.h"
 
-namespace nivre {
+namespace std_nivre {
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
@@ -23,12 +23,10 @@ namespace nivre {
 		IntTagSet uni_tagset;
 		TwoIntsTagSet bi_tagset;
 
+		void arc(const tscore & score);
 		void swap(const tscore & score);
-		void arcSwap(const tscore & score);
 		void reduce(const tscore & score);
-		void arcReduce(const tscore & score);
 		void shift(const tscore & score, const int & tokenId);
-		void arcShift(const tscore & score, const int & tokenId);
 
 		void getActionScores(const StateItem & item);
 		void getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount);
@@ -42,14 +40,10 @@ namespace nivre {
 
 	extern int LABEL_COUNT;
 
-	extern int A_SW_FIRST;
-	extern int A_RE_FIRST;
-	extern int A_SH_FIRST;
+	extern int A_FIRST;
 	extern int SH_FIRST;
 
-	extern int A_SW_END;
-	extern int A_RE_END;
-	extern int A_SH_END;
+	extern int A_END;
 	extern int SH_END;
 
 	extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
@@ -73,27 +67,20 @@ namespace nivre {
 	}
 
 	template<class RET_TYPE>
+	inline void DepParser<RET_TYPE>::arc(const tscore & score) {
+		for (int action = A_FIRST; action < A_END; ++action) {
+			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
+		}
+	}
+
+	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::swap(const tscore & score) {
 		m_abScores.insertItem(ScoredAction(SWAP, score + m_lPackedScore[SWAP]));
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcSwap(const tscore & score) {
-		for (int action = A_SW_FIRST; action < A_SW_END; ++action) {
-			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-		}
-	}
-
-	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::reduce(const tscore & score) {
 		m_abScores.insertItem(ScoredAction(REDUCE, score + m_lPackedScore[REDUCE]));
-	}
-
-	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcReduce(const tscore & score) {
-		for (int action = A_RE_FIRST; action < A_RE_END; ++action) {
-			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-		}
 	}
 
 	template<class RET_TYPE>
@@ -114,32 +101,6 @@ namespace nivre {
 			m_abScores.insertItem(ScoredAction(SH_FIRST, score + m_lPackedScore[SH_FIRST]));
 		}
 	}
-
-	template<class RET_TYPE>
-	void DepParser<RET_TYPE>::arcShift(const tscore & score, const int & tokenId) {
-		if (m_bSuperTag) {
-			if (g_mapSuperTagCandidatesOfWords.find(m_lSentence[tokenId].first()) != g_mapSuperTagCandidatesOfWords.end()) {
-				for (const auto & tag : g_mapSuperTagCandidatesOfWords[m_lSentence[tokenId].first()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
-						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-					}
-				}
-			}
-			else {
-				for (const auto & tag : g_mapSuperTagCandidatesOfPOSTags[m_lSentence[tokenId].second()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
-						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-					}
-				}
-			}
-		}
-		else {
-			for (int action = A_SH_FIRST, n = A_SH_FIRST + LABEL_COUNT; action < n; ++action) {
-				m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-			}
-		}
-	}
-
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
@@ -164,11 +125,7 @@ namespace nivre {
 
 			if (iGenerator->size() < m_nSentenceLength) {
 				if (iGenerator->canArc()) {
-					arcReduce(score);
-					arcShift(score, iGenerator->size());
-					if (iGenerator->canSwap()) {
-						arcSwap(score);
-					}
+					arc(score);
 				}
 				shift(score, iGenerator->size());
 			}

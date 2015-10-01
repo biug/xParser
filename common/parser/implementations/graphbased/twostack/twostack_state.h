@@ -20,7 +20,8 @@ namespace twostack {
 
 	class StateItem : public GraphStateBase {
 	private:
-		bool  m_bCanSwap;
+		bool m_bCanMem;
+		bool m_bCanRecall;
 		int m_nSecondStackBack;
 		int m_lSecondStack[MAX_SENTENCE_SIZE];
 
@@ -66,6 +67,7 @@ namespace twostack {
 	};
 
 	inline void StateItem::shift(const int & t) {
+		m_bCanMem = true;
 		m_lSuperTag[m_nNextWord] = t;
 		m_lStack[++m_nStackBack] = m_nNextWord++;
 		m_lActionList[++m_nActionBack] = SH_FIRST + t;
@@ -78,11 +80,13 @@ namespace twostack {
 	}
 
 	inline void StateItem::mem() {
+		m_bCanRecall = true;
 		m_lSecondStack[++m_nSecondStackBack] = m_lStack[m_nStackBack--];
 		m_lActionList[++m_nActionBack] = MEM;
 	}
 
 	inline void StateItem::recall() {
+		m_bCanMem = false;
 		m_lStack[++m_nStackBack] = m_lSecondStack[m_nSecondStackBack--];
 		m_lActionList[++m_nActionBack] = RECALL;
 	}
@@ -124,13 +128,11 @@ namespace twostack {
 	}
 
 	inline bool StateItem::canMem() const {
-		const int & action = m_lActionList[m_nActionBack];
-		return action != RECALL && !(action >= A_RC_FIRST && action < A_RC_END);
+		return m_nStackBack > 0 && m_bCanMem;
 	}
 
 	inline bool StateItem::canRecall() const {
-		const int & action = m_lActionList[m_nActionBack];
-		return action != MEM && !(action >= A_MM_FIRST && action < A_MM_END);
+		return m_nSecondStackBack >= 0 && m_bCanRecall;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "twostack_state.h"
+#include "std_titov_state.h"
 #include "common/token/deplabel.h"
 
-namespace twostack {
+namespace std_titov {
 
 	extern std::vector<int> g_vecLabelMap;
 
@@ -73,11 +73,6 @@ namespace twostack {
 			std::cout << " " << m_lStack[i];
 		}
 		std::cout << std::endl;
-		std::cout << "shift buffer(" << m_nSecondStackBack + 1 << ") :";
-		for (int i = 0; i <= m_nSecondStackBack; ++i) {
-			std::cout << " " << m_lSecondStack[i];
-		}
-		std::cout << std::endl;
 		std::cout << "arcs :" << std::endl;
 		for (int i = 0; i < m_nNextWord; ++i) {
 			if (m_lRightNodes[i].size() > 0) {
@@ -97,7 +92,7 @@ namespace twostack {
 		for (int i = 0; i <= m_nActionBack; ++i) {
 			item.move(m_lActionList[i]);
 		}
-		if (item != *this || m_nSecondStackBack != -1 || m_nStackBack != -1) {
+		if (item != *this || m_nStackBack != -1) {
 			std::cout << "origin" << std::endl;
 			this->print();
 			std::cout << "correct" << std::endl;
@@ -110,9 +105,6 @@ namespace twostack {
 		m_nNextWord = 0;
 		//reset stack seek
 		m_nStackBack = -1;
-		m_nSecondStackBack = -1;
-		m_bCanMem = false;
-		m_bCanRecall = false;
 		//reset score
 		m_nScore = 0;
 		//reset action
@@ -151,23 +143,11 @@ namespace twostack {
 		case REDUCE:
 			reduce();
 			return;
-		case MEM:
-			mem();
+		case SWAP:
+			swap();
 			return;
-		case RECALL:
-			recall();
-			return;
-		case A_MM:
-			arcMem(action - A_MM_FIRST + 1);
-			return;
-		case A_RC:
-			arcRecall(action - A_RC_FIRST + 1);
-			return;
-		case A_RE:
-			arcReduce(action - A_RE_FIRST + 1);
-			return;
-		case A_SH:
-			arcShift((action - A_SH_FIRST) % LABEL_COUNT + 1, (action - A_SH_FIRST) / LABEL_COUNT);
+		case ARC:
+			arc(action - A_FIRST + 1);
 			return;
 		case SHIFT:
 			shift(action - SH_FIRST);
@@ -202,57 +182,35 @@ namespace twostack {
 				++seek;
 			}
 			if (seek >= size) {
-				switch (label) {
-				case 0:
-					reduce();
-					return true;
-				default:
-					arcReduce(label);
-					return true;
-				}
+				reduce();
+				return true;
 			}
 			const RightNodeWithLabel & rnwl = GRAPHNODE_RIGHTNODE(node, seek);
 			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
 				++seek;
-				return extractOneStandard(seeks, graph, RIGHTNODE_LABEL(rnwl));
+				arc(RIGHTNODE_LABEL(rnwl));
+				return true;
 			}
-		}
-		// mem after reduce/arc
-		for (int i = m_nStackBack - 1; i >= 0; --i) {
-			const DependencyGraphNode & node = graph[m_lStack[i]];
-			const int & seek = seeks[m_lStack[i]];
-			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
-				switch (label) {
-				case 0:
-					mem();
-					return true;
-				default:
-					arcMem(label);
+			if (m_nStackBack > 0) {
+				int & seek2 = seeks[m_lStack[m_nStackBack - 1]];
+				const DependencyGraphNode & node2 = graph[m_lStack[m_nStackBack - 1]];
+				int size2 = GRAPHNODE_RIGHTNODES(node2).size();
+				if (seek < size && seek2 < size2) {
+					if (RIGHTNODE_POS(GRAPHNODE_RIGHTNODE(node, seek)) > RIGHTNODE_POS(GRAPHNODE_RIGHTNODE(node2, seek2))) {
+						swap();
+						return true;	
+					}
+				}
+				else if (seek < size) {
+					swap();
 					return true;
 				}
 			}
 		}
-		// recall after mem/arc
-		for (int i = m_nSecondStackBack; i >= 0; --i) {
-			switch (label) {
-			case 0:
-				recall();
-				return true;
-			default:
-				arcRecall(label);
-				return true;
-			}
-		}
-		// shfit after recall
+		// shfit after swap
 		if (m_nNextWord < graph.size()) {
-			switch (label) {
-			case 0:
-				shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			default:
-				arcShift(label,TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			}
+			shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
+			return true;
 		}
 		return false;
 	}
@@ -261,7 +219,9 @@ namespace twostack {
 		int rightNodeSeeks[MAX_SENTENCE_SIZE];
 		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
 		while (extractOneStandard(rightNodeSeeks, graph))
+		{
 			;
+		}
 		return *this == graph;
 	}
 
@@ -294,19 +254,13 @@ namespace twostack {
 
 	StateItem & StateItem::operator=(const StateItem & item) {
 		m_nStackBack = item.m_nStackBack;
-		m_nSecondStackBack = item.m_nSecondStackBack;
 		m_nActionBack = item.m_nActionBack;
 		m_nNextWord = item.m_nNextWord;
 		m_nScore = item.m_nScore;
-		m_bCanMem = item.m_bCanMem;
-		m_bCanRecall = item.m_bCanRecall;
 
 		size_t len = sizeof(int) * (m_nNextWord + 1);
 		if (m_nStackBack >= 0) {
 			memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
-		}
-		if (m_nSecondStackBack >= 0) {
-			memcpy(m_lSecondStack, item.m_lSecondStack, sizeof(int) * (m_nSecondStackBack + 1));
 		}
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 

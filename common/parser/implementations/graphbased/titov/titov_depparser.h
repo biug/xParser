@@ -142,10 +142,8 @@ namespace titov {
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
-		//auto time_start = GetTickCount();
 		memset(m_lPackedScore, 0, sizeof(m_lPackedScore));
 		getOrUpdateFeatureScore(item, AddScoreType(ACTION_START, 0));
-		//m_tGetScoreTime += GetTickCount() - time_start;
 	}
 
 	template<class RET_TYPE>
