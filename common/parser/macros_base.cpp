@@ -283,3 +283,38 @@ std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph) 
 	output << std::endl;
 	return output;
 }
+
+std::istream & operator>>(std::istream & input, SuperTagCandidates & stc) {
+	int size, key, candidate;
+	ttoken line;
+	input >> size;
+	std::getline(input, line);
+	while (size--) {
+		std::getline(input, line);
+		std::istringstream iss(line);
+		iss >> key;
+		while (iss >> candidate) {
+			stc[key].push_back(candidate);
+		}
+	}
+	return input;
+}
+
+std::ostream & operator<<(std::ostream & output, const SuperTagCandidates & stc) {
+	output << stc.size() << std::endl;
+	for (const auto & item : stc) {
+		output << item.first;
+		for (const auto & candi : item.second) {
+			output << " " << candi;
+		}
+		output << std::endl;
+	}
+	return output;
+}
+
+void nBackSpace(const std::string & str) {
+	for (int i = 0; i < str.size(); ++i) {
+		std::cout << '\b';
+	}
+	std::cout << std::flush;
+}

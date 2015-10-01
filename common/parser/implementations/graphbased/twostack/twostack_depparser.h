@@ -1,14 +1,14 @@
-#ifndef _NIVRE_DEPPARSER_H
-#define _NIVRE_DEPPARSER_H
+#ifndef _TWOSTACK_DEPPARSER_H
+#define _TWOSTACK_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "nivre_state.h"
-#include "nivre_weight.h"
+#include "twostack_state.h"
+#include "twostack_weight.h"
 #include "common/parser/implementations/graphbased/graphdepparser_base.h"
 
-namespace nivre {
+namespace twostack {
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
@@ -23,8 +23,10 @@ namespace nivre {
 		IntTagSet uni_tagset;
 		TwoIntsTagSet bi_tagset;
 
-		void swap(const tscore & score);
-		void arcSwap(const tscore & score);
+		void mem(const tscore & score);
+		void arcMem(const tscore & score);
+		void recall(const tscore & score);
+		void arcRecall(const tscore & score);
 		void reduce(const tscore & score);
 		void arcReduce(const tscore & score);
 		void shift(const tscore & score, const int & tokenId);
@@ -42,12 +44,14 @@ namespace nivre {
 
 	extern int LABEL_COUNT;
 
-	extern int A_SW_FIRST;
+	extern int A_MM_FIRST;
+	extern int A_RC_FIRST;
 	extern int A_RE_FIRST;
 	extern int A_SH_FIRST;
 	extern int SH_FIRST;
 
-	extern int A_SW_END;
+	extern int A_MM_END;
+	extern int A_RC_END;
 	extern int A_RE_END;
 	extern int A_SH_END;
 	extern int SH_END;
@@ -73,13 +77,25 @@ namespace nivre {
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::swap(const tscore & score) {
-		m_abScores.insertItem(ScoredAction(SWAP, score + m_lPackedScore[SWAP]));
+	inline void DepParser<RET_TYPE>::mem(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(MEM, score + m_lPackedScore[MEM]));
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcSwap(const tscore & score) {
-		for (int action = A_SW_FIRST; action < A_SW_END; ++action) {
+	inline void DepParser<RET_TYPE>::arcMem(const tscore & score) {
+		for (int action = A_MM_FIRST; action < A_MM_END; ++action) {
+			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
+		}
+	}
+
+	template<class RET_TYPE>
+	inline void DepParser<RET_TYPE>::recall(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(RECALL, score + m_lPackedScore[RECALL]));
+	}
+
+	template<class RET_TYPE>
+	inline void DepParser<RET_TYPE>::arcRecall(const tscore & score) {
+		for (int action = A_RC_FIRST; action < A_RC_END; ++action) {
 			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
 		}
 	}
@@ -166,17 +182,20 @@ namespace nivre {
 
 			if (iGenerator->size() < m_nSentenceLength) {
 				if (iGenerator->canArc()) {
+					arcMem(score);
+					arcRecall(score);
 					arcReduce(score);
 					arcShift(score, iGenerator->size());
-					if (iGenerator->canSwap()) {
-						arcSwap(score);
-					}
 				}
 				shift(score, iGenerator->size());
 			}
 
-			if (iGenerator->canSwap()) {
-				swap(score);
+			if (iGenerator->canMem()) {
+				mem(score);
+			}
+
+			if (iGenerator->canRecall()) {
+				recall(score);
 			}
 
 			for (const auto & saScore : m_abScores) {
@@ -210,7 +229,7 @@ namespace nivre {
 		const int & st2rh_index = st2_index == -1 ? -1 : item.rightHead(st2_index);
 		const int & st2rp_index = st2_index == -1 ? -1 : item.rightPred(st2_index);
 		// sst
-		const int & sst_index = item.bufferTop() == item.size() ? -1 : item.bufferTop();
+		const int & sst_index = item.secondStackBack() == -1 ? -1 : item.secondStackTop();
 		const int & sstlh_index = sst_index == -1 ? -1 : item.leftHead(sst_index);
 		const int & sstlp_index = sst_index == -1 ? -1 : item.leftPred(sst_index);
 		const int & sstrh_index = sst_index == -1 ? -1 : item.rightHead(sst_index);

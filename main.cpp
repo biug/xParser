@@ -1,4 +1,5 @@
 #include <memory>
+#include <iomanip>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -8,6 +9,8 @@
 #include "include/learning//tree/lca.h"
 #include "common/parser/implementations/arceager/arceager_run.h"
 #include "common/parser/implementations/graphbased/nivre/nivre_run.h"
+#include "common/parser/implementations/graphbased/titov/titov_run.h"
+#include "common/parser/implementations/graphbased/twostack/twostack_run.h"
 
 #include "common/parser/implementations/eisner/eisner_run.h"
 #include "common/parser/implementations/eisnergc/eisnergc_run.h"
@@ -20,6 +23,7 @@ int main(int argc, char * argv[]) {
 
 	std::ios_base::sync_with_stdio(false);
 	std::cin.tie(NULL);
+	std::cout << std::fixed << std::setprecision(4);
 
 	std::unique_ptr<RunBase> run(nullptr);
 
@@ -64,12 +68,16 @@ int main(int argc, char * argv[]) {
 		if (strcmp(argv[2], "nivre") == 0) {
 			run.reset(new nivre::Run(bChar, bPath, bSuperTag));
 		}
+		else if (strcmp(argv[2], "titov") == 0) {
+			run.reset(new titov::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "twostack") == 0) {
+			run.reset(new twostack::Run(bChar, bPath, bSuperTag));
+		}
 	}
 
 	if (strcmp(argv[1], "goldtest") == 0) {
 		run->goldtest(argv[3], argv[4]);
-		std::cout << TDepLabel::getTokenizer();
-		std::cout << TSuperTag::getTokenizer();
 	}
 	else if (strcmp(argv[1], "train") == 0) {
 

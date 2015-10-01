@@ -2,9 +2,9 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "nivre_macros.h"
+#include "titov_macros.h"
 
-namespace nivre {
+namespace titov {
 
 	int LABEL_COUNT;
 

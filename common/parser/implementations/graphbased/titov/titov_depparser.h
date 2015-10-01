@@ -1,14 +1,14 @@
-#ifndef _NIVRE_DEPPARSER_H
-#define _NIVRE_DEPPARSER_H
+#ifndef _TITOV_DEPPARSER_H
+#define _TITOV_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "nivre_state.h"
-#include "nivre_weight.h"
+#include "titov_state.h"
+#include "titov_weight.h"
 #include "common/parser/implementations/graphbased/graphdepparser_base.h"
 
-namespace nivre {
+namespace titov {
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
@@ -61,7 +61,6 @@ namespace nivre {
 
 		empty_taggedword.refer(TWord::code(EMPTY_WORD), TPOSTag::code(EMPTY_POSTAG));
 		start_taggedword.refer(TWord::code(START_WORD), TPOSTag::code(START_POSTAG));
-		middle_taggedword.refer(TWord::code(MIDDLE_WORD), TPOSTag::code(MIDDLE_POSTAG));
 		end_taggedword.refer(TWord::code(END_WORD), TPOSTag::code(END_POSTAG));
 
 		m_Weight = new Weight<RET_TYPE>(sFeatureInput, sFeatureOut);
@@ -162,21 +161,20 @@ namespace nivre {
 
 			if (iGenerator->stackBack() >= 0) {
 				reduce(score);
+				if (iGenerator->stackBack() > 0 && iGenerator->canSwap()) {
+					swap(score);
+				}
 			}
 
 			if (iGenerator->size() < m_nSentenceLength) {
 				if (iGenerator->canArc()) {
 					arcReduce(score);
 					arcShift(score, iGenerator->size());
-					if (iGenerator->canSwap()) {
+					if (iGenerator->stackBack() > 0) {
 						arcSwap(score);
 					}
 				}
 				shift(score, iGenerator->size());
-			}
-
-			if (iGenerator->canSwap()) {
-				swap(score);
 			}
 
 			for (const auto & saScore : m_abScores) {
@@ -209,12 +207,6 @@ namespace nivre {
 		const int & st2lp_index = st2_index == -1 ? -1 : item.leftPred(st2_index);
 		const int & st2rh_index = st2_index == -1 ? -1 : item.rightHead(st2_index);
 		const int & st2rp_index = st2_index == -1 ? -1 : item.rightPred(st2_index);
-		// sst
-		const int & sst_index = item.bufferTop() == item.size() ? -1 : item.bufferTop();
-		const int & sstlh_index = sst_index == -1 ? -1 : item.leftHead(sst_index);
-		const int & sstlp_index = sst_index == -1 ? -1 : item.leftPred(sst_index);
-		const int & sstrh_index = sst_index == -1 ? -1 : item.rightHead(sst_index);
-		const int & sstrp_index = sst_index == -1 ? -1 : item.rightPred(sst_index);
 		// n0
 		const int & n0_index = item.size() < m_nSentenceLength ? item.size() : -1;
 		const int & n0lp_index = n0_index == -1 ? -1 : item.leftPred(n0_index);
@@ -241,12 +233,6 @@ namespace nivre {
 		const WordPOSTag & st2lp_word_postag = st2lp_index == -1 ? empty_taggedword : m_lSentence[st2lp_index];
 		const WordPOSTag & st2rh_word_postag = st2rh_index == -1 ? empty_taggedword : m_lSentence[st2rh_index];
 		const WordPOSTag & st2rp_word_postag = st2rp_index == -1 ? empty_taggedword : m_lSentence[st2rp_index];
-		// sst
-		const WordPOSTag & sst_word_postag = sst_index == -1 ? middle_taggedword : m_lSentence[sst_index];
-		const WordPOSTag & sstlh_word_postag = sstlh_index == -1 ? empty_taggedword : m_lSentence[sstlh_index];
-		const WordPOSTag & sstlp_word_postag = sstlp_index == -1 ? empty_taggedword : m_lSentence[sstlp_index];
-		const WordPOSTag & sstrh_word_postag = sstrh_index == -1 ? empty_taggedword : m_lSentence[sstrh_index];
-		const WordPOSTag & sstrp_word_postag = sstrp_index == -1 ? empty_taggedword : m_lSentence[sstrp_index];
 		// n0
 		const WordPOSTag & n0_word_postag = n0_index == -1 ? end_taggedword : m_lSentence[n0_index];
 		const WordPOSTag & n0lh_word_postag = n0lh_index == -1 ? empty_taggedword : m_lSentence[n0lh_index];
@@ -311,31 +297,6 @@ namespace nivre {
 		const int & st2rp_label = st2_index == -1 ? 0 : item.rightPredLabel(st2_index);
 		const int & st2rp2_label = st2_index == -1 ? 0 : item.rightSubPredLabel(st2_index);
 		const int & st2rp_arity = st2_index == -1 ? -1 : item.rightPredArity(st2_index);
-		// sst
-		const Word & sst_word = sst_word_postag.first();
-		const POSTag & sst_postag = sst_word_postag.second();
-		const TagSet & sst_llabelset = sst_index == -1 ? empty_tagset : item.leftPredLabelSet(sst_index);
-		const TagSet & sst_rlabelset = sst_index == -1 ? empty_tagset : item.rightPredLabelSet(sst_index);
-		const Word & sstlh_word = sstlh_word_postag.first();
-		const POSTag & sstlh_postag = sstlh_word_postag.second();
-		const int & sstlh_label = sst_index == -1 ? 0 : item.leftHeadLabel(sst_index);
-		const int & sstlh_arity = sst_index == -1 ? -1 : item.leftHeadArity(sst_index);
-		const Word & sstlp_word = sstlp_word_postag.first();
-		const POSTag & sstlp_postag = sstlp_word_postag.second();
-		const POSTag & sstlp2_postag = (sst_index == -1 || item.leftSubPred(sst_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(sst_index)].second();
-		const int & sstlp_label = sst_index == -1 ? 0 : item.leftPredLabel(sst_index);
-		const int & sstlp2_label = sst_index == -1 ? 0 : item.leftSubPredLabel(sst_index);
-		const int & sstlp_arity = sst_index == -1 ? -1 : item.leftPredArity(sst_index);
-		const Word & sstrh_word = sstrh_word_postag.first();
-		const POSTag & sstrh_postag = sstrh_word_postag.second();
-		const int & sstrh_label = sst_index == -1 ? 0 : item.rightHeadLabel(sst_index);
-		const int & sstrh_arity = sst_index == -1 ? -1 : item.rightHeadArity(sst_index);
-		const Word & sstrp_word = sstrp_word_postag.first();
-		const POSTag & sstrp_postag = sstrp_word_postag.second();
-		const POSTag & sstrp2_postag = (sst_index == -1 || item.rightSubPred(sst_index) == -1) ? empty_taggedword.second() : m_lSentence[item.rightSubPred(sst_index)].second();
-		const int & sstrp_label = sst_index == -1 ? 0 : item.rightPredLabel(sst_index);
-		const int & sstrp2_label = sst_index == -1 ? 0 : item.rightSubPredLabel(sst_index);
-		const int & sstrp_arity = sst_index == -1 ? -1 : item.rightPredArity(sst_index);
 		// n0
 		const Word & n0_word = n0_word_postag.first();
 		const POSTag & n0_postag = n0_word_postag.second();
@@ -375,8 +336,6 @@ namespace nivre {
 		cweight->m_mapSTpt.getOrUpdateScore(m_lPackedScore, st_postag, m_nScoreIndex, amount, m_nTrainingRound);
 		cweight->m_mapST2w.getOrUpdateScore(m_lPackedScore, st2_word, m_nScoreIndex, amount, m_nTrainingRound);
 		cweight->m_mapST2pt.getOrUpdateScore(m_lPackedScore, st2_postag, m_nScoreIndex, amount, m_nTrainingRound);
-		cweight->m_mapSSTw.getOrUpdateScore(m_lPackedScore, sst_word, m_nScoreIndex, amount, m_nTrainingRound);
-		cweight->m_mapSSTpt.getOrUpdateScore(m_lPackedScore, sst_postag, m_nScoreIndex, amount, m_nTrainingRound);
 		cweight->m_mapN0w.getOrUpdateScore(m_lPackedScore, n0_word, m_nScoreIndex, amount, m_nTrainingRound);
 		cweight->m_mapN0pt.getOrUpdateScore(m_lPackedScore, n0_postag, m_nScoreIndex, amount, m_nTrainingRound);
 
@@ -468,15 +427,6 @@ namespace nivre {
 		cweight->m_mapST2wST2RHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		bi_features.refer(st2_word, st2rp_label);
 		cweight->m_mapST2wST2RPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst
-		bi_features.refer(sst_word, sstlh_label);
-		cweight->m_mapSSTwSSTLHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstlp_label);
-		cweight->m_mapSSTwSSTLPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstrh_label);
-		cweight->m_mapSSTwSSTRHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstrp_label);
-		cweight->m_mapSSTwSSTRPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 
 		// unigram with arity
 		// st, n0
@@ -512,19 +462,6 @@ namespace nivre {
 		cweight->m_mapST2wST2Hi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		bi_features.refer(st2_word, st2lp_arity + st2rp_arity);
 		cweight->m_mapST2wST2Pi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst
-		bi_features.refer(sst_word, sstlh_arity);
-		cweight->m_mapSSTwSSTLHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstlp_arity);
-		cweight->m_mapSSTwSSTLPi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstrh_arity);
-		cweight->m_mapSSTwSSTRHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstrp_arity);
-		cweight->m_mapSSTwSSTRPi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstlh_arity + sstrh_arity);
-		cweight->m_mapSSTwSSTHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, sstlp_arity + sstrp_arity);
-		cweight->m_mapSSTwSSTPi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 
 		// bi-gram
 		// st + n0
@@ -597,41 +534,6 @@ namespace nivre {
 		tri_features.refer(st2_word, n0_word, n0lp_arity);
 		cweight->m_mapST2wN0wN0LPi.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 
-		// sst + n0
-		bi_features.refer(sst_word, n0_word);
-		cweight->m_mapSSTwN0w.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, n0_postag);
-		cweight->m_mapSSTwN0pt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(n0_word, sst_postag);
-		cweight->m_mapSSTptN0w.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		poses_feature = ENCODE_POSTAG_SET_2(sst_postag, n0_postag);
-		cweight->m_mapSSTptN0pt.getOrUpdateScore(m_lPackedScore, poses_feature, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, n0_word, sst_postag);
-		cweight->m_mapSSTwptN0w.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, n0_word, n0_postag);
-		cweight->m_mapSSTwN0wpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, poses_feature);
-		cweight->m_mapSSTwptN0pt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(n0_word, poses_feature);
-		cweight->m_mapSSTptN0wpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, n0_word, poses_feature);
-		cweight->m_mapSSTwptN0wpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + dis
-		dis = encodeLinkDistance(sst_index, n0_index == -1 ? m_nSentenceLength : n0_index);
-		tri_features.refer(sst_word, n0_word, dis);
-		cweight->m_mapSSTwN0wD.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, n0_postag, dis);
-		cweight->m_mapSSTwN0ptD.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, sst_postag, dis);
-		cweight->m_mapSSTptN0wD.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(poses_feature, dis);
-		cweight->m_mapSSTptN0ptD.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + sst left/right head/pred
-		tri_features.refer(sst_word, n0_word, sstrp_arity);
-		cweight->m_mapSSTwN0wSSTRPi.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, n0_word, n0lp_arity);
-		cweight->m_mapSSTwN0wN0LPi.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-
 		// st + st2
 		bi_features.refer(st_word, st2_word);
 		cweight->m_mapSTwST2w.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
@@ -652,26 +554,6 @@ namespace nivre {
 		tri_features.refer(st_word, st2_word, poses_feature);
 		cweight->m_mapSTwptST2wpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 
-		// st + sst
-		bi_features.refer(st_word, sst_word);
-		cweight->m_mapSTwSSTw.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(st_word, sst_postag);
-		cweight->m_mapSTwSSTpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, st_postag);
-		cweight->m_mapSTptSSTw.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		poses_feature = ENCODE_POSTAG_SET_2(st_postag, sst_postag);
-		cweight->m_mapSTptSSTpt.getOrUpdateScore(m_lPackedScore, poses_feature, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(st_word, sst_word, st_postag);
-		cweight->m_mapSTwptSSTw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(st_word, sst_word, sst_postag);
-		cweight->m_mapSTwSSTwpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(st_word, poses_feature);
-		cweight->m_mapSTwptSSTpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, poses_feature);
-		cweight->m_mapSTptSSTwpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(st_word, sst_word, poses_feature);
-		cweight->m_mapSTwptSSTwpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-
 		// tri-gram
 		// st + n0 + st2
 		bi_features.refer(st_word, ENCODE_POSTAG_SET_2(st2_postag, n0_postag));
@@ -682,15 +564,6 @@ namespace nivre {
 		cweight->m_mapSTptN0ptST2w.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		poses_feature = ENCODE_POSTAG_SET_3(st_postag, st2_postag, n0_postag);
 		cweight->m_mapSTptN0ptST2pt.getOrUpdateScore(m_lPackedScore, poses_feature, m_nScoreIndex, amount, m_nTrainingRound);
-		// st + n0 + sst
-		bi_features.refer(st_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag));
-		cweight->m_mapSTwN0ptSSTpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(n0_word, ENCODE_POSTAG_SET_2(st_postag, sst_postag));
-		cweight->m_mapSTptN0wSSTpt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(sst_word, ENCODE_POSTAG_SET_2(st_postag, n0_postag));
-		cweight->m_mapSTptN0ptSSTw.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		poses_feature = ENCODE_POSTAG_SET_3(st_postag, sst_postag, n0_postag);
-		cweight->m_mapSTptN0ptSSTpt.getOrUpdateScore(m_lPackedScore, poses_feature, m_nScoreIndex, amount, m_nTrainingRound);
 
 		// st + n0 + st left/right head/pred
 		tri_features.refer(st_word, ENCODE_POSTAG_SET_2(stlh_postag, n0_postag), stlh_label);
@@ -840,80 +713,6 @@ namespace nivre {
 		tri_features.refer(poses_feature, n0lp_label, n0lp2_label);
 		cweight->m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 
-		// sst + n0 + sst left/right head/pred
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(sstlh_postag, n0_postag), sstlh_label);
-		cweight->m_mapSSTwN0ptSSTLHptSSTLHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, sstlh_postag), sstlh_label);
-		cweight->m_mapSSTptN0wSSTLHptSSTLHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sstlh_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sstlh_label);
-		cweight->m_mapSSTptN0ptSSTLHwSSTLHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, sstlh_postag, n0_postag), sstlh_label);
-		cweight->m_mapSSTptN0ptSSTLHptSSTLHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(sstlp_postag, n0_postag), sstlp_label);
-		cweight->m_mapSSTwN0ptSSTLPptSSTLPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, sstlp_postag), sstlp_label);
-		cweight->m_mapSSTptN0wSSTLPptSSTLPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sstlp_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sstlp_label);
-		cweight->m_mapSSTptN0ptSSTLPwSSTLPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, sstlp_postag, n0_postag), sstlp_label);
-		cweight->m_mapSSTptN0ptSSTLPptSSTLPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(sstrh_postag, n0_postag), sstrh_label);
-		cweight->m_mapSSTwN0ptSSTRHptSSTRHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, sstrh_postag), sstrh_label);
-		cweight->m_mapSSTptN0wSSTRHptSSTRHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sstrh_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sstrh_label);
-		cweight->m_mapSSTptN0ptSSTRHwSSTRHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, sstrh_postag, n0_postag), sstrh_label);
-		cweight->m_mapSSTptN0ptSSTRHptSSTRHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(sstrp_postag, n0_postag), sstrp_label);
-		cweight->m_mapSSTwN0ptSSTRPptSSTRPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, sstrp_postag), sstrp_label);
-		cweight->m_mapSSTptN0wSSTRPptSSTRPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sstrp_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sstrp_label);
-		cweight->m_mapSSTptN0ptSSTRPwSSTRPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, sstrp_postag, n0_postag), sstrp_label);
-		cweight->m_mapSSTptN0ptSSTRPptSSTRPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-
-		// sst + n0 + n0 left head/pred
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(n0_postag, n0lh_postag), n0lh_label);
-		cweight->m_mapSSTwN0ptN0LHptN0LHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, n0lh_postag), n0lh_label);
-		cweight->m_mapSSTptN0wN0LHptN0LHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0lh_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), n0lh_label);
-		cweight->m_mapSSTptN0ptN0LHwN0LHl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, n0_postag, n0lh_postag), n0lh_label);
-		cweight->m_mapSSTptN0ptN0LHptN0LHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(sst_word, ENCODE_POSTAG_SET_2(n0_postag, n0lp_postag), n0lp_label);
-		cweight->m_mapSSTwN0ptN0LPptN0LPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0_word, ENCODE_POSTAG_SET_2(sst_postag, n0lp_postag), n0lp_label);
-		cweight->m_mapSSTptN0wN0LPptN0LPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		tri_features.refer(n0lp_word, ENCODE_POSTAG_SET_2(sst_postag, n0_postag), n0lp_label);
-		cweight->m_mapSSTptN0ptN0LPwN0LPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		bi_features.refer(ENCODE_POSTAG_SET_3(sst_postag, n0_postag, n0lp_postag), n0lp_label);
-		cweight->m_mapSSTptN0ptN0LPptN0LPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		poses_feature = encodePOSTagSet4(sst_postag, sstrh_postag, sstrp_postag, n0_postag);
-		tri_features.refer(poses_feature, sstrh_label, sstrp_label);
-		cweight->m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + sst left pred + sst left pred 2
-		poses_feature = encodePOSTagSet4(sst_postag, sstlp_postag, sstlp2_postag, n0_postag);
-		tri_features.refer(poses_feature, sstlp_label, sstlp2_label);
-		cweight->m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + sst right pred + sst right pred 2
-		poses_feature = encodePOSTagSet4(sst_postag, sstrp_postag, sstrp2_postag, n0_postag);
-		tri_features.refer(poses_feature, sstrp_label, sstrp2_label);
-		cweight->m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + n0 left head + n0 left pred
-		poses_feature = encodePOSTagSet4(sst_postag, n0_postag, n0lh_postag, n0lp_postag);
-		tri_features.refer(poses_feature, n0lh_label, n0lp_label);
-		cweight->m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-		// sst + n0 + n0 left pred + n0 left pred 2
-		poses_feature = encodePOSTagSet4(sst_postag, n0_postag, n0lp_postag, n0lp2_postag);
-		tri_features.refer(poses_feature, n0lp_label, n0lp2_label);
-		cweight->m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
-
 		// st + n0 + labelset
 		uni_tagset.refer(st_word, st_llabelset.bits(0), st_llabelset.bits(1));
 		cweight->m_mapSTwSTll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
@@ -949,22 +748,6 @@ namespace nivre {
 		cweight->m_mapST2ptN0ptST2rl.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 		uni_tagset.refer(ENCODE_POSTAG_SET_2(st2_postag, n0_postag), n0_llabelset.bits(0), n0_llabelset.bits(1));
 		cweight->m_mapST2ptN0ptN0ll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-
-		// sst + n0 + labelset
-		uni_tagset.refer(sst_word, sst_llabelset.bits(0), sst_llabelset.bits(1));
-		cweight->m_mapSSTwSSTll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(sst_word, sst_rlabelset.bits(0), sst_rlabelset.bits(1));
-		cweight->m_mapSSTwSSTrl.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(sst_postag, sst_llabelset.bits(0), sst_llabelset.bits(1));
-		cweight->m_mapSSTptSSTll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(sst_postag, sst_rlabelset.bits(0), sst_rlabelset.bits(1));
-		cweight->m_mapSSTptSSTrl.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sst_llabelset.bits(0), sst_llabelset.bits(1));
-		cweight->m_mapSSTptN0ptSSTll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(ENCODE_POSTAG_SET_2(sst_postag, n0_postag), sst_rlabelset.bits(0), sst_rlabelset.bits(1));
-		cweight->m_mapSSTptN0ptSSTrl.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-		uni_tagset.refer(ENCODE_POSTAG_SET_2(sst_postag, n0_postag), n0_llabelset.bits(0), n0_llabelset.bits(1));
-		cweight->m_mapSSTptN0ptN0ll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 
 		if (m_bChar) {
 			cweight->m_map1CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
@@ -1002,21 +785,11 @@ namespace nivre {
 				cweight->m_mapST2FPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.FPOSPath[st2_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
 			}
 
-			if (sst_index == -1 || n0_index == -1) {
-				cweight->m_mapST2POSPath.getOrUpdateScore(m_lPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
-				cweight->m_mapST2FPOSPath.getOrUpdateScore(m_lPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
-			}
-			else {
-				cweight->m_mapSSTPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.POSPath[sst_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
-				cweight->m_mapSSTFPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.FPOSPath[sst_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
-			}
-
 		}
 
 		if (m_bSuperTag) {
 			const SuperTag & st_supertag = st_index == -1 ? 0 : item.superTag(st_index);
 			const SuperTag & st2_supertag = st2_index == -1 ? 0 : item.superTag(st2_index);
-			const SuperTag & sst_supertag = sst_index == -1 ? 0 : item.superTag(sst_index);
 			const SuperTag & stl2_supertag = stl2_index == -1 ? 0 : item.superTag(stl2_index);
 			const SuperTag & stl1_supertag = stl1_index == -1 ? 0 : item.superTag(stl1_index);
 			const SuperTag & str1_supertag = str1_index == -1 || str1_index >= n0_index || str1_index >= m_nSentenceLength ? 0 : item.superTag(str1_index);
@@ -1026,7 +799,6 @@ namespace nivre {
 
 			cweight->m_mapSTst.getOrUpdateScore(m_lPackedScore, st_supertag, m_nScoreIndex, amount, m_nTrainingRound);
 			cweight->m_mapST2st.getOrUpdateScore(m_lPackedScore, st2_supertag, m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_mapSSTst.getOrUpdateScore(m_lPackedScore, sst_supertag, m_nScoreIndex, amount, m_nTrainingRound);
 			bi_features.refer(stl2_supertag, -2);
 			cweight->m_mapSTist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 			bi_features.refer(stl1_supertag, -1);

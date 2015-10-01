@@ -5,11 +5,11 @@
 #include <sstream>
 #include <iostream>
 
-#include "nivre_run.h"
-#include "nivre_depparser.h"
+#include "titov_run.h"
+#include "titov_depparser.h"
 #include "common/token/deplabel.h"
 
-namespace nivre {
+namespace titov {
 
 	extern int LABEL_COUNT;
 

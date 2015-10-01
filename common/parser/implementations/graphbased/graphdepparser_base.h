@@ -128,7 +128,7 @@ void GraphDepParserBase<STATE_TYPE>::work(DependencyGraph * retval, const Depend
 		return;
 	}
 
-	// training only if titov has an oracle
+	// training only if it has an oracle
 	++m_nTrainingRound;
 
 	m_pGenerator = &m_abItems[0];
@@ -140,7 +140,6 @@ void GraphDepParserBase<STATE_TYPE>::work(DependencyGraph * retval, const Depend
 	STATE_TYPE clearItem;
 
 	while (step <= m_iCorrect.actionBack()) {
-
 		decode();
 
 		if (m_nState == TRAIN) {
@@ -199,7 +198,10 @@ void GraphDepParserBase<STATE_TYPE>::goldCheck(const DependencyGraph & correct) 
 	m_iCorrect.clear();
 	if (!m_iCorrect.extractOracle(correct)) {
 		++m_nTotalErrors;
-		std::cout << "errors at " << m_nTotalErrors << std::endl;
+		if (m_nTotalErrors > 1) {
+			nBackSpace("Error No. " + std::to_string(m_nTotalErrors - 1));
+		}
+		std::cout << "Error No." << m_nTotalErrors << std::flush;
 	}
 	m_iCorrect.check();
 }
@@ -220,16 +222,21 @@ void GraphDepParserBase<STATE_TYPE>::train(const DependencyGraph & correct, cons
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 	}
 	// train
+	int lastTotalErrors = m_nTotalErrors;
+	int lastTrainingRound = m_nTrainingRound;
 	work(nullptr, correct);
-	if (m_nTrainingRound % OUTPUT_STEP == 0) {
-		std::cout << m_nTotalErrors << " / " << m_nTrainingRound << std::endl;
+	if (lastTrainingRound > 0) {
+		nBackSpace("Error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");
+	}
+	if (m_nTrainingRound > 0) {
+		std::cout << "Error rate " << ((double)m_nTotalErrors / (double)m_nTrainingRound);
+		std::cout << " ( " << m_nTotalErrors << " / " << m_nTrainingRound << " ) " << std::flush;
 	}
 }
 
 template<class STATE_TYPE>
 void GraphDepParserBase<STATE_TYPE>::parse(const DependencyGraph & sentence, DependencyGraph * retval) {
 	int idx = 0;
-	m_nTrainingRound = 0;
 	m_sSentence.clear();
 	m_dtSyntaxTree.clear();
 	m_nSentenceLength = sentence.size();
@@ -242,6 +249,10 @@ void GraphDepParserBase<STATE_TYPE>::parse(const DependencyGraph & sentence, Dep
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 	}
 	work(retval, sentence);
+	if (m_nTrainingRound > 1) {
+		nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound - 1));
+	}
+	std::cout << "parsing sentence " << m_nTrainingRound << std::flush;
 }
 
 #endif

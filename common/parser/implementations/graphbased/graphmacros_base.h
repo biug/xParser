@@ -142,8 +142,6 @@ inline bool operator==(const AddScoreType & s, const int & i) {
 	return s.second == i;
 }
 
-// output step
-#define OUTPUT_STEP		100
 // agenda
 #define AGENDA_SIZE		16
 // action start
@@ -157,7 +155,7 @@ inline unsigned int encodePOSTagSet4(const unsigned int & t1, const unsigned int
 
 typedef TagSetN<2> TagSet;
 
-typedef tscore PackedScoreType[500];
+typedef tscore PackedScoreType[300];
 typedef tscore PackedSuperTagScoreType[30000];
 
 typedef TriGram<unsigned int> IntTagSet;
@@ -194,7 +192,6 @@ template<class RET_TYPE> using WordPOSTagIntMap = PackedScoreMap<ThreeInts, Scor
 template<class RET_TYPE> using ThreeWordsIntMap = PackedScoreMap<FourInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
 template<class RET_TYPE> using POSTagSet2IntMap = PackedScoreMap<TwoInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
 template<class RET_TYPE> using POSTagSet3IntMap = PackedScoreMap<TwoInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
-
-typedef std::unordered_map<int, std::vector<int>> SuperTagCandidates;
+template<class RET_TYPE> using POSTagSet4TwoIntsMap = PackedScoreMap<ThreeInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
 
 #endif

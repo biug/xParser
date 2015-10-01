@@ -135,6 +135,8 @@ typedef std::tuple<int, int> RightNodeWithLabel;
 typedef std::tuple<POSTaggedWord, ttoken, HeadWithLabel, std::vector<RightNodeWithLabel>> DependencyGraphNode;
 typedef std::vector<DependencyGraphNode> DependencyGraph;
 
+typedef std::unordered_map<int, std::vector<int>> SuperTagCandidates;
+
 int encodeLinkDistance(const int & st, const int & n0);
 int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir);
 std::string nCharPrev(const Sentence & sent, int index, int n);
@@ -149,5 +151,10 @@ std::istream & operator>>(std::istream & input, DependencyGraph & graph);
 std::ostream & operator<<(std::ostream & output, const Sentence & sentence);
 std::ostream & operator<<(std::ostream & output, const DependencyTree & tree);
 std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph);
+
+std::istream & operator>>(std::istream & input, SuperTagCandidates & stc);
+std::ostream & operator<<(std::ostream & output, const SuperTagCandidates & std);
+
+void nBackSpace(const std::string & str);
 
 #endif

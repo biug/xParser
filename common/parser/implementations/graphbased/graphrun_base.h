@@ -32,6 +32,8 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std:
 	int nRound = 0;
 	DependencyGraph ref_sent;
 
+	std::cout << "Training is started..." << std::endl;
+
 	std::unique_ptr<GraphDepParserBase<STATE_TYPE>> parser(
 			m_bSuperTagFeature ?
 			(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureInput, sFeatureOutput, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
@@ -47,6 +49,7 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std:
 			}
 			parser->train(ref_sent, ++nRound);
 		}
+		std::cout << std::endl;
 		parser->finishtraining();
 	}
 	input.close();
@@ -60,7 +63,7 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std:
 	DependencyGraph sentence;
 	DependencyGraph graph;
 
-	std::cout << "Parsing started" << std::endl;
+	std::cout << "Parsing is started..." << std::endl;
 
 	std::unique_ptr<GraphDepParserBase<STATE_TYPE>> parser(
 			m_bSuperTagFeature ?
@@ -83,6 +86,7 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std:
 			}
 		}
 	}
+	std::cout << std::endl;
 	input.close();
 	output.close();
 }
@@ -92,7 +96,7 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::goldtest(const s
 	int nRound = 0;
 	DependencyGraph ref_sent;
 
-	std::cout << "GoldTest iteration is started..." << std::endl;
+	std::cout << "GoldTesting is started..." << std::endl;
 
 	std::unique_ptr<GraphDepParserBase<STATE_TYPE>> parser((GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureInput, "", ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 
@@ -107,7 +111,7 @@ void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::goldtest(const s
 	}
 	input.close();
 
-	std::cout << "total " << nRound << " round" << std::endl;
+	std::cout << std::endl << "total " << nRound << " round" << std::endl;
 
 	std::cout << "Done." << std::endl;
 

@@ -1,7 +1,7 @@
-#ifndef _NIVRE_WEIGHT_H
-#define _NIVRE_WEIGHT_H
+#ifndef _TWOSTACK_WEIGHT_H
+#define _TWOSTACK_WEIGHT_H
 
-#include "nivre_macros.h"
+#include "twostack_macros.h"
 #include "common/parser/weight_base.h"
 #include "include/learning/perceptron/packed_score.h"
 
@@ -9,7 +9,7 @@
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
-namespace nivre {
+namespace twostack {
 	template<class RET_TYPE>
 	class Weight : public WeightBase {
 	public:

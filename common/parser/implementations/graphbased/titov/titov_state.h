@@ -1,11 +1,11 @@
-#ifndef _NIVRE_STATE_H
-#define _NIVRE_STATE_H
+#ifndef _TITOV_STATE_H
+#define _TITOV_STATE_H
 
-#include "nivre_macros.h"
+#include "titov_macros.h"
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graphbased/graphstate_base.h"
 
-namespace nivre {
+namespace titov {
 
 	extern int LABEL_COUNT;
 
@@ -14,11 +14,9 @@ namespace nivre {
 	extern int A_SH_FIRST;
 	extern int SH_FIRST;
 
+	extern int A_SW_END;
+
 	class StateItem : public GraphStateBase {
-	private:
-		bool m_bCanSwap;
-		int m_nShiftBufferBack;
-		int m_lShiftBuffer[MAX_SENTENCE_SIZE];
 
 	public:
 		StateItem();
@@ -32,11 +30,8 @@ namespace nivre {
 		void arcReduce(const int & l);
 		void arcShift(const int & l, const int & t);
 
-		const int & bufferTop() const;
-
 		bool canSwap() const;
 		bool canArc() const;
-		bool shiftBufferEmpty() const;
 
 		void clear() override;
 		void clearNext() override;
@@ -59,17 +54,10 @@ namespace nivre {
 	};
 
 	inline void StateItem::shift(const int & t) {
-		if (m_nShiftBufferBack == -1) {
-			m_lSuperTag[m_nNextWord] = t;
-			m_lStack[++m_nStackBack] = m_nNextWord++;
-			m_bCanSwap = true;
-			clearNext();
-		}
-		else {
-			m_lStack[++m_nStackBack] = m_lShiftBuffer[m_nShiftBufferBack--];
-			m_bCanSwap = false;
-		}
+		m_lSuperTag[m_nNextWord] = t;
+		m_lStack[++m_nStackBack] = m_nNextWord++;
 		m_lActionList[++m_nActionBack] = SH_FIRST + t;
+		clearNext();
 	}
 
 	inline void StateItem::reduce() {
@@ -78,9 +66,7 @@ namespace nivre {
 	}
 
 	inline void StateItem::swap() {
-		m_lShiftBuffer[++m_nShiftBufferBack] = m_lStack[m_nStackBack - 1];
-		m_lStack[m_nStackBack - 1] = m_lStack[m_nStackBack];
-		--m_nStackBack;
+		std::swap(m_lStack[m_nStackBack - 1], m_lStack[m_nStackBack]);
 		m_lActionList[++m_nActionBack] = SWAP;
 	}
 
@@ -102,20 +88,13 @@ namespace nivre {
 		m_lActionList[m_nActionBack] = A_SH_FIRST + tag * LABEL_COUNT + label - 1;
 	}
 
-	inline const int & StateItem::bufferTop() const {
-		return m_nShiftBufferBack == -1 ? m_nNextWord : m_lShiftBuffer[m_nShiftBufferBack];
-	}
-
 	inline bool StateItem::canArc() const {
 		return m_nStackBack == -1 ? false : (m_lRightNodes[m_lStack[m_nStackBack]].empty() ? true : (RIGHTNODE_POS(m_lRightNodes[m_lStack[m_nStackBack]].back()) != m_nNextWord));
 	}
 
 	inline bool StateItem::canSwap() const {
-		return m_nStackBack > 0 && m_bCanSwap;
-	}
-
-	inline bool StateItem::shiftBufferEmpty() const {
-		return m_nShiftBufferBack == -1;
+		const int & action = m_lActionList[m_nActionBack];
+		return action != SWAP && !(action >= A_SW_FIRST && action < A_SW_END);
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

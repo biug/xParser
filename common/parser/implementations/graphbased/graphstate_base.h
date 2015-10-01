@@ -15,7 +15,6 @@ protected:
 	int m_lActionList[MAX_SENTENCE_SIZE << MAX_SENTENCE_BITS];
 
 	int m_lStack[MAX_SENTENCE_SIZE];
-	int m_lShiftBuffer[MAX_SENTENCE_SIZE];
 	int m_lHeadL[MAX_SENTENCE_SIZE];	//heads for every node
 	int m_lHeadLabelL[MAX_SENTENCE_SIZE];	//label for every node
 	int m_lHeadLNum[MAX_SENTENCE_SIZE];

@@ -1,7 +1,7 @@
-#ifndef _NIVRE_WEIGHT_H
-#define _NIVRE_WEIGHT_H
+#ifndef _TITOV_WEIGHT_H
+#define _TITOV_WEIGHT_H
 
-#include "nivre_macros.h"
+#include "titov_macros.h"
 #include "common/parser/weight_base.h"
 #include "include/learning/perceptron/packed_score.h"
 
@@ -9,7 +9,7 @@
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
-namespace nivre {
+namespace titov {
 	template<class RET_TYPE>
 	class Weight : public WeightBase {
 	public:
@@ -21,9 +21,6 @@ namespace nivre {
 		WordMap<RET_TYPE> m_mapST2w;
 		POSTagMap<RET_TYPE> m_mapST2pt;
 		SuperTagMap<RET_TYPE> m_mapST2st;
-		WordMap<RET_TYPE> m_mapSSTw;
-		POSTagMap<RET_TYPE> m_mapSSTpt;
-		SuperTagMap<RET_TYPE> m_mapSSTst;
 		WordMap<RET_TYPE> m_mapN0w;
 		POSTagMap<RET_TYPE> m_mapN0pt;
 
@@ -56,14 +53,9 @@ namespace nivre {
 		WordIntMap<RET_TYPE> m_mapST2wST2LPl;
 		WordIntMap<RET_TYPE> m_mapST2wST2RHl;
 		WordIntMap<RET_TYPE> m_mapST2wST2RPl;
-		// sst
-		WordIntMap<RET_TYPE> m_mapSSTwSSTLHl;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTLPl;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTRHl;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTRPl;
 
 		// unigram with arity
-		// st, n0, st2, sst
+		// st, n0, st2
 		// st
 		WordIntMap<RET_TYPE> m_mapSTwSTLHi;
 		WordIntMap<RET_TYPE> m_mapSTwSTLPi;
@@ -81,13 +73,6 @@ namespace nivre {
 		WordIntMap<RET_TYPE> m_mapST2wST2RPi;
 		WordIntMap<RET_TYPE> m_mapST2wST2Hi;
 		WordIntMap<RET_TYPE> m_mapST2wST2Pi;
-		// sst
-		WordIntMap<RET_TYPE> m_mapSSTwSSTLHi;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTLPi;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTRHi;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTRPi;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTHi;
-		WordIntMap<RET_TYPE> m_mapSSTwSSTPi;
 
 		// bi-gram
 		// st + n0
@@ -148,35 +133,6 @@ namespace nivre {
 		WordPOSTagIntMap<RET_TYPE> m_mapST2ptN0wN0LPi;
 		POSTagSet2IntMap<RET_TYPE> m_mapST2ptN0ptN0LPi;
 
-		// sst + n0
-		TwoWordsMap<RET_TYPE> m_mapSSTwN0w;
-		WordPOSTagMap<RET_TYPE> m_mapSSTwN0pt;
-		WordPOSTagMap<RET_TYPE> m_mapSSTptN0w;
-		POSTagSet2Map<RET_TYPE> m_mapSSTptN0pt;
-		WordWordPOSTagMap<RET_TYPE> m_mapSSTwptN0w;
-		WordWordPOSTagMap<RET_TYPE> m_mapSSTwN0wpt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSSTwptN0pt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSSTptN0wpt;
-		WordWordPOSTagPOSTagMap<RET_TYPE> m_mapSSTwptN0wpt;
-		// sst + n0 + dis
-		TwoWordsIntMap<RET_TYPE> m_mapSSTwN0wD;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptD;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTptN0wD;
-		POSTagSet2IntMap<RET_TYPE> m_mapSSTptN0ptD;
-		// st2 + n0 + st2 left/right head/pred
-		TwoWordsIntMap<RET_TYPE> m_mapSSTwN0wSSTLPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTLPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTLPi;
-		POSTagSet2IntMap<RET_TYPE> m_mapSSTptN0ptSSTLPi;
-		TwoWordsIntMap<RET_TYPE> m_mapSSTwN0wSSTRPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTRPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTRPi;
-		POSTagSet2IntMap<RET_TYPE> m_mapSSTptN0ptSSTRPi;
-		TwoWordsIntMap<RET_TYPE> m_mapSSTwN0wN0LPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptN0LPi;
-		WordPOSTagIntMap<RET_TYPE> m_mapSSTptN0wN0LPi;
-		POSTagSet2IntMap<RET_TYPE> m_mapSSTptN0ptN0LPi;
-
 		// st + st2
 		TwoWordsMap<RET_TYPE> m_mapSTwST2w;
 		WordPOSTagMap<RET_TYPE> m_mapSTwST2pt;
@@ -188,28 +144,12 @@ namespace nivre {
 		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptST2wpt;
 		WordWordPOSTagPOSTagMap<RET_TYPE> m_mapSTwptST2wpt;
 
-		// st + sst
-		TwoWordsMap<RET_TYPE> m_mapSTwSSTw;
-		WordPOSTagMap<RET_TYPE> m_mapSTwSSTpt;
-		WordPOSTagMap<RET_TYPE> m_mapSTptSSTw;
-		POSTagSet2Map<RET_TYPE> m_mapSTptSSTpt;
-		WordWordPOSTagMap<RET_TYPE> m_mapSTwptSSTw;
-		WordWordPOSTagMap<RET_TYPE> m_mapSTwSSTwpt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTwptSSTpt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptSSTwpt;
-		WordWordPOSTagPOSTagMap<RET_TYPE> m_mapSTwptSSTwpt;
-
 		// tri-gram
 		// st + n0 + st2
 		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTwN0ptST2pt;
 		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptN0wST2pt;
 		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptN0ptST2w;
 		POSTagSet3Map<RET_TYPE> m_mapSTptN0ptST2pt;
-		// st + n0 + sst
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTwN0ptSSTpt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptN0wSSTpt;
-		WordPOSTagPOSTagMap<RET_TYPE> m_mapSTptN0ptSSTw;
-		POSTagSet3Map<RET_TYPE> m_mapSTptN0ptSSTpt;
 
 		// st + n0 + st left/right head/pred
 		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSTwN0ptSTLHptSTLHl;
@@ -291,46 +231,6 @@ namespace nivre {
 		// st2 + n0 + n0 left pred + n0 left pred 2
 		POSTagSet4TwoIntsMap<RET_TYPE> m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
 
-		// sst + n0 + sst left/right head/pred
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTLHptSSTLHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTLHptSSTLHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptSSTLHwSSTLHl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptSSTLHptSSTLHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTLPptSSTLPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTLPptSSTLPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptSSTLPwSSTLPl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptSSTLPptSSTLPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTRHptSSTRHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTRHptSSTRHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptSSTRHwSSTRHl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptSSTRHptSSTRHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptSSTRPptSSTRPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wSSTRPptSSTRPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptSSTRPwSSTRPl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptSSTRPptSSTRPl;
-
-		// st + n0 + n0 left head/pred
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptN0LHwN0LHl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptN0LHptN0LHl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTwN0ptN0LPptN0LPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0wN0LPptN0LPl;
-		WordPOSTagPOSTagIntMap<RET_TYPE> m_mapSSTptN0ptN0LPwN0LPl;
-		POSTagSet3IntMap<RET_TYPE> m_mapSSTptN0ptN0LPptN0LPl;
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		POSTagSet4TwoIntsMap<RET_TYPE> m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl;
-		// sst + n0 + sst left pred + sst left pred 2
-		POSTagSet4TwoIntsMap<RET_TYPE> m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l;
-		// sst + n0 + sst right pred + sst right pred 2
-		POSTagSet4TwoIntsMap<RET_TYPE> m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l;
-		// sst + n0 + n0 left head + n0 left pred
-		POSTagSet4TwoIntsMap<RET_TYPE> m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl;
-		// sst + n0 + n0 left pred + n0 left pred 2
-		POSTagSet4TwoIntsMap<RET_TYPE> m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
-
 		// st + n0 + label set
 		WordTagsetMap<RET_TYPE> m_mapSTwSTll;
 		WordTagsetMap<RET_TYPE> m_mapSTwSTrl;
@@ -349,14 +249,6 @@ namespace nivre {
 		POSTagSet2TagsetMap<RET_TYPE> m_mapST2ptN0ptST2ll;
 		POSTagSet2TagsetMap<RET_TYPE> m_mapST2ptN0ptST2rl;
 		POSTagSet2TagsetMap<RET_TYPE> m_mapST2ptN0ptN0ll;
-		// sst + n0 + label set
-		WordTagsetMap<RET_TYPE> m_mapSSTwSSTll;
-		WordTagsetMap<RET_TYPE> m_mapSSTwSSTrl;
-		POSTagTagsetMap<RET_TYPE> m_mapSSTptSSTll;
-		POSTagTagsetMap<RET_TYPE> m_mapSSTptSSTrl;
-		POSTagSet2TagsetMap<RET_TYPE> m_mapSSTptN0ptSSTll;
-		POSTagSet2TagsetMap<RET_TYPE> m_mapSSTptN0ptSSTrl;
-		POSTagSet2TagsetMap<RET_TYPE> m_mapSSTptN0ptN0ll;
 
 		// char feature
 		// for chinese
@@ -376,10 +268,8 @@ namespace nivre {
 		// string feature
 		StringMap<RET_TYPE> m_mapSTPOSPath;
 		StringMap<RET_TYPE> m_mapST2POSPath;
-		StringMap<RET_TYPE> m_mapSSTPOSPath;
 		StringMap<RET_TYPE> m_mapSTFPOSPath;
 		StringMap<RET_TYPE> m_mapST2FPOSPath;
-		StringMap<RET_TYPE> m_mapSSTFPOSPath;
 
 	public:
 		Weight(const std::string & sRead, const std::string & sRecord);
@@ -404,9 +294,6 @@ namespace nivre {
 		m_mapST2w("m_mapST2w"),
 		m_mapST2pt("m_mapST2pt"),
 		m_mapST2st("m_mapST2st"),
-		m_mapSSTw("m_mapSSTw"),
-		m_mapSSTpt("m_mapSSTpt"),
-		m_mapSSTst("m_mapSSTst"),
 		m_mapN0w("m_mapN0w"),
 		m_mapN0pt("m_mapN0pt"),
 
@@ -439,14 +326,9 @@ namespace nivre {
 		m_mapST2wST2LPl("m_mapST2wST2LPl"),
 		m_mapST2wST2RHl("m_mapST2wST2RHl"),
 		m_mapST2wST2RPl("m_mapST2wST2RPl"),
-		// sst
-		m_mapSSTwSSTLHl("m_mapSSTwSSTLHl"),
-		m_mapSSTwSSTLPl("m_mapSSTwSSTLPl"),
-		m_mapSSTwSSTRHl("m_mapSSTwSSTRHl"),
-		m_mapSSTwSSTRPl("m_mapSSTwSSTRPl"),
 
 		// unigram with arity
-		// st, n0, st2, sst
+		// st, n0, st2
 		// st
 		m_mapSTwSTLHi("m_mapSTwSTLHi"),
 		m_mapSTwSTLPi("m_mapSTwSTLPi"),
@@ -464,13 +346,6 @@ namespace nivre {
 		m_mapST2wST2RPi("m_mapST2wST2RPi"),
 		m_mapST2wST2Hi("m_mapST2wST2Hi"),
 		m_mapST2wST2Pi("m_mapST2wST2Pi"),
-		// sst
-		m_mapSSTwSSTLHi("m_mapSSTwSSTLHi"),
-		m_mapSSTwSSTLPi("m_mapSSTwSSTLPi"),
-		m_mapSSTwSSTRHi("m_mapSSTwSSTRHi"),
-		m_mapSSTwSSTRPi("m_mapSSTwSSTRPi"),
-		m_mapSSTwSSTHi("m_mapSSTwSSTHi"),
-		m_mapSSTwSSTPi("m_mapSSTwSSTPi"),
 
 		// bi-gram
 		// st + n0
@@ -531,35 +406,6 @@ namespace nivre {
 		m_mapST2ptN0wN0LPi("m_mapST2ptN0wN0LPi"),
 		m_mapST2ptN0ptN0LPi("m_mapST2ptN0ptN0LPi"),
 
-		// sst + n0
-		m_mapSSTwN0w("m_mapSSTwN0w"),
-		m_mapSSTwN0pt("m_mapSSTwN0pt"),
-		m_mapSSTptN0w("m_mapSSTptN0w"),
-		m_mapSSTptN0pt("m_mapSSTptN0pt"),
-		m_mapSSTwptN0w("m_mapSSTwptN0w"),
-		m_mapSSTwN0wpt("m_mapSSTwN0wpt"),
-		m_mapSSTwptN0pt("m_mapSSTwptN0pt"),
-		m_mapSSTptN0wpt("m_mapSSTptN0wpt"),
-		m_mapSSTwptN0wpt("m_mapSSTwptN0wpt"),
-		// sst + n0 + dis
-		m_mapSSTwN0wD("m_mapSSTwN0wD"),
-		m_mapSSTwN0ptD("m_mapSSTwN0ptD"),
-		m_mapSSTptN0wD("m_mapSSTptN0wD"),
-		m_mapSSTptN0ptD("m_mapSSTptN0ptD"),
-		// st2 + n0 + st2 left/right head/pred
-		m_mapSSTwN0wSSTLPi("m_mapSSTwN0wSSTLPi"),
-		m_mapSSTwN0ptSSTLPi("m_mapSSTwN0ptSSTLPi"),
-		m_mapSSTptN0wSSTLPi("m_mapSSTptN0wSSTLPi"),
-		m_mapSSTptN0ptSSTLPi("m_mapSSTptN0ptSSTLPi"),
-		m_mapSSTwN0wSSTRPi("m_mapSSTwN0wSSTRPi"),
-		m_mapSSTwN0ptSSTRPi("m_mapSSTwN0ptSSTRPi"),
-		m_mapSSTptN0wSSTRPi("m_mapSSTptN0wSSTRPi"),
-		m_mapSSTptN0ptSSTRPi("m_mapSSTptN0ptSSTRPi"),
-		m_mapSSTwN0wN0LPi("m_mapSSTwN0wN0LPi"),
-		m_mapSSTwN0ptN0LPi("m_mapSSTwN0ptN0LPi"),
-		m_mapSSTptN0wN0LPi("m_mapSSTptN0wN0LPi"),
-		m_mapSSTptN0ptN0LPi("m_mapSSTptN0ptN0LPi"),
-
 		// st + st2
 		m_mapSTwST2w("m_mapSTwST2w"),
 		m_mapSTwST2pt("m_mapSTwST2pt"),
@@ -571,28 +417,12 @@ namespace nivre {
 		m_mapSTptST2wpt("m_mapSTptST2wpt"),
 		m_mapSTwptST2wpt("m_mapSTwptST2wpt"),
 
-		// st + sst
-		m_mapSTwSSTw("m_mapSTwSSTw"),
-		m_mapSTwSSTpt("m_mapSTwSSTpt"),
-		m_mapSTptSSTw("m_mapSTptSSTw"),
-		m_mapSTptSSTpt("m_mapSTptSSTpt"),
-		m_mapSTwptSSTw("m_mapSTwptSSTw"),
-		m_mapSTwSSTwpt("m_mapSTwSSTwpt"),
-		m_mapSTwptSSTpt("m_mapSTwptSSTpt"),
-		m_mapSTptSSTwpt("m_mapSTptSSTwpt"),
-		m_mapSTwptSSTwpt("m_mapSTwptSSTwpt"),
-
 		// tri-gram
 		// st + n0 + st2
 		m_mapSTwN0ptST2pt("m_mapSTwN0ptST2pt"),
 		m_mapSTptN0wST2pt("m_mapSTptN0wST2pt"),
 		m_mapSTptN0ptST2w("m_mapSTptN0ptST2w"),
 		m_mapSTptN0ptST2pt("m_mapSTptN0ptST2pt"),
-		// st + n0 + sst
-		m_mapSTwN0ptSSTpt("m_mapSTwN0ptSSTpt"),
-		m_mapSTptN0wSSTpt("m_mapSTptN0wSSTpt"),
-		m_mapSTptN0ptSSTw("m_mapSTptN0ptSSTw"),
-		m_mapSTptN0ptSSTpt("m_mapSTptN0ptSSTpt"),
 
 		// st + n0 + st left/right head/pred
 		m_mapSTwN0ptSTLHptSTLHl("m_mapSTwN0ptSTLHptSTLHl"),
@@ -674,46 +504,6 @@ namespace nivre {
 		// st2 + n0 + n0 left pred + n0 left pred 2
 		m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l("m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l"),
 
-		// sst + n0 + sst left/right head/pred
-		m_mapSSTwN0ptSSTLHptSSTLHl("m_mapSSTwN0ptSSTLHptSSTLHl"),
-		m_mapSSTptN0wSSTLHptSSTLHl("m_mapSSTptN0wSSTLHptSSTLHl"),
-		m_mapSSTptN0ptSSTLHwSSTLHl("m_mapSSTptN0ptSSTLHwSSTLHl"),
-		m_mapSSTptN0ptSSTLHptSSTLHl("m_mapSSTptN0ptSSTLHptSSTLHl"),
-		m_mapSSTwN0ptSSTLPptSSTLPl("m_mapSSTwN0ptSSTLPptSSTLPl"),
-		m_mapSSTptN0wSSTLPptSSTLPl("m_mapSSTptN0wSSTLPptSSTLPl"),
-		m_mapSSTptN0ptSSTLPwSSTLPl("m_mapSSTptN0ptSSTLPwSSTLPl"),
-		m_mapSSTptN0ptSSTLPptSSTLPl("m_mapSSTptN0ptSSTLPptSSTLPl"),
-		m_mapSSTwN0ptSSTRHptSSTRHl("m_mapSSTwN0ptSSTRHptSSTRHl"),
-		m_mapSSTptN0wSSTRHptSSTRHl("m_mapSSTptN0wSSTRHptSSTRHl"),
-		m_mapSSTptN0ptSSTRHwSSTRHl("m_mapSSTptN0ptSSTRHwSSTRHl"),
-		m_mapSSTptN0ptSSTRHptSSTRHl("m_mapSSTptN0ptSSTRHptSSTRHl"),
-		m_mapSSTwN0ptSSTRPptSSTRPl("m_mapSSTwN0ptSSTRPptSSTRPl"),
-		m_mapSSTptN0wSSTRPptSSTRPl("m_mapSSTptN0wSSTRPptSSTRPl"),
-		m_mapSSTptN0ptSSTRPwSSTRPl("m_mapSSTptN0ptSSTRPwSSTRPl"),
-		m_mapSSTptN0ptSSTRPptSSTRPl("m_mapSSTptN0ptSSTRPptSSTRPl"),
-
-		// st + n0 + n0 left head/pred
-		m_mapSSTwN0ptN0LHptN0LHl("m_mapSSTwN0ptN0LHptN0LHl"),
-		m_mapSSTptN0wN0LHptN0LHl("m_mapSSTptN0wN0LHptN0LHl"),
-		m_mapSSTptN0ptN0LHwN0LHl("m_mapSSTptN0ptN0LHwN0LHl"),
-		m_mapSSTptN0ptN0LHptN0LHl("m_mapSSTptN0ptN0LHptN0LHl"),
-		m_mapSSTwN0ptN0LPptN0LPl("m_mapSSTwN0ptN0LPptN0LPl"),
-		m_mapSSTptN0wN0LPptN0LPl("m_mapSSTptN0wN0LPptN0LPl"),
-		m_mapSSTptN0ptN0LPwN0LPl("m_mapSSTptN0ptN0LPwN0LPl"),
-		m_mapSSTptN0ptN0LPptN0LPl("m_mapSSTptN0ptN0LPptN0LPl"),
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl("m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl"),
-		// sst + n0 + sst left pred + sst left pred 2
-		m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l("m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l"),
-		// sst + n0 + sst right pred + sst right pred 2
-		m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l("m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l"),
-		// sst + n0 + n0 left head + n0 left pred
-		m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl("m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl"),
-		// sst + n0 + n0 left pred + n0 left pred 2
-		m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l("m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l"),
-
 		// st + n0 + label set
 		m_mapSTwSTll("m_mapSTwSTll"),
 		m_mapSTwSTrl("m_mapSTwSTrl"),
@@ -732,14 +522,6 @@ namespace nivre {
 		m_mapST2ptN0ptST2ll("m_mapST2ptN0ptST2ll"),
 		m_mapST2ptN0ptST2rl("m_mapST2ptN0ptST2rl"),
 		m_mapST2ptN0ptN0ll("m_mapST2ptN0ptN0ll"),
-		// sst + n0 + label set
-		m_mapSSTwSSTll("m_mapSSTwSSTll"),
-		m_mapSSTwSSTrl("m_mapSSTwSSTrl"),
-		m_mapSSTptSSTll("m_mapSSTptSSTll"),
-		m_mapSSTptSSTrl("m_mapSSTptSSTrl"),
-		m_mapSSTptN0ptSSTll("m_mapSSTptN0ptSSTll"),
-		m_mapSSTptN0ptSSTrl("m_mapSSTptN0ptSSTrl"),
-		m_mapSSTptN0ptN0ll("m_mapSSTptN0ptN0ll"),
 
 		// char feature
 		// for chinese
@@ -759,10 +541,8 @@ namespace nivre {
 		// string feature
 		m_mapSTPOSPath("m_mapSTPOSPath"),
 		m_mapST2POSPath("m_mapST2POSPath"),
-		m_mapSSTPOSPath("m_mapSSTPOSPath"),
 		m_mapSTFPOSPath("m_mapSTFPOSPath"),
-		m_mapST2FPOSPath("m_mapST2FPOSPath"),
-		m_mapSSTFPOSPath("m_mapSSTFPOSPath")
+		m_mapST2FPOSPath("m_mapST2FPOSPath")
 	{
 		loadScores();
 		std::cout << "features load complete." << std::endl;
@@ -805,9 +585,6 @@ namespace nivre {
 		input >> m_mapST2w;
 		input >> m_mapST2pt;
 		input >> m_mapST2st;
-		input >> m_mapSSTw;
-		input >> m_mapSSTpt;
-		input >> m_mapSSTst;
 		input >> m_mapN0w;
 		input >> m_mapN0pt;
 
@@ -840,14 +617,9 @@ namespace nivre {
 		input >> m_mapST2wST2LPl;
 		input >> m_mapST2wST2RHl;
 		input >> m_mapST2wST2RPl;
-		// sst
-		input >> m_mapSSTwSSTLHl;
-		input >> m_mapSSTwSSTLPl;
-		input >> m_mapSSTwSSTRHl;
-		input >> m_mapSSTwSSTRPl;
 
 		// unigram with arity
-		// st, n0, st2, sst
+		// st, n0, st2
 		// st
 		input >> m_mapSTwSTLHi;
 		input >> m_mapSTwSTLPi;
@@ -865,13 +637,6 @@ namespace nivre {
 		input >> m_mapST2wST2RPi;
 		input >> m_mapST2wST2Hi;
 		input >> m_mapST2wST2Pi;
-		// sst
-		input >> m_mapSSTwSSTLHi;
-		input >> m_mapSSTwSSTLPi;
-		input >> m_mapSSTwSSTRHi;
-		input >> m_mapSSTwSSTRPi;
-		input >> m_mapSSTwSSTHi;
-		input >> m_mapSSTwSSTPi;
 
 		// bi-gram
 		// st + n0
@@ -932,35 +697,6 @@ namespace nivre {
 		input >> m_mapST2ptN0wN0LPi;
 		input >> m_mapST2ptN0ptN0LPi;
 
-		// sst + n0
-		input >> m_mapSSTwN0w;
-		input >> m_mapSSTwN0pt;
-		input >> m_mapSSTptN0w;
-		input >> m_mapSSTptN0pt;
-		input >> m_mapSSTwptN0w;
-		input >> m_mapSSTwN0wpt;
-		input >> m_mapSSTwptN0pt;
-		input >> m_mapSSTptN0wpt;
-		input >> m_mapSSTwptN0wpt;
-		// sst + n0 + dis
-		input >> m_mapSSTwN0wD;
-		input >> m_mapSSTwN0ptD;
-		input >> m_mapSSTptN0wD;
-		input >> m_mapSSTptN0ptD;
-		// st2 + n0 + st2 left/right head/pred
-		input >> m_mapSSTwN0wSSTLPi;
-		input >> m_mapSSTwN0ptSSTLPi;
-		input >> m_mapSSTptN0wSSTLPi;
-		input >> m_mapSSTptN0ptSSTLPi;
-		input >> m_mapSSTwN0wSSTRPi;
-		input >> m_mapSSTwN0ptSSTRPi;
-		input >> m_mapSSTptN0wSSTRPi;
-		input >> m_mapSSTptN0ptSSTRPi;
-		input >> m_mapSSTwN0wN0LPi;
-		input >> m_mapSSTwN0ptN0LPi;
-		input >> m_mapSSTptN0wN0LPi;
-		input >> m_mapSSTptN0ptN0LPi;
-
 		// st + st2
 		input >> m_mapSTwST2w;
 		input >> m_mapSTwST2pt;
@@ -972,28 +708,12 @@ namespace nivre {
 		input >> m_mapSTptST2wpt;
 		input >> m_mapSTwptST2wpt;
 
-		// st + sst
-		input >> m_mapSTwSSTw;
-		input >> m_mapSTwSSTpt;
-		input >> m_mapSTptSSTw;
-		input >> m_mapSTptSSTpt;
-		input >> m_mapSTwptSSTw;
-		input >> m_mapSTwSSTwpt;
-		input >> m_mapSTwptSSTpt;
-		input >> m_mapSTptSSTwpt;
-		input >> m_mapSTwptSSTwpt;
-
 		// tri-gram
 		// st + n0 + st2
 		input >> m_mapSTwN0ptST2pt;
 		input >> m_mapSTptN0wST2pt;
 		input >> m_mapSTptN0ptST2w;
 		input >> m_mapSTptN0ptST2pt;
-		// st + n0 + sst
-		input >> m_mapSTwN0ptSSTpt;
-		input >> m_mapSTptN0wSSTpt;
-		input >> m_mapSTptN0ptSSTw;
-		input >> m_mapSTptN0ptSSTpt;
 
 		// st + n0 + st left/right head/pred
 		input >> m_mapSTwN0ptSTLHptSTLHl;
@@ -1075,46 +795,6 @@ namespace nivre {
 		// st2 + n0 + n0 left pred + n0 left pred 2
 		input >> m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
 
-		// sst + n0 + sst left/right head/pred
-		input >> m_mapSSTwN0ptSSTLHptSSTLHl;
-		input >> m_mapSSTptN0wSSTLHptSSTLHl;
-		input >> m_mapSSTptN0ptSSTLHwSSTLHl;
-		input >> m_mapSSTptN0ptSSTLHptSSTLHl;
-		input >> m_mapSSTwN0ptSSTLPptSSTLPl;
-		input >> m_mapSSTptN0wSSTLPptSSTLPl;
-		input >> m_mapSSTptN0ptSSTLPwSSTLPl;
-		input >> m_mapSSTptN0ptSSTLPptSSTLPl;
-		input >> m_mapSSTwN0ptSSTRHptSSTRHl;
-		input >> m_mapSSTptN0wSSTRHptSSTRHl;
-		input >> m_mapSSTptN0ptSSTRHwSSTRHl;
-		input >> m_mapSSTptN0ptSSTRHptSSTRHl;
-		input >> m_mapSSTwN0ptSSTRPptSSTRPl;
-		input >> m_mapSSTptN0wSSTRPptSSTRPl;
-		input >> m_mapSSTptN0ptSSTRPwSSTRPl;
-		input >> m_mapSSTptN0ptSSTRPptSSTRPl;
-
-		// st + n0 + n0 left head/pred
-		input >> m_mapSSTwN0ptN0LHptN0LHl;
-		input >> m_mapSSTptN0wN0LHptN0LHl;
-		input >> m_mapSSTptN0ptN0LHwN0LHl;
-		input >> m_mapSSTptN0ptN0LHptN0LHl;
-		input >> m_mapSSTwN0ptN0LPptN0LPl;
-		input >> m_mapSSTptN0wN0LPptN0LPl;
-		input >> m_mapSSTptN0ptN0LPwN0LPl;
-		input >> m_mapSSTptN0ptN0LPptN0LPl;
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		input >> m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl;
-		// sst + n0 + sst left pred + sst left pred 2
-		input >> m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l;
-		// sst + n0 + sst right pred + sst right pred 2
-		input >> m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l;
-		// sst + n0 + n0 left head + n0 left pred
-		input >> m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl;
-		// sst + n0 + n0 left pred + n0 left pred 2
-		input >> m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
-
 		// st + n0 + label set
 		input >> m_mapSTwSTll;
 		input >> m_mapSTwSTrl;
@@ -1133,14 +813,6 @@ namespace nivre {
 		input >> m_mapST2ptN0ptST2ll;
 		input >> m_mapST2ptN0ptST2rl;
 		input >> m_mapST2ptN0ptN0ll;
-		// sst + n0 + label set
-		input >> m_mapSSTwSSTll;
-		input >> m_mapSSTwSSTrl;
-		input >> m_mapSSTptSSTll;
-		input >> m_mapSSTptSSTrl;
-		input >> m_mapSSTptN0ptSSTll;
-		input >> m_mapSSTptN0ptSSTrl;
-		input >> m_mapSSTptN0ptN0ll;
 
 		// char feature
 		// for chinese
@@ -1160,10 +832,8 @@ namespace nivre {
 		// string feature
 		input >> m_mapSTPOSPath;
 		input >> m_mapST2POSPath;
-		input >> m_mapSSTPOSPath;
 		input >> m_mapSTFPOSPath;
 		input >> m_mapST2FPOSPath;
-		input >> m_mapSSTFPOSPath;
 
 		input.close();
 	}
@@ -1199,9 +869,6 @@ namespace nivre {
 		output << m_mapST2w;
 		output << m_mapST2pt;
 		output << m_mapST2st;
-		output << m_mapSSTw;
-		output << m_mapSSTpt;
-		output << m_mapSSTst;
 		output << m_mapN0w;
 		output << m_mapN0pt;
 
@@ -1234,14 +901,9 @@ namespace nivre {
 		output << m_mapST2wST2LPl;
 		output << m_mapST2wST2RHl;
 		output << m_mapST2wST2RPl;
-		// sst
-		output << m_mapSSTwSSTLHl;
-		output << m_mapSSTwSSTLPl;
-		output << m_mapSSTwSSTRHl;
-		output << m_mapSSTwSSTRPl;
 
 		// unigram with arity
-		// st, n0, st2, sst
+		// st, n0, st2
 		// st
 		output << m_mapSTwSTLHi;
 		output << m_mapSTwSTLPi;
@@ -1259,13 +921,6 @@ namespace nivre {
 		output << m_mapST2wST2RPi;
 		output << m_mapST2wST2Hi;
 		output << m_mapST2wST2Pi;
-		// sst
-		output << m_mapSSTwSSTLHi;
-		output << m_mapSSTwSSTLPi;
-		output << m_mapSSTwSSTRHi;
-		output << m_mapSSTwSSTRPi;
-		output << m_mapSSTwSSTHi;
-		output << m_mapSSTwSSTPi;
 
 		// bi-gram
 		// st + n0
@@ -1326,35 +981,6 @@ namespace nivre {
 		output << m_mapST2ptN0wN0LPi;
 		output << m_mapST2ptN0ptN0LPi;
 
-		// sst + n0
-		output << m_mapSSTwN0w;
-		output << m_mapSSTwN0pt;
-		output << m_mapSSTptN0w;
-		output << m_mapSSTptN0pt;
-		output << m_mapSSTwptN0w;
-		output << m_mapSSTwN0wpt;
-		output << m_mapSSTwptN0pt;
-		output << m_mapSSTptN0wpt;
-		output << m_mapSSTwptN0wpt;
-		// sst + n0 + dis
-		output << m_mapSSTwN0wD;
-		output << m_mapSSTwN0ptD;
-		output << m_mapSSTptN0wD;
-		output << m_mapSSTptN0ptD;
-		// st2 + n0 + st2 left/right head/pred
-		output << m_mapSSTwN0wSSTLPi;
-		output << m_mapSSTwN0ptSSTLPi;
-		output << m_mapSSTptN0wSSTLPi;
-		output << m_mapSSTptN0ptSSTLPi;
-		output << m_mapSSTwN0wSSTRPi;
-		output << m_mapSSTwN0ptSSTRPi;
-		output << m_mapSSTptN0wSSTRPi;
-		output << m_mapSSTptN0ptSSTRPi;
-		output << m_mapSSTwN0wN0LPi;
-		output << m_mapSSTwN0ptN0LPi;
-		output << m_mapSSTptN0wN0LPi;
-		output << m_mapSSTptN0ptN0LPi;
-
 		// st + st2
 		output << m_mapSTwST2w;
 		output << m_mapSTwST2pt;
@@ -1366,28 +992,12 @@ namespace nivre {
 		output << m_mapSTptST2wpt;
 		output << m_mapSTwptST2wpt;
 
-		// st + sst
-		output << m_mapSTwSSTw;
-		output << m_mapSTwSSTpt;
-		output << m_mapSTptSSTw;
-		output << m_mapSTptSSTpt;
-		output << m_mapSTwptSSTw;
-		output << m_mapSTwSSTwpt;
-		output << m_mapSTwptSSTpt;
-		output << m_mapSTptSSTwpt;
-		output << m_mapSTwptSSTwpt;
-
 		// tri-gram
 		// st + n0 + st2
 		output << m_mapSTwN0ptST2pt;
 		output << m_mapSTptN0wST2pt;
 		output << m_mapSTptN0ptST2w;
 		output << m_mapSTptN0ptST2pt;
-		// st + n0 + sst
-		output << m_mapSTwN0ptSSTpt;
-		output << m_mapSTptN0wSSTpt;
-		output << m_mapSTptN0ptSSTw;
-		output << m_mapSTptN0ptSSTpt;
 
 		// st + n0 + st left/right head/pred
 		output << m_mapSTwN0ptSTLHptSTLHl;
@@ -1469,46 +1079,6 @@ namespace nivre {
 		// st2 + n0 + n0 left pred + n0 left pred 2
 		output << m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
 
-		// sst + n0 + sst left/right head/pred
-		output << m_mapSSTwN0ptSSTLHptSSTLHl;
-		output << m_mapSSTptN0wSSTLHptSSTLHl;
-		output << m_mapSSTptN0ptSSTLHwSSTLHl;
-		output << m_mapSSTptN0ptSSTLHptSSTLHl;
-		output << m_mapSSTwN0ptSSTLPptSSTLPl;
-		output << m_mapSSTptN0wSSTLPptSSTLPl;
-		output << m_mapSSTptN0ptSSTLPwSSTLPl;
-		output << m_mapSSTptN0ptSSTLPptSSTLPl;
-		output << m_mapSSTwN0ptSSTRHptSSTRHl;
-		output << m_mapSSTptN0wSSTRHptSSTRHl;
-		output << m_mapSSTptN0ptSSTRHwSSTRHl;
-		output << m_mapSSTptN0ptSSTRHptSSTRHl;
-		output << m_mapSSTwN0ptSSTRPptSSTRPl;
-		output << m_mapSSTptN0wSSTRPptSSTRPl;
-		output << m_mapSSTptN0ptSSTRPwSSTRPl;
-		output << m_mapSSTptN0ptSSTRPptSSTRPl;
-
-		// st + n0 + n0 left head/pred
-		output << m_mapSSTwN0ptN0LHptN0LHl;
-		output << m_mapSSTptN0wN0LHptN0LHl;
-		output << m_mapSSTptN0ptN0LHwN0LHl;
-		output << m_mapSSTptN0ptN0LHptN0LHl;
-		output << m_mapSSTwN0ptN0LPptN0LPl;
-		output << m_mapSSTptN0wN0LPptN0LPl;
-		output << m_mapSSTptN0ptN0LPwN0LPl;
-		output << m_mapSSTptN0ptN0LPptN0LPl;
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		output << m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl;
-		// sst + n0 + sst left pred + sst left pred 2
-		output << m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l;
-		// sst + n0 + sst right pred + sst right pred 2
-		output << m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l;
-		// sst + n0 + n0 left head + n0 left pred
-		output << m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl;
-		// sst + n0 + n0 left pred + n0 left pred 2
-		output << m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l;
-
 		// st + n0 + label set
 		output << m_mapSTwSTll;
 		output << m_mapSTwSTrl;
@@ -1527,14 +1097,6 @@ namespace nivre {
 		output << m_mapST2ptN0ptST2ll;
 		output << m_mapST2ptN0ptST2rl;
 		output << m_mapST2ptN0ptN0ll;
-		// sst + n0 + label set
-		output << m_mapSSTwSSTll;
-		output << m_mapSSTwSSTrl;
-		output << m_mapSSTptSSTll;
-		output << m_mapSSTptSSTrl;
-		output << m_mapSSTptN0ptSSTll;
-		output << m_mapSSTptN0ptSSTrl;
-		output << m_mapSSTptN0ptN0ll;
 
 		// char feature
 		// for chinese
@@ -1554,10 +1116,8 @@ namespace nivre {
 		// string feature
 		output << m_mapSTPOSPath;
 		output << m_mapST2POSPath;
-		output << m_mapSSTPOSPath;
 		output << m_mapSTFPOSPath;
 		output << m_mapST2FPOSPath;
-		output << m_mapSSTFPOSPath;
 
 		output.close();
 	}
@@ -1573,9 +1133,6 @@ namespace nivre {
 		m_mapST2w.computeAverage(round);
 		m_mapST2pt.computeAverage(round);
 		m_mapST2st.computeAverage(round);
-		m_mapSSTw.computeAverage(round);
-		m_mapSSTpt.computeAverage(round);
-		m_mapSSTst.computeAverage(round);
 		m_mapN0w.computeAverage(round);
 		m_mapN0pt.computeAverage(round);
 
@@ -1608,14 +1165,9 @@ namespace nivre {
 		m_mapST2wST2LPl.computeAverage(round);
 		m_mapST2wST2RHl.computeAverage(round);
 		m_mapST2wST2RPl.computeAverage(round);
-		// sst
-		m_mapSSTwSSTLHl.computeAverage(round);
-		m_mapSSTwSSTLPl.computeAverage(round);
-		m_mapSSTwSSTRHl.computeAverage(round);
-		m_mapSSTwSSTRPl.computeAverage(round);
 
 		// unigram with arity
-		// st, n0, st2, sst
+		// st, n0, st2
 		// st
 		m_mapSTwSTLHi.computeAverage(round);
 		m_mapSTwSTLPi.computeAverage(round);
@@ -1633,13 +1185,6 @@ namespace nivre {
 		m_mapST2wST2RPi.computeAverage(round);
 		m_mapST2wST2Hi.computeAverage(round);
 		m_mapST2wST2Pi.computeAverage(round);
-		// sst
-		m_mapSSTwSSTLHi.computeAverage(round);
-		m_mapSSTwSSTLPi.computeAverage(round);
-		m_mapSSTwSSTRHi.computeAverage(round);
-		m_mapSSTwSSTRPi.computeAverage(round);
-		m_mapSSTwSSTHi.computeAverage(round);
-		m_mapSSTwSSTPi.computeAverage(round);
 
 		// bi-gram
 		// st + n0
@@ -1700,35 +1245,6 @@ namespace nivre {
 		m_mapST2ptN0wN0LPi.computeAverage(round);
 		m_mapST2ptN0ptN0LPi.computeAverage(round);
 
-		// sst + n0
-		m_mapSSTwN0w.computeAverage(round);
-		m_mapSSTwN0pt.computeAverage(round);
-		m_mapSSTptN0w.computeAverage(round);
-		m_mapSSTptN0pt.computeAverage(round);
-		m_mapSSTwptN0w.computeAverage(round);
-		m_mapSSTwN0wpt.computeAverage(round);
-		m_mapSSTwptN0pt.computeAverage(round);
-		m_mapSSTptN0wpt.computeAverage(round);
-		m_mapSSTwptN0wpt.computeAverage(round);
-		// sst + n0 + dis
-		m_mapSSTwN0wD.computeAverage(round);
-		m_mapSSTwN0ptD.computeAverage(round);
-		m_mapSSTptN0wD.computeAverage(round);
-		m_mapSSTptN0ptD.computeAverage(round);
-		// st2 + n0 + st2 left/right head/pred
-		m_mapSSTwN0wSSTLPi.computeAverage(round);
-		m_mapSSTwN0ptSSTLPi.computeAverage(round);
-		m_mapSSTptN0wSSTLPi.computeAverage(round);
-		m_mapSSTptN0ptSSTLPi.computeAverage(round);
-		m_mapSSTwN0wSSTRPi.computeAverage(round);
-		m_mapSSTwN0ptSSTRPi.computeAverage(round);
-		m_mapSSTptN0wSSTRPi.computeAverage(round);
-		m_mapSSTptN0ptSSTRPi.computeAverage(round);
-		m_mapSSTwN0wN0LPi.computeAverage(round);
-		m_mapSSTwN0ptN0LPi.computeAverage(round);
-		m_mapSSTptN0wN0LPi.computeAverage(round);
-		m_mapSSTptN0ptN0LPi.computeAverage(round);
-
 		// st + st2
 		m_mapSTwST2w.computeAverage(round);
 		m_mapSTwST2pt.computeAverage(round);
@@ -1740,28 +1256,12 @@ namespace nivre {
 		m_mapSTptST2wpt.computeAverage(round);
 		m_mapSTwptST2wpt.computeAverage(round);
 
-		// st + sst
-		m_mapSTwSSTw.computeAverage(round);
-		m_mapSTwSSTpt.computeAverage(round);
-		m_mapSTptSSTw.computeAverage(round);
-		m_mapSTptSSTpt.computeAverage(round);
-		m_mapSTwptSSTw.computeAverage(round);
-		m_mapSTwSSTwpt.computeAverage(round);
-		m_mapSTwptSSTpt.computeAverage(round);
-		m_mapSTptSSTwpt.computeAverage(round);
-		m_mapSTwptSSTwpt.computeAverage(round);
-
 		// tri-gram
 		// st + n0 + st2
 		m_mapSTwN0ptST2pt.computeAverage(round);
 		m_mapSTptN0wST2pt.computeAverage(round);
 		m_mapSTptN0ptST2w.computeAverage(round);
 		m_mapSTptN0ptST2pt.computeAverage(round);
-		// st + n0 + sst
-		m_mapSTwN0ptSSTpt.computeAverage(round);
-		m_mapSTptN0wSSTpt.computeAverage(round);
-		m_mapSTptN0ptSSTw.computeAverage(round);
-		m_mapSTptN0ptSSTpt.computeAverage(round);
 
 		// st + n0 + st left/right head/pred
 		m_mapSTwN0ptSTLHptSTLHl.computeAverage(round);
@@ -1843,46 +1343,6 @@ namespace nivre {
 		// st2 + n0 + n0 left pred + n0 left pred 2
 		m_mapST2ptN0ptN0LPptN0LP2ptN0LPlN0LP2l.computeAverage(round);
 
-		// sst + n0 + sst left/right head/pred
-		m_mapSSTwN0ptSSTLHptSSTLHl.computeAverage(round);
-		m_mapSSTptN0wSSTLHptSSTLHl.computeAverage(round);
-		m_mapSSTptN0ptSSTLHwSSTLHl.computeAverage(round);
-		m_mapSSTptN0ptSSTLHptSSTLHl.computeAverage(round);
-		m_mapSSTwN0ptSSTLPptSSTLPl.computeAverage(round);
-		m_mapSSTptN0wSSTLPptSSTLPl.computeAverage(round);
-		m_mapSSTptN0ptSSTLPwSSTLPl.computeAverage(round);
-		m_mapSSTptN0ptSSTLPptSSTLPl.computeAverage(round);
-		m_mapSSTwN0ptSSTRHptSSTRHl.computeAverage(round);
-		m_mapSSTptN0wSSTRHptSSTRHl.computeAverage(round);
-		m_mapSSTptN0ptSSTRHwSSTRHl.computeAverage(round);
-		m_mapSSTptN0ptSSTRHptSSTRHl.computeAverage(round);
-		m_mapSSTwN0ptSSTRPptSSTRPl.computeAverage(round);
-		m_mapSSTptN0wSSTRPptSSTRPl.computeAverage(round);
-		m_mapSSTptN0ptSSTRPwSSTRPl.computeAverage(round);
-		m_mapSSTptN0ptSSTRPptSSTRPl.computeAverage(round);
-
-		// st + n0 + n0 left head/pred
-		m_mapSSTwN0ptN0LHptN0LHl.computeAverage(round);
-		m_mapSSTptN0wN0LHptN0LHl.computeAverage(round);
-		m_mapSSTptN0ptN0LHwN0LHl.computeAverage(round);
-		m_mapSSTptN0ptN0LHptN0LHl.computeAverage(round);
-		m_mapSSTwN0ptN0LPptN0LPl.computeAverage(round);
-		m_mapSSTptN0wN0LPptN0LPl.computeAverage(round);
-		m_mapSSTptN0ptN0LPwN0LPl.computeAverage(round);
-		m_mapSSTptN0ptN0LPptN0LPl.computeAverage(round);
-
-		// quar-gram
-		// sst + n0 + sst right head + sst right pred
-		m_mapSSTptN0ptSSTRHptSSTRPptSSTRHlSSTRPl.computeAverage(round);
-		// sst + n0 + sst left pred + sst left pred 2
-		m_mapSSTptN0ptSSTLPptSSTLP2ptSSTLPlSSTLP2l.computeAverage(round);
-		// sst + n0 + sst right pred + sst right pred 2
-		m_mapSSTptN0ptSSTRPptSSTRP2ptSSTRPlSSTRP2l.computeAverage(round);
-		// sst + n0 + n0 left head + n0 left pred
-		m_mapSSTptN0ptN0LHptN0LPptN0LHlN0LPl.computeAverage(round);
-		// sst + n0 + n0 left pred + n0 left pred 2
-		m_mapSSTptN0ptN0LPptN0LP2ptN0LPlN0LP2l.computeAverage(round);
-
 		// st + n0 + label set
 		m_mapSTwSTll.computeAverage(round);
 		m_mapSTwSTrl.computeAverage(round);
@@ -1901,14 +1361,6 @@ namespace nivre {
 		m_mapST2ptN0ptST2ll.computeAverage(round);
 		m_mapST2ptN0ptST2rl.computeAverage(round);
 		m_mapST2ptN0ptN0ll.computeAverage(round);
-		// sst + n0 + label set
-		m_mapSSTwSSTll.computeAverage(round);
-		m_mapSSTwSSTrl.computeAverage(round);
-		m_mapSSTptSSTll.computeAverage(round);
-		m_mapSSTptSSTrl.computeAverage(round);
-		m_mapSSTptN0ptSSTll.computeAverage(round);
-		m_mapSSTptN0ptSSTrl.computeAverage(round);
-		m_mapSSTptN0ptN0ll.computeAverage(round);
 
 		// char feature
 		// for chinese
@@ -1928,10 +1380,8 @@ namespace nivre {
 		// string feature
 		m_mapSTPOSPath.computeAverage(round);
 		m_mapST2POSPath.computeAverage(round);
-		m_mapSSTPOSPath.computeAverage(round);
 		m_mapSTFPOSPath.computeAverage(round);
 		m_mapST2FPOSPath.computeAverage(round);
-		m_mapSSTFPOSPath.computeAverage(round);
 	}
 }
 
