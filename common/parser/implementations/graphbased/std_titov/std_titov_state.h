@@ -9,7 +9,6 @@ namespace std_titov {
 
 	extern int LABEL_COUNT;
 
-	extern int A_FIRST;
 	extern int SH_FIRST;
 
 	class StateItem : public GraphStateBase {
