@@ -5,6 +5,8 @@
 
 namespace std_titov {
 
+	extern int A_FIRST;
+
 	extern std::vector<int> g_vecLabelMap;
 
 	StateItem::StateItem() {

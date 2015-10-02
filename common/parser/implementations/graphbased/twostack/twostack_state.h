@@ -135,7 +135,7 @@ namespace twostack {
 	}
 
 	inline bool StateItem::canShift() const {
-		return m_SecondStackBack == -1;
+		return m_nSecondStackBack == -1;
 	}
 
 	inline bool StateItem::operator<(const StateItem & item) const {

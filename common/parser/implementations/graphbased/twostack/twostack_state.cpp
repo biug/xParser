@@ -112,7 +112,6 @@ namespace twostack {
 		m_nStackBack = -1;
 		m_nSecondStackBack = -1;
 		m_bCanMem = false;
-		m_bCanRecall = false;
 		//reset score
 		m_nScore = 0;
 		//reset action

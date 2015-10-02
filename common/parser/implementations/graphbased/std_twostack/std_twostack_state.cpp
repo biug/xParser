@@ -5,6 +5,8 @@
 
 namespace std_twostack {
 
+	extern int A_FIRST;
+
 	extern std::vector<int> g_vecLabelMap;
 
 	StateItem::StateItem() {
@@ -220,7 +222,6 @@ namespace std_twostack {
 		if (m_nNextWord < graph.size()) {
 			shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
 			return true;
-			}
 		}
 		return false;
 	}
