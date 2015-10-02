@@ -64,7 +64,7 @@ namespace std_titov {
 
 		LABEL_COUNT = TDepLabel::count();
 
-		A_FIRST = REDUCE + 1;
+		A_FIRST = SHIFT + 1;
 		A_END = SH_FIRST = A_FIRST + LABEL_COUNT;
 		SH_END = m_bSuperTagFeature ? SH_FIRST + TSuperTag::count() + 1 : SH_FIRST + 1;
 

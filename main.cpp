@@ -11,6 +11,9 @@
 #include "common/parser/implementations/graphbased/nivre/nivre_run.h"
 #include "common/parser/implementations/graphbased/titov/titov_run.h"
 #include "common/parser/implementations/graphbased/twostack/twostack_run.h"
+#include "common/parser/implementations/graphbased/std_nivre/std_nivre_run.h"
+#include "common/parser/implementations/graphbased/std_titov/std_titov_run.h"
+#include "common/parser/implementations/graphbased/std_twostack/std_twostack_run.h"
 
 #include "common/parser/implementations/eisner/eisner_run.h"
 #include "common/parser/implementations/eisnergc/eisnergc_run.h"
@@ -48,7 +51,8 @@ int main(int argc, char * argv[]) {
 	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
 		run.reset(new emptyeisnergc3rd::Run());
 	}
-	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0) {
+	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
+			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -73,6 +77,15 @@ int main(int argc, char * argv[]) {
 		}
 		else if (strcmp(argv[2], "twostack") == 0) {
 			run.reset(new twostack::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "std_nivre") == 0) {
+			run.reset(new std_nivre::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "std_titov") == 0) {
+			run.reset(new std_titov::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "std_twostack") == 0) {
+			run.reset(new std_twostack::Run(bChar, bPath, bSuperTag));
 		}
 	}
 

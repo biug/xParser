@@ -68,7 +68,7 @@ namespace nivre {
 
 		LABEL_COUNT = TDepLabel::count();
 
-		A_SW_FIRST = REDUCE + 1;
+		A_SW_FIRST = SHIFT + 1;
 		A_SW_END = A_RE_FIRST = A_SW_FIRST + LABEL_COUNT;
 		A_RE_END = A_SH_FIRST = A_RE_FIRST + LABEL_COUNT;
 		A_SH_END = SH_FIRST = (m_bSuperTagFeature ? A_SH_FIRST + LABEL_COUNT * (TSuperTag::count() + 1) : A_SH_FIRST + LABEL_COUNT);

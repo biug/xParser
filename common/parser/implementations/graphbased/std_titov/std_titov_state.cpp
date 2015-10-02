@@ -66,6 +66,7 @@ namespace std_titov {
 		}
 		//add right arcs for stack seek
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l));
+		m_lActionList[++m_nActionBack] = A_FIRST + l - 1;
 	}
 
 	void StateItem::print() const {

@@ -66,6 +66,7 @@ namespace std_twostack {
 		}
 		//add right arcs for stack seek
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l));
+		m_lActionList[++m_nActionBack] = A_FIRST + l - 1;
 	}
 
 	void StateItem::print() const {
@@ -90,6 +91,10 @@ namespace std_twostack {
 		}
 		std::cout << "last action: ";
 		printAction(m_lActionList[m_nActionBack]);
+		std::cout << "action list:" << std::endl;
+		for (int i = 0; i < m_nActionBack; ++i) {
+			printAction(m_lActionList[i]);
+		}
 		std::cout << "score : " << m_nScore << std::endl;
 		std::cout << std::endl;
 	}
