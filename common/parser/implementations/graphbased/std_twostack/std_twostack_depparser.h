@@ -1,14 +1,14 @@
-#ifndef _TWOSTACK_DEPPARSER_H
-#define _TWOSTACK_DEPPARSER_H
+#ifndef _STD_TWOSTACK_DEPPARSER_H
+#define _STD_TWOSTACK_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "twostack_state.h"
-#include "twostack_weight.h"
+#include "std_twostack_state.h"
+#include "std_twostack_weight.h"
 #include "common/parser/implementations/graphbased/graphdepparser_base.h"
 
-namespace twostack {
+namespace std_twostack {
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
@@ -23,14 +23,11 @@ namespace twostack {
 		IntTagSet uni_tagset;
 		TwoIntsTagSet bi_tagset;
 
+		void arc(const tscore & score);
 		void mem(const tscore & score);
-		void arcMem(const tscore & score);
 		void recall(const tscore & score);
-		void arcRecall(const tscore & score);
 		void reduce(const tscore & score);
-		void arcReduce(const tscore & score);
 		void shift(const tscore & score, const int & tokenId);
-		void arcShift(const tscore & score, const int & tokenId);
 
 		void getActionScores(const StateItem & item);
 		void getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount);
@@ -44,16 +41,10 @@ namespace twostack {
 
 	extern int LABEL_COUNT;
 
-	extern int A_MM_FIRST;
-	extern int A_RC_FIRST;
-	extern int A_RE_FIRST;
-	extern int A_SH_FIRST;
+	extern int A_FIRST;
 	extern int SH_FIRST;
 
-	extern int A_MM_END;
-	extern int A_RC_END;
-	extern int A_RE_END;
-	extern int A_SH_END;
+	extern int A_END;
 	extern int SH_END;
 
 	extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
@@ -77,15 +68,15 @@ namespace twostack {
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::mem(const tscore & score) {
-		m_abScores.insertItem(ScoredAction(MEM, score + m_lPackedScore[MEM]));
+	inline void DepParser<RET_TYPE>::arc(const tscore & score) {
+		for (int action = A_FIRST; action < A_END; ++action) {
+			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
+		}
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcMem(const tscore & score) {
-		for (int action = A_MM_FIRST; action < A_MM_END; ++action) {
-			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-		}
+	inline void DepParser<RET_TYPE>::mem(const tscore & score) {
+		m_abScores.insertItem(ScoredAction(MEM, score + m_lPackedScore[MEM]));
 	}
 
 	template<class RET_TYPE>
@@ -94,22 +85,8 @@ namespace twostack {
 	}
 
 	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcRecall(const tscore & score) {
-		for (int action = A_RC_FIRST; action < A_RC_END; ++action) {
-			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-		}
-	}
-
-	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::reduce(const tscore & score) {
 		m_abScores.insertItem(ScoredAction(REDUCE, score + m_lPackedScore[REDUCE]));
-	}
-
-	template<class RET_TYPE>
-	inline void DepParser<RET_TYPE>::arcReduce(const tscore & score) {
-		for (int action = A_RE_FIRST; action < A_RE_END; ++action) {
-			m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-		}
 	}
 
 	template<class RET_TYPE>
@@ -130,32 +107,6 @@ namespace twostack {
 			m_abScores.insertItem(ScoredAction(SH_FIRST, score + m_lPackedScore[SH_FIRST]));
 		}
 	}
-
-	template<class RET_TYPE>
-	void DepParser<RET_TYPE>::arcShift(const tscore & score, const int & tokenId) {
-		if (m_bSuperTag) {
-			if (g_mapSuperTagCandidatesOfWords.find(m_lSentence[tokenId].first()) != g_mapSuperTagCandidatesOfWords.end()) {
-				for (const auto & tag : g_mapSuperTagCandidatesOfWords[m_lSentence[tokenId].first()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
-						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-					}
-				}
-			}
-			else {
-				for (const auto & tag : g_mapSuperTagCandidatesOfPOSTags[m_lSentence[tokenId].second()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
-						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-					}
-				}
-			}
-		}
-		else {
-			for (int action = A_SH_FIRST, n = A_SH_FIRST + LABEL_COUNT; action < n; ++action) {
-				m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
-			}
-		}
-	}
-
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
@@ -180,16 +131,7 @@ namespace twostack {
 
 			if (iGenerator->size() < m_nSentenceLength) {
 				if (iGenerator->canArc()) {
-					arcReduce(score);
-					if (iGenerator->canShift()) {
-						arcShift(score, iGenerator->size());
-					}
-					if (iGenerator->canMem()) {
-						arcMem(score);
-					}
-					if (iGenerator->canRecall()) {
-						arcRecall(score);
-					}
+					arc(score);
 				}
 				if (iGenerator->canShift()) {
 					shift(score, iGenerator->size());
