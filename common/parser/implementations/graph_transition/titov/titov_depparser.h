@@ -760,6 +760,10 @@ namespace titov {
 
 		if (m_bPath) {
 
+			const WordPOSTag & st_syn_head_word_postag = (st_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[st_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[st_index])]);
+			const WordPOSTag & n0_syn_head_word_postag = (n0_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[n0_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[n0_index])]);
+			const WordPOSTag & st2_syn_head_word_postag = (st2_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[st2_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[st2_index])]);
+
 			if (st_index == -1 || n0_index == -1) {
 				cweight->m_mapSTPOSPath.getOrUpdateScore(m_lPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
 				cweight->m_mapSTFPOSPath.getOrUpdateScore(m_lPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
@@ -768,6 +772,18 @@ namespace titov {
 				cweight->m_mapSTPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.POSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
 				cweight->m_mapSTFPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.FPOSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
 			}
+			tri_features.refer(st_word, st_syn_head_word_postag.first(), n0_postag);
+			cweight->m_mapSTwN0ptSTsynhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st_word, n0_postag, st_syn_head_word_postag.second());
+			cweight->m_mapSTwN0wSTsynhpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(n0_word, st_syn_head_word_postag.first(), st_postag);
+			cweight->m_mapSTptN0wSTsynhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st_word, n0_syn_head_word_postag.first(), n0_postag);
+			cweight->m_mapSTwN0ptN0synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st_word, n0_postag, n0_syn_head_word_postag.second());
+			cweight->m_mapSTwN0wN0synhpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(n0_word, n0_syn_head_word_postag.first(), st_postag);
+			cweight->m_mapSTptN0wN0synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 
 			if (st2_index == -1 || n0_index == -1) {
 				cweight->m_mapST2POSPath.getOrUpdateScore(m_lPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
@@ -777,33 +793,41 @@ namespace titov {
 				cweight->m_mapST2POSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.POSPath[st2_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
 				cweight->m_mapST2FPOSPath.getOrUpdateScore(m_lPackedScore, m_lcaAnalyzer.FPOSPath[st2_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
 			}
+			tri_features.refer(st2_word, st2_syn_head_word_postag.first(), n0_postag);
+			cweight->m_mapST2wN0ptST2synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st2_word, n0_postag, st2_syn_head_word_postag.second());
+			cweight->m_mapST2wN0wST2synhpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(n0_word, st2_syn_head_word_postag.first(), st2_postag);
+			cweight->m_mapST2ptN0wST2synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st2_word, n0_syn_head_word_postag.first(), n0_postag);
+			cweight->m_mapST2wN0ptN0synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st2_word, n0_postag, n0_syn_head_word_postag.second());
+			cweight->m_mapST2wN0wN0synhpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(n0_word, n0_syn_head_word_postag.first(), st2_postag);
+			cweight->m_mapST2ptN0wN0synhw.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 
 		}
 
 		if (m_bSuperTag) {
 			const SuperTag & st_supertag = st_index == -1 ? 0 : item.superTag(st_index);
 			const SuperTag & st2_supertag = st2_index == -1 ? 0 : item.superTag(st2_index);
-			const SuperTag & stl2_supertag = stl2_index == -1 ? 0 : item.superTag(stl2_index);
-			const SuperTag & stl1_supertag = stl1_index == -1 ? 0 : item.superTag(stl1_index);
-			const SuperTag & str1_supertag = str1_index == -1 || str1_index >= n0_index || str1_index >= m_nSentenceLength ? 0 : item.superTag(str1_index);
-			const SuperTag & str2_supertag = str2_index == -1 || str2_index >= n0_index || str2_index >= m_nSentenceLength ? 0 : item.superTag(str2_index);
 			const SuperTag & n0l2_supertag = n0l2_index == -1 ? 0 : item.superTag(n0l2_index);
 			const SuperTag & n0l1_supertag = n0l1_index == -1 ? 0 : item.superTag(n0l1_index);
 
 			cweight->m_mapSTst.getOrUpdateScore(m_lPackedScore, st_supertag, m_nScoreIndex, amount, m_nTrainingRound);
 			cweight->m_mapST2st.getOrUpdateScore(m_lPackedScore, st2_supertag, m_nScoreIndex, amount, m_nTrainingRound);
-			bi_features.refer(stl2_supertag, -2);
-			cweight->m_mapSTist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-			bi_features.refer(stl1_supertag, -1);
-			cweight->m_mapSTist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-			bi_features.refer(str1_supertag, 1);
-			cweight->m_mapSTist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
-			bi_features.refer(str2_supertag, 2);
-			cweight->m_mapSTist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 			bi_features.refer(n0l2_supertag, -2);
 			cweight->m_mapN0ist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 			bi_features.refer(n0l1_supertag, -1);
 			cweight->m_mapN0ist.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+			bi_features.refer(st_supertag, st2_supertag);
+			cweight->m_mapSTstST2st.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+			bi_features.refer(st_supertag, n0_word);
+			cweight->m_mapSTstN0w.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+			bi_features.refer(st_supertag, n0_postag);
+			cweight->m_mapSTstN0pt.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+			tri_features.refer(st_supertag, n0_word, n0_postag);
+			cweight->m_mapSTstN0wpt.getOrUpdateScore(m_lPackedScore, tri_features, m_nScoreIndex, amount, m_nTrainingRound);
 		}
 	}
 }

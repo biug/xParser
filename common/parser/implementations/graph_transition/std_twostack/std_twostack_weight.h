@@ -17,33 +17,35 @@ namespace std_twostack {
 	class Weight : public WeightBase {
 	public:
 		// uni-gram
-		// st, n0, st2
+		// st, n0, st2, sst
+		// st
 		WordMap<RET_TYPE> m_mapSTw;
 		POSTagMap<RET_TYPE> m_mapSTpt;
-		SuperTagMap<RET_TYPE> m_mapSTst;
-		WordMap<RET_TYPE> m_mapST2w;
-		POSTagMap<RET_TYPE> m_mapST2pt;
-		SuperTagMap<RET_TYPE> m_mapST2st;
-		WordMap<RET_TYPE> m_mapSSTw;
-		POSTagMap<RET_TYPE> m_mapSSTpt;
-		SuperTagMap<RET_TYPE> m_mapSSTst;
+		// n0
 		WordMap<RET_TYPE> m_mapN0w;
 		POSTagMap<RET_TYPE> m_mapN0pt;
+		// st2
+		WordMap<RET_TYPE> m_mapST2w;
+		POSTagMap<RET_TYPE> m_mapST2pt;
+		// sst
+		WordMap<RET_TYPE> m_mapSSTw;
+		POSTagMap<RET_TYPE> m_mapSSTpt;
 
 		// unigram context
-		// st + sti, n0 + n0i
+		// st, n0
+		// st context
 		WordIntMap<RET_TYPE> m_mapSTiw;
 		TwoWordsIntMap<RET_TYPE> m_mapSTiwSTjw;
-		WordIntMap<RET_TYPE> m_mapN0iw;
-		TwoWordsIntMap<RET_TYPE> m_mapN0iwN0jw;
 		POSTagIntMap<RET_TYPE> m_mapSTipt;
 		POSTagSet2IntMap<RET_TYPE> m_mapSTiptSTjpt;
+		// n0 context
+		WordIntMap<RET_TYPE> m_mapN0iw;
+		TwoWordsIntMap<RET_TYPE> m_mapN0iwN0jw;
 		POSTagIntMap<RET_TYPE> m_mapN0ipt;
 		POSTagSet2IntMap<RET_TYPE> m_mapN0iptN0jpt;
-		SuperTagIntMap<RET_TYPE> m_mapSTist;
-		SuperTagIntMap<RET_TYPE> m_mapN0ist;
 
 		// unigram with label
+		// st, n0, st2, sst
 		// st
 		WordIntMap<RET_TYPE> m_mapSTwSTLHl;
 		WordIntMap<RET_TYPE> m_mapSTwSTLPl;
@@ -77,6 +79,8 @@ namespace std_twostack {
 		// n0
 		WordIntMap<RET_TYPE> m_mapN0wN0LHi;
 		WordIntMap<RET_TYPE> m_mapN0wN0LPi;
+		POSTagIntMap<RET_TYPE> m_mapN0ptN0LHi;
+		POSTagIntMap<RET_TYPE> m_mapN0ptN0LPi;
 		// st2
 		WordIntMap<RET_TYPE> m_mapST2wST2LHi;
 		WordIntMap<RET_TYPE> m_mapST2wST2LPi;
@@ -361,14 +365,15 @@ namespace std_twostack {
 		POSTagSet2TagsetMap<RET_TYPE> m_mapSSTptN0ptSSTrl;
 		POSTagSet2TagsetMap<RET_TYPE> m_mapSSTptN0ptN0ll;
 
-		// char feature
-		// for chinese
+		// char feature (for chinese)
+		// st context char
 		StringMap<RET_TYPE> m_map1CharBeforeST;
 		StringMap<RET_TYPE> m_map2CharBeforeST;
 		StringMap<RET_TYPE> m_map3CharBeforeST;
 		StringMap<RET_TYPE> m_map1CharAfterST;
 		StringMap<RET_TYPE> m_map2CharAfterST;
 		StringMap<RET_TYPE> m_map3CharAfterST;
+		// n0 context char
 		StringMap<RET_TYPE> m_map1CharBeforeN0;
 		StringMap<RET_TYPE> m_map2CharBeforeN0;
 		StringMap<RET_TYPE> m_map3CharBeforeN0;
@@ -376,13 +381,45 @@ namespace std_twostack {
 		StringMap<RET_TYPE> m_map2CharAfterN0;
 		StringMap<RET_TYPE> m_map3CharAfterN0;
 
-		// string feature
+		// path feature
+		// st - n0
 		StringMap<RET_TYPE> m_mapSTPOSPath;
-		StringMap<RET_TYPE> m_mapST2POSPath;
-		StringMap<RET_TYPE> m_mapSSTPOSPath;
 		StringMap<RET_TYPE> m_mapSTFPOSPath;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTwN0ptSTsynhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTwN0wSTsynhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTptN0wSTsynhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTwN0ptN0synhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTwN0wN0synhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapSTptN0wN0synhw;
+		// st2 - n0
+		StringMap<RET_TYPE> m_mapST2POSPath;
 		StringMap<RET_TYPE> m_mapST2FPOSPath;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2wN0ptST2synhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2wN0wST2synhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2ptN0wST2synhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2wN0ptN0synhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2wN0wN0synhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapST2ptN0wN0synhw;
+		// sst - n0
+		StringMap<RET_TYPE> m_mapSSTPOSPath;
 		StringMap<RET_TYPE> m_mapSSTFPOSPath;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTwN0ptSSTsynhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTwN0wSSTsynhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTptN0wSSTsynhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTwN0ptN0synhw;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTwN0wN0synhpt;
+		WordWordPOSTagMap<RET_TYPE> m_mapSSTptN0wN0synhw;
+
+		// supertag feature
+		SuperTagMap<RET_TYPE> m_mapSTst;
+		SuperTagMap<RET_TYPE> m_mapST2st;
+		SuperTagMap<RET_TYPE> m_mapSSTst;
+		SuperTagIntMap<RET_TYPE> m_mapN0ist;
+		SuperTagSet2Map<RET_TYPE> m_mapSTstST2st;
+		SuperTagSet2Map<RET_TYPE> m_mapSTstSSTst;
+		WordSuperTagMap<RET_TYPE> m_mapSTstN0w;
+		POSTagSuperTagMap<RET_TYPE> m_mapSTstN0pt;
+		WordPOSTagSuperTagMap<RET_TYPE> m_mapSTstN0wpt;
 
 	public:
 		Weight(const std::string & sRead, const std::string & sRecord);
@@ -397,33 +434,35 @@ namespace std_twostack {
 	Weight<RET_TYPE>::Weight(const std::string & sRead, const std::string & sRecord) :
 		WeightBase(sRead, sRecord),
 		// uni-gram
-		// st, n0, st2
+		// st, n0, st2, sst
+		// st
 		m_mapSTw("m_mapSTw"),
 		m_mapSTpt("m_mapSTpt"),
-		m_mapSTst("m_mapSTst"),
-		m_mapST2w("m_mapST2w"),
-		m_mapST2pt("m_mapST2pt"),
-		m_mapST2st("m_mapST2st"),
-		m_mapSSTw("m_mapSSTw"),
-		m_mapSSTpt("m_mapSSTpt"),
-		m_mapSSTst("m_mapSSTst"),
+		// n0
 		m_mapN0w("m_mapN0w"),
 		m_mapN0pt("m_mapN0pt"),
+		// st2
+		m_mapST2w("m_mapST2w"),
+		m_mapST2pt("m_mapST2pt"),
+		// sst
+		m_mapSSTw("m_mapSSTw"),
+		m_mapSSTpt("m_mapSSTpt"),
 
 		// unigram context
-		// st + sti, n0 + n0i
+		// st, n0
+		// st context
 		m_mapSTiw("m_mapSTiw"),
 		m_mapSTiwSTjw("m_mapSTiwSTjw"),
-		m_mapN0iw("m_mapN0iw"),
-		m_mapN0iwN0jw("m_mapN0iwN0jw"),
 		m_mapSTipt("m_mapSTipt"),
 		m_mapSTiptSTjpt("m_mapSTiptSTjpt"),
+		// n0 context
+		m_mapN0iw("m_mapN0iw"),
+		m_mapN0iwN0jw("m_mapN0iwN0jw"),
 		m_mapN0ipt("m_mapN0ipt"),
 		m_mapN0iptN0jpt("m_mapN0iptN0jpt"),
-		m_mapSTist("m_mapSTist"),
-		m_mapN0ist("m_mapN0ist"),
 
 		// unigram with label
+		// st, n0, st2, sst
 		// st
 		m_mapSTwSTLHl("m_mapSTwSTLHl"),
 		m_mapSTwSTLPl("m_mapSTwSTLPl"),
@@ -457,6 +496,8 @@ namespace std_twostack {
 		// n0
 		m_mapN0wN0LHi("m_mapN0wN0LHi"),
 		m_mapN0wN0LPi("m_mapN0wN0LPi"),
+		m_mapN0ptN0LHi("m_mapN0ptN0LHi"),
+		m_mapN0ptN0LPi("m_mapN0ptN0LPi"),
 		// st2
 		m_mapST2wST2LHi("m_mapST2wST2LHi"),
 		m_mapST2wST2LPi("m_mapST2wST2LPi"),
@@ -741,14 +782,15 @@ namespace std_twostack {
 		m_mapSSTptN0ptSSTrl("m_mapSSTptN0ptSSTrl"),
 		m_mapSSTptN0ptN0ll("m_mapSSTptN0ptN0ll"),
 
-		// char feature
-		// for chinese
+		// char feature (for chinese)
+		// st context char
 		m_map1CharBeforeST("m_map1CharBeforeST"),
 		m_map2CharBeforeST("m_map2CharBeforeST"),
 		m_map3CharBeforeST("m_map3CharBeforeST"),
 		m_map1CharAfterST("m_map1CharAfterST"),
 		m_map2CharAfterST("m_map2CharAfterST"),
 		m_map3CharAfterST("m_map3CharAfterST"),
+		// n0 context char
 		m_map1CharBeforeN0("m_map1CharBeforeN0"),
 		m_map2CharBeforeN0("m_map2CharBeforeN0"),
 		m_map3CharBeforeN0("m_map3CharBeforeN0"),
@@ -756,16 +798,48 @@ namespace std_twostack {
 		m_map2CharAfterN0("m_map2CharAfterN0"),
 		m_map3CharAfterN0("m_map3CharAfterN0"),
 
-		// string feature
+		// path feature
+		// st - n0
 		m_mapSTPOSPath("m_mapSTPOSPath"),
-		m_mapST2POSPath("m_mapST2POSPath"),
-		m_mapSSTPOSPath("m_mapSSTPOSPath"),
 		m_mapSTFPOSPath("m_mapSTFPOSPath"),
+		m_mapSTwN0ptSTsynhw("m_mapSTwN0ptSTsynhw"),
+		m_mapSTwN0wSTsynhpt("m_mapSTwN0wSTsynhpt"),
+		m_mapSTptN0wSTsynhw("m_mapSTptN0wSTsynhw"),
+		m_mapSTwN0ptN0synhw("m_mapSTwN0ptN0synhw"),
+		m_mapSTwN0wN0synhpt("m_mapSTwN0wN0synhpt"),
+		m_mapSTptN0wN0synhw("m_mapSTptN0wN0synhw"),
+		// st2 - n0
+		m_mapST2POSPath("m_mapST2POSPath"),
 		m_mapST2FPOSPath("m_mapST2FPOSPath"),
-		m_mapSSTFPOSPath("m_mapSSTFPOSPath")
+		m_mapST2wN0ptST2synhw("m_mapST2wN0ptST2synhw"),
+		m_mapST2wN0wST2synhpt("m_mapST2wN0wST2synhpt"),
+		m_mapST2ptN0wST2synhw("m_mapST2ptN0wST2synhw"),
+		m_mapST2wN0ptN0synhw("m_mapST2wN0ptN0synhw"),
+		m_mapST2wN0wN0synhpt("m_mapST2wN0wN0synhpt"),
+		m_mapST2ptN0wN0synhw("m_mapST2ptN0wN0synhw"),
+		// sst - n0
+		m_mapSSTPOSPath("m_mapSSTPOSPath"),
+		m_mapSSTFPOSPath("m_mapSSTFPOSPath"),
+		m_mapSSTwN0ptSSTsynhw("m_mapSSTwN0ptSSTsynhw"),
+		m_mapSSTwN0wSSTsynhpt("m_mapSSTwN0wSSTsynhpt"),
+		m_mapSSTptN0wSSTsynhw("m_mapSSTptN0wSSTsynhw"),
+		m_mapSSTwN0ptN0synhw("m_mapSSTwN0ptN0synhw"),
+		m_mapSSTwN0wN0synhpt("m_mapSSTwN0wN0synhpt"),
+		m_mapSSTptN0wN0synhw("m_mapSSTptN0wN0synhw"),
+
+		// supertag feature
+		m_mapSTst("m_mapSTst"),
+		m_mapST2st("m_mapST2st"),
+		m_mapSSTst("m_mapSSTst"),
+		m_mapN0ist("m_mapN0ist"),
+		m_mapSTstST2st("m_mapSTstST2st"),
+		m_mapSTstSSTst("m_mapSTstSSTst"),
+		m_mapSTstN0w("m_mapSTstN0w"),
+		m_mapSTstN0pt("m_mapSTstN0pt"),
+		m_mapSTstN0wpt("m_mapSTstN0wpt")
 	{
 		loadScores();
-		std::cout << "features load complete." << std::endl;
+		std::cout << "load complete." << std::endl;
 	}
 
 	template<class RET_TYPE>
@@ -798,33 +872,35 @@ namespace std_twostack {
 		input >> g_mapSuperTagCandidatesOfPOSTags;
 
 		// uni-gram
-		// st, n0, st2
+		// st, n0, st2, sst
+		// st
 		input >> m_mapSTw;
 		input >> m_mapSTpt;
-		input >> m_mapSTst;
-		input >> m_mapST2w;
-		input >> m_mapST2pt;
-		input >> m_mapST2st;
-		input >> m_mapSSTw;
-		input >> m_mapSSTpt;
-		input >> m_mapSSTst;
+		// n0
 		input >> m_mapN0w;
 		input >> m_mapN0pt;
+		// st2
+		input >> m_mapST2w;
+		input >> m_mapST2pt;
+		// sst
+		input >> m_mapSSTw;
+		input >> m_mapSSTpt;
 
 		// unigram context
-		// st + sti, n0 + n0i
+		// st, n0
+		// st context
 		input >> m_mapSTiw;
 		input >> m_mapSTiwSTjw;
-		input >> m_mapN0iw;
-		input >> m_mapN0iwN0jw;
 		input >> m_mapSTipt;
 		input >> m_mapSTiptSTjpt;
+		// n0 context
+		input >> m_mapN0iw;
+		input >> m_mapN0iwN0jw;
 		input >> m_mapN0ipt;
 		input >> m_mapN0iptN0jpt;
-		input >> m_mapSTist;
-		input >> m_mapN0ist;
 
 		// unigram with label
+		// st, n0, st2, sst
 		// st
 		input >> m_mapSTwSTLHl;
 		input >> m_mapSTwSTLPl;
@@ -858,6 +934,8 @@ namespace std_twostack {
 		// n0
 		input >> m_mapN0wN0LHi;
 		input >> m_mapN0wN0LPi;
+		input >> m_mapN0ptN0LHi;
+		input >> m_mapN0ptN0LPi;
 		// st2
 		input >> m_mapST2wST2LHi;
 		input >> m_mapST2wST2LPi;
@@ -1142,14 +1220,15 @@ namespace std_twostack {
 		input >> m_mapSSTptN0ptSSTrl;
 		input >> m_mapSSTptN0ptN0ll;
 
-		// char feature
-		// for chinese
+		// char feature (for chinese)
+		// st context char
 		input >> m_map1CharBeforeST;
 		input >> m_map2CharBeforeST;
 		input >> m_map3CharBeforeST;
 		input >> m_map1CharAfterST;
 		input >> m_map2CharAfterST;
 		input >> m_map3CharAfterST;
+		// n0 context char
 		input >> m_map1CharBeforeN0;
 		input >> m_map2CharBeforeN0;
 		input >> m_map3CharBeforeN0;
@@ -1157,13 +1236,45 @@ namespace std_twostack {
 		input >> m_map2CharAfterN0;
 		input >> m_map3CharAfterN0;
 
-		// string feature
+		// path feature
+		// st - n0
 		input >> m_mapSTPOSPath;
-		input >> m_mapST2POSPath;
-		input >> m_mapSSTPOSPath;
 		input >> m_mapSTFPOSPath;
+		input >> m_mapSTwN0ptSTsynhw;
+		input >> m_mapSTwN0wSTsynhpt;
+		input >> m_mapSTptN0wSTsynhw;
+		input >> m_mapSTwN0ptN0synhw;
+		input >> m_mapSTwN0wN0synhpt;
+		input >> m_mapSTptN0wN0synhw;
+		// st2 - n0
+		input >> m_mapST2POSPath;
 		input >> m_mapST2FPOSPath;
+		input >> m_mapST2wN0ptST2synhw;
+		input >> m_mapST2wN0wST2synhpt;
+		input >> m_mapST2ptN0wST2synhw;
+		input >> m_mapST2wN0ptN0synhw;
+		input >> m_mapST2wN0wN0synhpt;
+		input >> m_mapST2ptN0wN0synhw;
+		// sst - n0
+		input >> m_mapSSTPOSPath;
 		input >> m_mapSSTFPOSPath;
+		input >> m_mapSSTwN0ptSSTsynhw;
+		input >> m_mapSSTwN0wSSTsynhpt;
+		input >> m_mapSSTptN0wSSTsynhw;
+		input >> m_mapSSTwN0ptN0synhw;
+		input >> m_mapSSTwN0wN0synhpt;
+		input >> m_mapSSTptN0wN0synhw;
+
+		// supertag feature
+		input >> m_mapSTst;
+		input >> m_mapST2st;
+		input >> m_mapSSTst;
+		input >> m_mapN0ist;
+		input >> m_mapSTstST2st;
+		input >> m_mapSTstSSTst;
+		input >> m_mapSTstN0w;
+		input >> m_mapSTstN0pt;
+		input >> m_mapSTstN0wpt;
 
 		input.close();
 	}
@@ -1192,33 +1303,35 @@ namespace std_twostack {
 		output << g_mapSuperTagCandidatesOfPOSTags;
 
 		// uni-gram
-		// st, n0, st2
+		// st, n0, st2, sst
+		// st
 		output << m_mapSTw;
 		output << m_mapSTpt;
-		output << m_mapSTst;
-		output << m_mapST2w;
-		output << m_mapST2pt;
-		output << m_mapST2st;
-		output << m_mapSSTw;
-		output << m_mapSSTpt;
-		output << m_mapSSTst;
+		// n0
 		output << m_mapN0w;
 		output << m_mapN0pt;
+		// st2
+		output << m_mapST2w;
+		output << m_mapST2pt;
+		// sst
+		output << m_mapSSTw;
+		output << m_mapSSTpt;
 
 		// unigram context
-		// st + sti, n0 + n0i
+		// st, n0
+		// st context
 		output << m_mapSTiw;
 		output << m_mapSTiwSTjw;
-		output << m_mapN0iw;
-		output << m_mapN0iwN0jw;
 		output << m_mapSTipt;
 		output << m_mapSTiptSTjpt;
+		// n0 context
+		output << m_mapN0iw;
+		output << m_mapN0iwN0jw;
 		output << m_mapN0ipt;
 		output << m_mapN0iptN0jpt;
-		output << m_mapSTist;
-		output << m_mapN0ist;
 
 		// unigram with label
+		// st, n0, st2, sst
 		// st
 		output << m_mapSTwSTLHl;
 		output << m_mapSTwSTLPl;
@@ -1252,6 +1365,8 @@ namespace std_twostack {
 		// n0
 		output << m_mapN0wN0LHi;
 		output << m_mapN0wN0LPi;
+		output << m_mapN0ptN0LHi;
+		output << m_mapN0ptN0LPi;
 		// st2
 		output << m_mapST2wST2LHi;
 		output << m_mapST2wST2LPi;
@@ -1536,14 +1651,15 @@ namespace std_twostack {
 		output << m_mapSSTptN0ptSSTrl;
 		output << m_mapSSTptN0ptN0ll;
 
-		// char feature
-		// for chinese
+		// char feature (for chinese)
+		// st context char
 		output << m_map1CharBeforeST;
 		output << m_map2CharBeforeST;
 		output << m_map3CharBeforeST;
 		output << m_map1CharAfterST;
 		output << m_map2CharAfterST;
 		output << m_map3CharAfterST;
+		// n0 context char
 		output << m_map1CharBeforeN0;
 		output << m_map2CharBeforeN0;
 		output << m_map3CharBeforeN0;
@@ -1551,13 +1667,45 @@ namespace std_twostack {
 		output << m_map2CharAfterN0;
 		output << m_map3CharAfterN0;
 
-		// string feature
+		// path feature
+		// st - n0
 		output << m_mapSTPOSPath;
-		output << m_mapST2POSPath;
-		output << m_mapSSTPOSPath;
 		output << m_mapSTFPOSPath;
+		output << m_mapSTwN0ptSTsynhw;
+		output << m_mapSTwN0wSTsynhpt;
+		output << m_mapSTptN0wSTsynhw;
+		output << m_mapSTwN0ptN0synhw;
+		output << m_mapSTwN0wN0synhpt;
+		output << m_mapSTptN0wN0synhw;
+		// st2 - n0
+		output << m_mapST2POSPath;
 		output << m_mapST2FPOSPath;
+		output << m_mapST2wN0ptST2synhw;
+		output << m_mapST2wN0wST2synhpt;
+		output << m_mapST2ptN0wST2synhw;
+		output << m_mapST2wN0ptN0synhw;
+		output << m_mapST2wN0wN0synhpt;
+		output << m_mapST2ptN0wN0synhw;
+		// sst - n0
+		output << m_mapSSTPOSPath;
 		output << m_mapSSTFPOSPath;
+		output << m_mapSSTwN0ptSSTsynhw;
+		output << m_mapSSTwN0wSSTsynhpt;
+		output << m_mapSSTptN0wSSTsynhw;
+		output << m_mapSSTwN0ptN0synhw;
+		output << m_mapSSTwN0wN0synhpt;
+		output << m_mapSSTptN0wN0synhw;
+
+		// supertag feature
+		output << m_mapSTst;
+		output << m_mapST2st;
+		output << m_mapSSTst;
+		output << m_mapN0ist;
+		output << m_mapSTstST2st;
+		output << m_mapSTstSSTst;
+		output << m_mapSTstN0w;
+		output << m_mapSTstN0pt;
+		output << m_mapSTstN0wpt;
 
 		output.close();
 	}
@@ -1566,33 +1714,35 @@ namespace std_twostack {
 	void Weight<RET_TYPE>::computeAverageFeatureWeights(const int & round) {
 
 		// uni-gram
-		// st, n0, st2
+		// st, n0, st2, sst
+		// st
 		m_mapSTw.computeAverage(round);
 		m_mapSTpt.computeAverage(round);
-		m_mapSTst.computeAverage(round);
-		m_mapST2w.computeAverage(round);
-		m_mapST2pt.computeAverage(round);
-		m_mapST2st.computeAverage(round);
-		m_mapSSTw.computeAverage(round);
-		m_mapSSTpt.computeAverage(round);
-		m_mapSSTst.computeAverage(round);
+		// n0
 		m_mapN0w.computeAverage(round);
 		m_mapN0pt.computeAverage(round);
+		// st2
+		m_mapST2w.computeAverage(round);
+		m_mapST2pt.computeAverage(round);
+		// sst
+		m_mapSSTw.computeAverage(round);
+		m_mapSSTpt.computeAverage(round);
 
 		// unigram context
-		// st + sti, n0 + n0i
+		// st, n0
+		// st context
 		m_mapSTiw.computeAverage(round);
 		m_mapSTiwSTjw.computeAverage(round);
-		m_mapN0iw.computeAverage(round);
-		m_mapN0iwN0jw.computeAverage(round);
 		m_mapSTipt.computeAverage(round);
 		m_mapSTiptSTjpt.computeAverage(round);
+		// n0 context
+		m_mapN0iw.computeAverage(round);
+		m_mapN0iwN0jw.computeAverage(round);
 		m_mapN0ipt.computeAverage(round);
 		m_mapN0iptN0jpt.computeAverage(round);
-		m_mapSTist.computeAverage(round);
-		m_mapN0ist.computeAverage(round);
 
 		// unigram with label
+		// st, n0, st2, sst
 		// st
 		m_mapSTwSTLHl.computeAverage(round);
 		m_mapSTwSTLPl.computeAverage(round);
@@ -1626,6 +1776,8 @@ namespace std_twostack {
 		// n0
 		m_mapN0wN0LHi.computeAverage(round);
 		m_mapN0wN0LPi.computeAverage(round);
+		m_mapN0ptN0LHi.computeAverage(round);
+		m_mapN0ptN0LPi.computeAverage(round);
 		// st2
 		m_mapST2wST2LHi.computeAverage(round);
 		m_mapST2wST2LPi.computeAverage(round);
@@ -1910,14 +2062,15 @@ namespace std_twostack {
 		m_mapSSTptN0ptSSTrl.computeAverage(round);
 		m_mapSSTptN0ptN0ll.computeAverage(round);
 
-		// char feature
-		// for chinese
+		// char feature (for chinese)
+		// st context char
 		m_map1CharBeforeST.computeAverage(round);
 		m_map2CharBeforeST.computeAverage(round);
 		m_map3CharBeforeST.computeAverage(round);
 		m_map1CharAfterST.computeAverage(round);
 		m_map2CharAfterST.computeAverage(round);
 		m_map3CharAfterST.computeAverage(round);
+		// n0 context char
 		m_map1CharBeforeN0.computeAverage(round);
 		m_map2CharBeforeN0.computeAverage(round);
 		m_map3CharBeforeN0.computeAverage(round);
@@ -1925,13 +2078,45 @@ namespace std_twostack {
 		m_map2CharAfterN0.computeAverage(round);
 		m_map3CharAfterN0.computeAverage(round);
 
-		// string feature
+		// path feature
+		// st - n0
 		m_mapSTPOSPath.computeAverage(round);
-		m_mapST2POSPath.computeAverage(round);
-		m_mapSSTPOSPath.computeAverage(round);
 		m_mapSTFPOSPath.computeAverage(round);
+		m_mapSTwN0ptSTsynhw.computeAverage(round);
+		m_mapSTwN0wSTsynhpt.computeAverage(round);
+		m_mapSTptN0wSTsynhw.computeAverage(round);
+		m_mapSTwN0ptN0synhw.computeAverage(round);
+		m_mapSTwN0wN0synhpt.computeAverage(round);
+		m_mapSTptN0wN0synhw.computeAverage(round);
+		// st2 - n0
+		m_mapST2POSPath.computeAverage(round);
 		m_mapST2FPOSPath.computeAverage(round);
+		m_mapST2wN0ptST2synhw.computeAverage(round);
+		m_mapST2wN0wST2synhpt.computeAverage(round);
+		m_mapST2ptN0wST2synhw.computeAverage(round);
+		m_mapST2wN0ptN0synhw.computeAverage(round);
+		m_mapST2wN0wN0synhpt.computeAverage(round);
+		m_mapST2ptN0wN0synhw.computeAverage(round);
+		// sst - n0
+		m_mapSSTPOSPath.computeAverage(round);
 		m_mapSSTFPOSPath.computeAverage(round);
+		m_mapSSTwN0ptSSTsynhw.computeAverage(round);
+		m_mapSSTwN0wSSTsynhpt.computeAverage(round);
+		m_mapSSTptN0wSSTsynhw.computeAverage(round);
+		m_mapSSTwN0ptN0synhw.computeAverage(round);
+		m_mapSSTwN0wN0synhpt.computeAverage(round);
+		m_mapSSTptN0wN0synhw.computeAverage(round);
+
+		// supertag feature
+		m_mapSTst.computeAverage(round);
+		m_mapST2st.computeAverage(round);
+		m_mapSSTst.computeAverage(round);
+		m_mapN0ist.computeAverage(round);
+		m_mapSTstST2st.computeAverage(round);
+		m_mapSTstSSTst.computeAverage(round);
+		m_mapSTstN0w.computeAverage(round);
+		m_mapSTstN0pt.computeAverage(round);
+		m_mapSTstN0wpt.computeAverage(round);
 	}
 }
 
