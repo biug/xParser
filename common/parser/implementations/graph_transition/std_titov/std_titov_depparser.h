@@ -38,16 +38,11 @@ namespace std_titov {
 		void decode() override;
 	};
 
-	extern int LABEL_COUNT;
-
 	extern int A_FIRST;
 	extern int SH_FIRST;
 
 	extern int A_END;
 	extern int SH_END;
-
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	template<class RET_TYPE>
 	DepParser<RET_TYPE>::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :

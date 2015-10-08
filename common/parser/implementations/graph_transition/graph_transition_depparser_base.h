@@ -199,9 +199,9 @@ void GraphDepParserBase<STATE_TYPE>::goldCheck(const DependencyGraph & correct) 
 	if (!m_iCorrect.extractOracle(correct)) {
 		++m_nTotalErrors;
 		if (m_nTotalErrors > 1) {
-			nBackSpace("Error No. " + std::to_string(m_nTotalErrors - 1));
+			nBackSpace("error No. " + std::to_string(m_nTotalErrors - 1));
 		}
-		std::cout << "Error No." << m_nTotalErrors << std::flush;
+		std::cout << "error No." << m_nTotalErrors << std::flush;
 	}
 	m_iCorrect.check();
 }
@@ -226,10 +226,10 @@ void GraphDepParserBase<STATE_TYPE>::train(const DependencyGraph & correct, cons
 	int lastTrainingRound = m_nTrainingRound;
 	work(nullptr, correct);
 	if (lastTrainingRound > 0) {
-		nBackSpace("Error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");
+		nBackSpace("error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");
 	}
 	if (m_nTrainingRound > 0) {
-		std::cout << "Error rate " << ((double)m_nTotalErrors / (double)m_nTrainingRound);
+		std::cout << "error rate " << ((double)m_nTotalErrors / (double)m_nTrainingRound);
 		std::cout << " ( " << m_nTotalErrors << " / " << m_nTrainingRound << " ) " << std::flush;
 	}
 }

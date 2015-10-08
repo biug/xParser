@@ -9,6 +9,9 @@
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
+extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
+extern SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
+
 namespace std_titov {
 	template<class RET_TYPE>
 	class Weight : public WeightBase {
@@ -279,9 +282,6 @@ namespace std_titov {
 		void saveScores() const override;
 		void computeAverageFeatureWeights(const int & round) override;
 	};
-
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	template<class RET_TYPE>
 	Weight<RET_TYPE>::Weight(const std::string & sRead, const std::string & sRecord) :

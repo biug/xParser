@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-namespace std_titov {
+extern int LABEL_COUNT;
 
-	extern int LABEL_COUNT;
+namespace std_titov {
 
 	extern int SH_FIRST;
 
@@ -20,7 +20,6 @@ namespace std_titov {
 		void shift(const int & t);
 		void reduce();
 		void swap();
-		void arc(const int & l);
 
 		bool canSwap() const;
 		bool canArc() const;

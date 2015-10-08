@@ -7,7 +7,7 @@
 namespace std_twostack {
 	class Run : public GraphRunBase<DepParser<PackedScoreType>, DepParser<PackedSuperTagScoreType>, StateItem> {
 	protected:
-		void initConstant(const std::string & sInputFile = "") const override;
+		void initAction() const override;
 	public:
 		Run(const bool & bChar = false, const bool & bPath = false, const bool & bSTag = false);
 		~Run();

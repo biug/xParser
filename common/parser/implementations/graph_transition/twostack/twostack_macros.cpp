@@ -4,16 +4,12 @@
 
 #include "twostack_macros.h"
 
-namespace twostack {
+extern int LABEL_COUNT;
 
-	int LABEL_COUNT;
+namespace twostack {
 
 	int A_MM_FIRST, A_RC_FIRST, A_RE_FIRST, A_SH_FIRST, SH_FIRST;
 	int A_MM_END, A_RC_END, A_RE_END, A_SH_END, SH_END;
-
-	std::vector<int> g_vecLabelMap;
-	SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	int decodeAction(const int & action) {
 		if (action < A_MM_FIRST) {

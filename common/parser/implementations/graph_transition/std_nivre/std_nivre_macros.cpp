@@ -6,14 +6,8 @@
 
 namespace std_nivre {
 
-	int LABEL_COUNT;
-
 	int A_FIRST, SH_FIRST;
 	int A_END, SH_END;
-
-	std::vector<int> g_vecLabelMap;
-	SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	int decodeAction(const int & action) {
 		if (action < A_FIRST) {

@@ -72,6 +72,7 @@ public:
 	const int & stackSubTop() const;
 	const int & actionBack() const;
 
+	void arc(const int & l);
 	void generateGraph(const DependencyGraph & sent, DependencyGraph & tree) const;
 
 	virtual void clear() = 0;

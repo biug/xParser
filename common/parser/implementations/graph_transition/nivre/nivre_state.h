@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-namespace nivre {
+extern int LABEL_COUNT;
 
-	extern int LABEL_COUNT;
+namespace nivre {
 
 	extern int A_SW_FIRST;
 	extern int A_RE_FIRST;
@@ -27,7 +27,6 @@ namespace nivre {
 		void shift(const int & t);
 		void reduce();
 		void swap();
-		void arc(const int & l);
 		void arcSwap(const int & l);
 		void arcReduce(const int & l);
 		void arcShift(const int & l, const int & t);

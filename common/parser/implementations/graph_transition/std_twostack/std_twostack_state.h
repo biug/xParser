@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-namespace std_twostack {
+extern int LABEL_COUNT;
 
-	extern int LABEL_COUNT;
+namespace std_twostack {
 
 	extern int SH_FIRST;
 
@@ -25,7 +25,6 @@ namespace std_twostack {
 		void reduce();
 		void mem();
 		void recall();
-		void arc(const int & l);
 
 		const int & secondStackTop() const;
 		const int & secondStackBack() const;

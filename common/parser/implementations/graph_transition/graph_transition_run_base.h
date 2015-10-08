@@ -12,7 +12,8 @@ protected:
 	bool m_bPathFeature;
 	bool m_bSuperTagFeature;
 
-	virtual void initConstant(const std::string & sInputFile = "") const = 0;
+	virtual void initAction() const = 0;
+	void initConstant(const std::string & sInputFile = "") const;
 public:
 	GraphRunBase(const bool & bChar = false, const bool & bPath = false, const bool & bSTag = false);
 	virtual ~GraphRunBase() {};
@@ -26,6 +27,18 @@ template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::GraphRunBase
 (const bool & bChar, const bool & bPath, const bool & bSuperTag) :
 m_bCharFeature(bChar), m_bPathFeature(bPath), m_bSuperTagFeature(bSuperTag) {}
+
+template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
+void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::initConstant(const std::string & sInputFile) const {
+	initTags(sInputFile);
+	initAction();
+
+	std::cout << "constant load complete." << std::endl;
+
+	std::cout << (m_bCharFeature ? "use char" : "without char") << std::endl;
+	std::cout << (m_bPathFeature ? "use path" : "without path") << std::endl;
+	std::cout << (m_bSuperTagFeature ? "use supertag" : "without supertag") << std::endl;
+}
 
 template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {

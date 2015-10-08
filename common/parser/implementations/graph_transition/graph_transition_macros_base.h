@@ -194,4 +194,6 @@ template<class RET_TYPE> using POSTagSet2IntMap = PackedScoreMap<TwoInts, ScoreA
 template<class RET_TYPE> using POSTagSet3IntMap = PackedScoreMap<TwoInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
 template<class RET_TYPE> using POSTagSet4TwoIntsMap = PackedScoreMap<ThreeInts, ScoreArray<RET_TYPE>, RET_TYPE, AddScoreType>;
 
+void initTags(const std::string & sInput);
+
 #endif

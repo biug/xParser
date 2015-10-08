@@ -40,8 +40,6 @@ namespace nivre {
 		void decode() override;
 	};
 
-	extern int LABEL_COUNT;
-
 	extern int A_SW_FIRST;
 	extern int A_RE_FIRST;
 	extern int A_SH_FIRST;
@@ -51,9 +49,6 @@ namespace nivre {
 	extern int A_RE_END;
 	extern int A_SH_END;
 	extern int SH_END;
-
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	extern SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	template<class RET_TYPE>
 	DepParser<RET_TYPE>::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :

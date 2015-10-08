@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-namespace twostack {
+extern int LABEL_COUNT;
 
-	extern int LABEL_COUNT;
+namespace twostack {
 
 	extern int A_MM_FIRST;
 	extern int A_RC_FIRST;
@@ -32,7 +32,6 @@ namespace twostack {
 		void reduce();
 		void mem();
 		void recall();
-		void arc(const int & l);
 		void arcMem(const int & l);
 		void arcRecall(const int & l);
 		void arcReduce(const int & l);

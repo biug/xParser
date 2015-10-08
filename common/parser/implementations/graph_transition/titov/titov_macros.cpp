@@ -4,16 +4,12 @@
 
 #include "titov_macros.h"
 
-namespace titov {
+extern int LABEL_COUNT;
 
-	int LABEL_COUNT;
+namespace titov {
 
 	int A_SW_FIRST, A_RE_FIRST, A_SH_FIRST, SH_FIRST;
 	int A_SW_END, A_RE_END, A_SH_END, SH_END;
-
-	std::vector<int> g_vecLabelMap;
-	SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-	SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
 
 	int decodeAction(const int & action) {
 		if (action < A_SW_FIRST) {
