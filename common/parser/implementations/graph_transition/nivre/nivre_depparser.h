@@ -452,6 +452,10 @@ namespace nivre {
 		cweight->m_mapN0wN0LHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		bi_features.refer(n0_word, n0lp_label);
 		cweight->m_mapN0wN0LPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+		bi_features.refer(n0_postag, n0lh_label);
+		cweight->m_mapN0ptN0LHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+		bi_features.refer(n0_postag, n0lp_label);
+		cweight->m_mapN0ptN0LPl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		// st2
 		bi_features.refer(st2_word, st2lh_label);
 		cweight->m_mapST2wST2LHl.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
@@ -492,6 +496,10 @@ namespace nivre {
 		cweight->m_mapN0wN0LHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		bi_features.refer(n0_word, n0lp_arity);
 		cweight->m_mapN0wN0LPi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+		bi_features.refer(n0_postag, n0lh_arity);
+		cweight->m_mapN0ptN0LHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
+		bi_features.refer(n0_postag, n0lp_arity);
+		cweight->m_mapN0ptN0LPi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
 		// st2
 		bi_features.refer(st2_word, st2lh_arity);
 		cweight->m_mapST2wST2LHi.getOrUpdateScore(m_lPackedScore, bi_features, m_nScoreIndex, amount, m_nTrainingRound);
