@@ -167,20 +167,21 @@ namespace std_nivre {
 	}
 
 	/*
-		for the next word
-		we draw the rightmost arc first
-		then we draw arc from leftmost to right
+	 	action priority is : "reduce" > "arc" > "swap" > "shift"
 		for example
-		| 0 | 1 | 2 | 3 | 4 |					| 5 | . . .
-		if we have arc 0 - 5, 2 - 5, 3 - 5, 4 - 5, '1' doesn't have arc right node righter than 5
-		first we use 4 swap and get state
-		| 4 |			| 0 | 1 | 2 | 3 |		| 5 | . . .
-		we draw 4 - 5 first
-		then we shift | 0 | and arc, get 0 - 5
-		then we shift | 1 | and reduce
-		then we shift | 2 | and arc, get 2 - 5
-		then we shift | 3 | and arc, get 3 - 5
-		then we shift | 4 | and arc, get 4 - 5
+		| 0 | 1 |					| 2 | 3 | . . .
+		if we have arc 0 - 2, 1 - 3
+		we use swap, get state
+		| 1 |						| 2 | 3 | . . .
+		| 0 |
+		we use shift, get state
+		| 1 | 0 |					| 2 | 3 | . . .
+		we use arc + reduce, get state
+		| 1 |						| 2 | 3 | . . .		"0 - 2"
+		we use shift + reduce, get state
+		| 1 |							| 3 | . . .
+		finally we use arc + reduce, get state
+		|								| 3 | . . .		"1 - 3"
 	*/
 	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & label) {
 		// remove shift-reduce
