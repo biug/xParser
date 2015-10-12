@@ -15,12 +15,12 @@
 #include "common/parser/implementations/graph_transition/std_titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/std_twostack/std_twostack_run.h"
 
-#include "common/parser/implementations/eisner/eisner_run.h"
-#include "common/parser/implementations/eisnergc/eisnergc_run.h"
-#include "common/parser/implementations/eisner3rd/eisner3rd_run.h"
-#include "common/parser/implementations/eisnergc3rd/eisnergc3rd_run.h"
-#include "common/parser/implementations/emptyeisner3rd/emptyeisner3rd_run.h"
-#include "common/parser/implementations/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
+#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
+#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
+#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
+#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
+#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
+#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
 
 int main(int argc, char * argv[]) {
 
@@ -100,7 +100,7 @@ int main(int argc, char * argv[]) {
 		std::string next_feature;
 
 		current_feature = next_feature = argv[4];
-		next_feature = next_feature.substr(0, next_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
+		next_feature = next_feature.substr(0, next_feature.rfind("/") + strlen("/")) + argv[2] + "1.feat";
 
 		for (int i = 0; i < iteration; ++i) {
 			run->train(argv[3], current_feature, next_feature);
