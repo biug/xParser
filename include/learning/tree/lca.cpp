@@ -181,61 +181,54 @@ void LCA::loadPath(DependencyTree & tree) {
 	}
 
 	std::vector<int> heads;
+	heads.push_back(-1);
 	for (int i = 0, n = tree.size(); i < n; ++i) {
 		pred[i] = -1;
 	}
 	for (int i = 0, n = tree.size(); i < n; ++i) {
 		int idx = TREENODE_HEAD(tree[i]);
-		heads.push_back(idx);
+		heads.push_back(idx + 1);
 		head[i] = idx < i ? idx : -1;
 		if (idx >= 0 && i < idx) {
 			pred[idx] = i;
 		}
 	}
 	loadTree(heads);
-	for (int i = 0, n = tree.size(); i < n; ++i) {
+	for (int i = 1, n = tree.size(); i <= n; ++i) {
 		POSPath.push_back(std::vector<std::string>());
 		FPOSPath.push_back(std::vector<std::string>());
-		for (int j = 0; j < n; ++j) {
+		for (int j = 1; j <= n; ++j) {
 			int si = i, sj = j;
 			int r = query(si, sj);
 			int left_dep = 0, right_dep = 0;
 			std::string lp = "";
 			std::string lfp = "";
-			std::string ll = "";
 			while (si != r) {
-				lp += TREENODE_POSTAG(tree[si]) + LCA::UP;
-				lfp += TREENODE_POSTAG(tree[si]).substr(0, 1) + LCA::UP;
-				ll += TREENODE_LABEL(tree[si]) + LCA::UP;
+				lp += TREENODE_POSTAG(tree[si - 1]) + LCA::UP;
+				lfp += TREENODE_POSTAG(tree[si - 1]).substr(0, 1) + LCA::UP;
 				si = heads[si];
 				++left_dep;
 			}
-			if (r == tree.size()) {
+			if (r == 0) {
 				lp += NONE;
 				lfp += NONE;
-				ll += NONE;
 			}
 			else {
-				lp += TREENODE_POSTAG(tree[si]) + LCA::UP;
-				lfp += TREENODE_POSTAG(tree[si]).substr(0, 1) + LCA::UP;
-				ll += TREENODE_LABEL(tree[si]) + LCA::ROOT;
+				lp += TREENODE_POSTAG(tree[si - 1]) + LCA::UP;
+				lfp += TREENODE_POSTAG(tree[si - 1]).substr(0, 1) + LCA::UP;
 			}
 			std::string rp = "";
 			std::string rfp = "";
 			std::string rl = "";
 			while (sj != r) {
-				rp = TREENODE_POSTAG(tree[sj]) + LCA::DOWN + rp;
-				rfp = TREENODE_POSTAG(tree[sj]).substr(0, 1) + LCA::DOWN + rfp;
-				rl = TREENODE_LABEL(tree[sj]) + LCA::DOWN + rl;
+				rp = TREENODE_POSTAG(tree[sj - 1]) + LCA::DOWN + rp;
+				rfp = TREENODE_POSTAG(tree[sj - 1]).substr(0, 1) + LCA::DOWN + rfp;
+				rl = TREENODE_LABEL(tree[sj - 1]) + LCA::DOWN + rl;
 				sj = heads[sj];
 				++right_dep;
 			}
-			POSPath[i].push_back(std::min(left_dep, right_dep) <= 2 ? lp + rp : LCA::NONE);
-			FPOSPath[i].push_back(std::min(left_dep, right_dep) <= 2 ? lfp + rfp : LCA::NONE);
-
-#ifdef _DEBUG
-			std::cout << i << " and " << j << " lca is " << r << std::endl;
-#endif
+			POSPath[i - 1].push_back(std::min(left_dep, right_dep) <= 2 ? lp + rp : LCA::NONE);
+			FPOSPath[i - 1].push_back(std::min(left_dep, right_dep) <= 2 ? lfp + rfp : LCA::NONE);
 		}
 	}
 }
