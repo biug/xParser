@@ -110,6 +110,7 @@ typedef BiGram<gtype> POSTagInt;
 typedef TriGram<gtype> TwoWordsInt;
 typedef TriGram<gtype> POSTagSet2Int;
 typedef TriGram<gtype> WordPOSTagInt;
+typedef TriGram<UNSIGNED> ThreeUNSIGNEDS;
 
 typedef QuarGram<gtype> POSTagSet3Int;
 typedef QuarGram<gtype> TwoWordsIntInt;

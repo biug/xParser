@@ -995,12 +995,12 @@ namespace twostack {
 		cweight->m_mapSSTptN0ptN0ll.getOrUpdateScore(m_lPackedScore, uni_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 
 		if (m_bChar) {
-			cweight->m_map1CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map2CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map3CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map1CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map2CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_map3CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map1CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index == -1 ? 0 : st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index == -1 ? 0 : st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharBeforeST.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, st_index == -1 ? 0 : st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map1CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index == -1 ? 0 : st_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map2CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index == -1 ? 0 : st_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_map3CharAfterST.getOrUpdateScore(m_lPackedScore, nCharNext(m_sSentence, st_index == -1 ? 0 : st_index, 3), m_nScoreIndex, amount, m_nTrainingRound);
 
 			cweight->m_map1CharBeforeN0.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 1), m_nScoreIndex, amount, m_nTrainingRound);
 			cweight->m_map2CharBeforeN0.getOrUpdateScore(m_lPackedScore, nCharPrev(m_sSentence, n0_index == -1 ? m_nSentenceLength : n0_index, 2), m_nScoreIndex, amount, m_nTrainingRound);
