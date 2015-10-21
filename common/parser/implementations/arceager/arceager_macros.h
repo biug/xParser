@@ -93,8 +93,6 @@ inline bool operator==(const arceager::AddScoreType & s, const int & i) {
 
 namespace arceager {
 
-#define OUTPUT_STEP 100
-
 #define AGENDA_SIZE 64
 
 	enum Action {
@@ -123,8 +121,8 @@ namespace arceager {
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
 
-	typedef PackedScoreMap<QuarGram<unsigned int>, ScoreArray, PackedScoreType, AddScoreType> WordSetOfDepLabelsMap;
-	typedef PackedScoreMap<QuarGram<unsigned int>, ScoreArray, PackedScoreType, AddScoreType> POSTagSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<UNSIGNED>, ScoreArray, PackedScoreType, AddScoreType> WordSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<UNSIGNED>, ScoreArray, PackedScoreType, AddScoreType> POSTagSetOfDepLabelsMap;
 
 	typedef PackedScoreMap<WordInt, ScoreArray, PackedScoreType, AddScoreType> WordIntMap;
 	typedef PackedScoreMap<POSTagInt, ScoreArray, PackedScoreType, AddScoreType> POSTagIntMap;

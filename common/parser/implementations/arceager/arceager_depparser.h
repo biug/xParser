@@ -12,10 +12,6 @@ namespace arceager {
 
 	class DepParser : public DepParserBase {
 	private:
-		double m_tDecodeTime;
-		double m_tGetScoreTime;
-		double m_tUpdateScoreTime;
-		double m_tStartTime;
 
 		static WordPOSTag empty_taggedword;
 		static SetOfDepLabels empty_setoflabels;
@@ -85,13 +81,6 @@ namespace arceager {
 		void parse(const Sentence & sentence, DependencyTree * retval);
 		void work(DependencyTree * retval, const DependencyTree & correct);
 		void goldCheck(const DependencyTree & correct);
-
-		void printTime() {
-//			std::cout << "total time tick is " << GetTickCount() - m_tStartTime << std::endl;
-			std::cout << "total get score time is " << m_tGetScoreTime << std::endl;
-			std::cout << "total update score time is " << m_tUpdateScoreTime << std::endl;
-			std::cout << "total decode time is " << m_tDecodeTime << std::endl;
-		}
 	};
 
 	extern int AL_FIRST;

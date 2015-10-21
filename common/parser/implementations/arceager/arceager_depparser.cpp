@@ -24,11 +24,6 @@ namespace arceager {
 
 		DepParser::empty_taggedword.refer(TWord::code(EMPTY_WORD), TPOSTag::code(EMPTY_POSTAG));
 		empty_setoflabels.add(0);
-
-		m_tDecodeTime = 0;
-		m_tGetScoreTime = 0;
-		m_tUpdateScoreTime = 0;
-		m_tStartTime = 0;
 	}
 
 	DepParser::~DepParser() {
@@ -45,16 +40,21 @@ namespace arceager {
 		}
 
 		// train
+		int lastTotalErrors = m_nTotalErrors;
+		int lastTrainingRound = m_nTrainingRound;
 		work(nullptr, correct);
-		if (m_nTrainingRound % OUTPUT_STEP == 0) {
-			std::cout << m_nTotalErrors << " / " << m_nTrainingRound << std::endl;
-			//printTime();
+		if (lastTrainingRound > 0) {
+			nBackSpace("error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");
+		}
+		if (m_nTrainingRound > 0) {
+			std::cout << "error rate " << ((double)m_nTotalErrors / (double)m_nTrainingRound);
+			std::cout << " ( " << m_nTotalErrors << " / " << m_nTrainingRound << " ) " << std::flush;
 		}
 	}
 
 	void DepParser::parse(const Sentence & sentence, DependencyTree * retval) {
 		int idx = 0;
-		m_nTrainingRound = 0;
+		++m_nTrainingRound;
 		DependencyTree correct;
 		m_nSentenceLength = sentence.size();
 		for (const auto & token : sentence) {
@@ -62,6 +62,10 @@ namespace arceager {
 			correct.push_back(DependencyTreeNode(token, -1, NULL_LABEL));
 		}
 		work(retval, correct);
+		if (m_nTrainingRound > 1) {
+			nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound - 1));
+		}
+		std::cout << "parsing sentence " << m_nTrainingRound << std::flush;
 	}
 
 	void DepParser::goldCheck(const DependencyTree & correct) {
@@ -135,8 +139,6 @@ namespace arceager {
 			m_abScores.clear();
 			getActionScores(*iGenerator);
 
-			//auto time_start = GetTickCount();
-
 			const tscore & score = iGenerator->getScore();
 
 			if (iGenerator->size() == m_nSentenceLength) {
@@ -172,15 +174,12 @@ namespace arceager {
 				m_iCandidate.move(saScore->getAction());
 				m_pGenerated->insertItem(m_iCandidate);
 			}
-
-			//m_tDecodeTime += GetTickCount() - time_start;
 		}
 	}
 
 	void DepParser::decodeArcs() {}
 
 	void DepParser::update() {
-		//auto time_start = GetTickCount();
 
 		m_iStatesItem.clear();
 		const StateItem & output = m_pGenerator->bestUnsortItem();
@@ -196,14 +195,10 @@ namespace arceager {
 					break;
 				}
 			}
-			//std::cout << "update correct" << std::endl; //debug
 			updateScoreForState(m_iStatesItem, m_iCorrect, 1);
-			//std::cout << "update training" << std::endl; //debug
 			updateScoreForState(m_iStatesItem, output, -1);
 			++m_nTotalErrors;
 		}
-
-		//m_tUpdateScoreTime += GetTickCount() - time_start;
 	}
 
 	void DepParser::generate(DependencyTree * retval, const DependencyTree & correct) {
@@ -211,10 +206,8 @@ namespace arceager {
 	}
 
 	void DepParser::getActionScores(const StateItem & item) {
-		//auto time_start = GetTickCount();
 		memset(m_mapPackedScore, 0, sizeof(tscore) * MAX_ACTION);
 		getOrUpdateStackScore(item, std::make_pair<int, const int &>(NO_ACTION, 0));
-		//m_tGetScoreTime += GetTickCount() - time_start;
 	}
 
 	void DepParser::updateScoreForState(const StateItem & from, const StateItem & output, const int & amount) {

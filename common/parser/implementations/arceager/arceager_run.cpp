@@ -86,8 +86,6 @@ namespace arceager {
 
 		std::cout << "GoldTest iteration is started..." << std::endl;
 
-		auto time_begin = time(NULL);
-
 		std::unique_ptr<DepParser> parser(new DepParser(sFeatureInput, "", ParserState::GOLDTEST));
 		TDepLabel::add("ROOT");
 
@@ -114,10 +112,6 @@ namespace arceager {
 
 		std::cout << "total " << nRound << " round" << std::endl;
 
-		auto time_end = time(NULL);
-
 		std::cout << "Done." << std::endl;
-
-		std::cout << "Training has finished successfully. Total time taken is: " << difftime(time_end, time_begin) << "s" << std::endl;
 	}
 }
