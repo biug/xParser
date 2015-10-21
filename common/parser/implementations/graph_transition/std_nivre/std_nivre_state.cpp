@@ -146,6 +146,7 @@ namespace std_nivre {
 			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
 				++seek;
 				arc(RIGHTNODE_LABEL(rnwl));
+				m_lActionList[++m_nActionBack] = A_FIRST + RIGHTNODE_LABEL(rnwl) - 1;
 				return true;
 			}
 		}
