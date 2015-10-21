@@ -219,11 +219,9 @@ void LCA::loadPath(DependencyTree & tree) {
 			}
 			std::string rp = "";
 			std::string rfp = "";
-			std::string rl = "";
 			while (sj != r) {
 				rp = TREENODE_POSTAG(tree[sj - 1]) + LCA::DOWN + rp;
 				rfp = TREENODE_POSTAG(tree[sj - 1]).substr(0, 1) + LCA::DOWN + rfp;
-				rl = TREENODE_LABEL(tree[sj - 1]) + LCA::DOWN + rl;
 				sj = heads[sj];
 				++right_dep;
 			}
