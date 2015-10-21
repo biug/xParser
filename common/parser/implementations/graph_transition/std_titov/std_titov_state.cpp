@@ -95,6 +95,7 @@ namespace std_titov {
 			return;
 		case ARC:
 			arc(action - A_FIRST + 1);
+			m_lActionList[++m_nActionBack] = action;
 			return;
 		case SHIFT:
 			shift(action - SH_FIRST);
