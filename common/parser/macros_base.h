@@ -87,8 +87,8 @@ typedef BiGram<gtype> TwoInts;
 typedef BiGram<gtype> TwoWords;
 typedef BiGram<gtype> POSTagSet2;
 typedef BiGram<gtype> WordPOSTag;
-typedef BiGram<long long> WordSetOfDepLabels;
-typedef BiGram<long long> POSTagSetOfDepLabels;
+typedef QuarGram<unsigned int> WordSetOfDepLabels;
+typedef QuarGram<unsigned int> POSTagSetOfDepLabels;
 
 typedef TriGram<gtype> ThreeInts;
 typedef TriGram<gtype> ThreeWords;

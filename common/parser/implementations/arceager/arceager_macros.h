@@ -1,13 +1,14 @@
 #ifndef _ARCEAGER_MACROS_H
 #define _ARCEAGER_MACROS_H
 
+#include "common/token/tagset.h"
 #include "common/parser/agenda.h"
 #include "common/parser/macros_base.h"
 #include "include/learning/perceptron/packed_score.h"
 
 namespace arceager {
 
-#define MAX_ACTION 100
+#define MAX_ACTION 200
 	typedef tscore PackedScoreType[MAX_ACTION];
 	typedef std::pair<int, const int &> AddScoreType;
 
@@ -108,7 +109,7 @@ namespace arceager {
 #define ENCODE_POSTAG_SET_2(T1, T2)		(((T1) << 8) | (T2))
 #define ENCODE_POSTAG_SET_3(T1, T2, T3)	(((T1) << 16) | ((T2) << 8) | (T3))
 
-	typedef SetOfLabels<int, long long> SetOfDepLabels;
+	typedef TagSetN<3> SetOfDepLabels;
 
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> IntMap;
 	typedef PackedScoreMap<Word, ScoreArray, PackedScoreType, AddScoreType> WordMap;
@@ -122,8 +123,8 @@ namespace arceager {
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
 	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
 
-	typedef PackedScoreMap<WordSetOfDepLabels, ScoreArray, PackedScoreType, AddScoreType> WordSetOfDepLabelsMap;
-	typedef PackedScoreMap<POSTagSetOfDepLabels, ScoreArray, PackedScoreType, AddScoreType> POSTagSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<unsigned int>, ScoreArray, PackedScoreType, AddScoreType> WordSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<unsigned int>, ScoreArray, PackedScoreType, AddScoreType> POSTagSetOfDepLabelsMap;
 
 	typedef PackedScoreMap<WordInt, ScoreArray, PackedScoreType, AddScoreType> WordIntMap;
 	typedef PackedScoreMap<POSTagInt, ScoreArray, PackedScoreType, AddScoreType> POSTagIntMap;

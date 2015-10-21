@@ -53,3 +53,4 @@ Temporary Items
 *.cproject
 *.prefs
 .settings/org.eclipse.cdt.managedbuilder.core.prefs
+main.cpp

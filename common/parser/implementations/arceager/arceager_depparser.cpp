@@ -458,20 +458,20 @@ namespace arceager {
 		}
 
 		if (st_index != -1){
-			word_tagset.refer(st_word, st_rtagset.hash());
+			word_tagset.refer(st_word, st_rtagset.bits(0), st_rtagset.bits(1), st_rtagset.bits(2));
 			cweight->m_mapSTwrp.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-			tag_tagset.refer(st_tag, st_rtagset.hash());
+			tag_tagset.refer(st_tag, st_rtagset.bits(0), st_rtagset.bits(1), st_rtagset.bits(2));
 			cweight->m_mapSTtrp.getOrUpdateScore(m_mapPackedScore, tag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-			word_tagset.refer(st_word, st_ltagset.hash());
+			word_tagset.refer(st_word, st_ltagset.bits(0), st_ltagset.bits(1), st_ltagset.bits(2));
 			cweight->m_mapSTwlp.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-			tag_tagset.refer(st_tag, st_ltagset.hash());
+			tag_tagset.refer(st_tag, st_ltagset.bits(0), st_ltagset.bits(1), st_ltagset.bits(2));
 			cweight->m_mapSTtlp.getOrUpdateScore(m_mapPackedScore, tag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 		}
 
 		if (n0_index != -1){
-			word_tagset.refer(n0_word, n0_ltagset.hash());
+			word_tagset.refer(n0_word, n0_ltagset.bits(0), n0_ltagset.bits(1), n0_ltagset.bits(2));
 			cweight->m_mapN0wlp.getOrUpdateScore(m_mapPackedScore, word_tagset, m_nScoreIndex, amount, m_nTrainingRound);
-			tag_tagset.refer(n0_tag, n0_ltagset.hash());
+			tag_tagset.refer(n0_tag, n0_ltagset.bits(0), n0_ltagset.bits(1), n0_ltagset.bits(2));
 			cweight->m_mapN0tlp.getOrUpdateScore(m_mapPackedScore, tag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 		}
 	}
