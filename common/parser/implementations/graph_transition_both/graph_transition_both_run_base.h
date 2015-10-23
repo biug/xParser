@@ -14,7 +14,7 @@ namespace graph_transition_both {
 		bool m_bSuperTagFeature;
 
 		virtual void initAction() const = 0;
-		void initConstant(const std::string & sInputFile = "") const;
+		void initConstant(const std::string & sInputFile = "", const std::string & sInputReverseFile = "") const;
 	public:
 		GraphRunBase(const bool & bChar = false, const bool & bPath = false, const bool & bSTag = false);
 		virtual ~GraphRunBase() {};
@@ -30,11 +30,12 @@ namespace graph_transition_both {
 		m_bCharFeature(bChar), m_bPathFeature(bPath), m_bSuperTagFeature(bSuperTag) {}
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
-	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::initConstant(const std::string & sInputFile) const {
-		initTags(sInputFile);
+	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::initConstant(const std::string & sInputFile, const std::string & sInputReverseFile) const {
+		initTags(sInputFile, sInputReverseFile);
 		initAction();
 
 		std::cout << "constant load complete." << std::endl;
+		std::cout << "label count is " << g_nGraphLabelCount << std::endl;
 
 		std::cout << (m_bCharFeature ? "use char" : "without char") << std::endl;
 		std::cout << (m_bPathFeature ? "use path" : "without path") << std::endl;
@@ -56,7 +57,7 @@ namespace graph_transition_both {
 
 		std::string sInputFile = sInput.substr(0, sInput.find("#"));
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
-		initConstant(sInputFile);
+		initConstant(sInputFile, sInputReverseFile);
 
 		std::ifstream input(sInputFile);
 		std::ifstream inputReverse(sInputReverseFile);
@@ -92,6 +93,8 @@ namespace graph_transition_both {
 				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sFeatureFile, sFeatureFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 		std::string sInputFile = sInput.substr(0, sInput.find("#"));
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
+		std::cout << sInputFile << std::endl;
+		std::cout << sInputReverseFile << std::endl;
 		std::ifstream input(sInputFile);
 		std::ifstream inputReverse(sInputReverseFile);
 		std::ofstream output(sOutputFile);

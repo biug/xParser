@@ -82,6 +82,74 @@ void initTags(const std::string & sInputFile) {
 	}
 }
 
+void initTags(const std::string & sInputFile, const std::string & sInputReverseFile) {
+	DependencyGraph graph;
+	DependencyGraph graphReverse;
+	std::ifstream input(sInputFile);
+	std::ifstream inputReverse(sInputReverseFile);
+
+	std::unordered_map<int, std::unordered_set<int>> wordsCandidates;
+	std::unordered_map<int, std::unordered_set<int>> postagsCandidates;
+	if (input) {
+		while (input >> graph) {
+			inputReverse >> graphReverse;
+			for (const auto & node : graph) {
+				int w = TWord::code(GRAPHNODE_WORD(node));
+				int p = TPOSTag::code(GRAPHNODE_POSTAG(node));
+				int t = GRAPHNODE_SUPERTAG(node) == "_" ? 0 : TSuperTag::code(GRAPHNODE_SUPERTAG(node));
+				if (t != 0) {
+					wordsCandidates[w].insert(t);
+					postagsCandidates[p].insert(t);
+				}
+			}
+		}
+		g_mapSuperTagCandidatesOfWords.clear();
+		for (const auto & word_set : wordsCandidates) {
+			for (const auto & t : word_set.second) {
+				g_mapSuperTagCandidatesOfWords[word_set.first].push_back(t);
+			}
+		}
+		g_mapSuperTagCandidatesOfPOSTags.clear();
+		for (const auto & postag_set : postagsCandidates) {
+			for (const auto & t : postag_set.second) {
+				g_mapSuperTagCandidatesOfPOSTags[postag_set.first].push_back(t);
+			}
+		}
+	}
+	input.close();
+	inputReverse.close();
+
+	g_nGraphLabelCount = TDepLabel::count();
+
+	int count = 0;
+	g_vecGraphLabelMap.clear();
+	g_vecGraphLabelMap.push_back(0);
+	std::unordered_map<std::string, int> labelMap;
+	for (int i = TDepLabel::START; i <= g_nGraphLabelCount; ++i) {
+		const ttoken & label = TDepLabel::key(i);
+		if (IS_LEFT_LABEL(label)) {
+			if (labelMap.find(DECODE_LEFT_LABEL(label)) == labelMap.end()) {
+				labelMap[DECODE_LEFT_LABEL(label)] = ++count;
+			}
+			g_vecGraphLabelMap.push_back(ENCODE_LABEL_ID(labelMap[DECODE_LEFT_LABEL(label)], 0));
+		}
+		else if (IS_RIGHT_LABEL(label)) {
+			if (labelMap.find(DECODE_RIGHT_LABEL(label)) == labelMap.end()) {
+				labelMap[DECODE_RIGHT_LABEL(label)] = ++count;
+			}
+			g_vecGraphLabelMap.push_back(ENCODE_LABEL_ID(0, labelMap[DECODE_RIGHT_LABEL(label)]));
+		}
+		else if (IS_TWOWAY_LABEL(label)) {
+			if (labelMap.find(DECODE_TWOWAY_LEFT_LABEL(label)) == labelMap.end()) {
+				labelMap[DECODE_TWOWAY_LEFT_LABEL(label)] = ++count;
+			}
+			if (labelMap.find(DECODE_TWOWAY_RIGHT_LABEL(label)) == labelMap.end()) {
+				labelMap[DECODE_TWOWAY_RIGHT_LABEL(label)] = ++count;
+			}
+			g_vecGraphLabelMap.push_back(ENCODE_LABEL_ID(labelMap[DECODE_TWOWAY_LEFT_LABEL(label)], labelMap[DECODE_TWOWAY_RIGHT_LABEL(label)]));
+		}
+	}
+}
 
 std::istream & operator>>(std::istream & input, DependencyGraph & graph) {
 	graph.clear();

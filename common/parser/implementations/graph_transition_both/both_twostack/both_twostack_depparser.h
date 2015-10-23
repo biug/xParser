@@ -252,10 +252,10 @@ namespace both_twostack {
 		const int & bf2rp_index = bf2_index == -1 ? -1 : rItem.rightPred(bf2_index);
 		// sst
 		const int & sbf_index = rItem.secondStackBack() == -1 ? -1 : rItem.secondStackTop();
-		const int & sbflh_index = sbf_index == -1 ? -1 : item.leftHead(sbf_index);
-		const int & sbflp_index = sbf_index == -1 ? -1 : item.leftPred(sbf_index);
-		const int & sbfrh_index = sbf_index == -1 ? -1 : item.rightHead(sbf_index);
-		const int & sbfrp_index = sbf_index == -1 ? -1 : item.rightPred(sbf_index);
+		const int & sbflh_index = sbf_index == -1 ? -1 : rItem.leftHead(sbf_index);
+		const int & sbflp_index = sbf_index == -1 ? -1 : rItem.leftPred(sbf_index);
+		const int & sbfrh_index = sbf_index == -1 ? -1 : rItem.rightHead(sbf_index);
+		const int & sbfrp_index = sbf_index == -1 ? -1 : rItem.rightPred(sbf_index);
 		// context
 		const int & stl2_index = st_index >= 2 ? st_index - 2 : -1;
 		const int & stl1_index = st_index >= 1 ? st_index - 1 : -1;
@@ -415,18 +415,18 @@ namespace both_twostack {
 		// bf2
 		const Word & bf2_word = bf2_word_postag.first();
 		const POSTag & bf2_postag = bf2_word_postag.second();
-		const TagSet & bf2_llabelset = bf2_index == -1 ? empty_tagset : item.leftPredLabelSet(bf2_index);
+		const TagSet & bf2_llabelset = bf2_index == -1 ? empty_tagset : rItem.leftPredLabelSet(bf2_index);
 		const TagSet & bf2_rlabelset = bf2_index == -1 ? empty_tagset : rItem.rightPredLabelSet(bf2_index);
 		const Word & bf2lh_word = bf2lh_word_postag.first();
 		const POSTag & bf2lh_postag = bf2lh_word_postag.second();
-		const int & bf2lh_label = bf2_index == -1 ? 0 : item.leftHeadLabel(bf2_index);
-		const int & bf2lh_arity = bf2_index == -1 ? -1 : item.leftHeadArity(bf2_index);
+		const int & bf2lh_label = bf2_index == -1 ? 0 : rItem.leftHeadLabel(bf2_index);
+		const int & bf2lh_arity = bf2_index == -1 ? -1 : rItem.leftHeadArity(bf2_index);
 		const Word & bf2lp_word = bf2lp_word_postag.first();
 		const POSTag & bf2lp_postag = bf2lp_word_postag.second();
-		const POSTag & bf2lp2_postag = (bf2_index == -1 || item.leftSubPred(bf2_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(bf2_index)].second();
-		const int & bf2lp_label = bf2_index == -1 ? 0 : item.leftPredLabel(bf2_index);
-		const int & bf2lp2_label = bf2_index == -1 ? 0 : item.leftSubPredLabel(bf2_index);
-		const int & bf2lp_arity = bf2_index == -1 ? -1 : item.leftPredArity(bf2_index);
+		const POSTag & bf2lp2_postag = (bf2_index == -1 || rItem.leftSubPred(bf2_index) == -1) ? empty_taggedword.second() : m_lSentence[rItem.leftSubPred(bf2_index)].second();
+		const int & bf2lp_label = bf2_index == -1 ? 0 : rItem.leftPredLabel(bf2_index);
+		const int & bf2lp2_label = bf2_index == -1 ? 0 : rItem.leftSubPredLabel(bf2_index);
+		const int & bf2lp_arity = bf2_index == -1 ? -1 : rItem.leftPredArity(bf2_index);
 		const Word & bf2rh_word = bf2rh_word_postag.first();
 		const POSTag & bf2rh_postag = bf2rh_word_postag.second();
 		const int & bf2rh_label = bf2_index == -1 ? 0 : rItem.rightHeadLabel(bf2_index);
@@ -440,18 +440,18 @@ namespace both_twostack {
 		// sbf
 		const Word & sbf_word = sbf_word_postag.first();
 		const POSTag & sbf_postag = sbf_word_postag.second();
-		const TagSet & sbf_llabelset = sbf_index == -1 ? empty_tagset : item.leftPredLabelSet(sbf_index);
+		const TagSet & sbf_llabelset = sbf_index == -1 ? empty_tagset : rItem.leftPredLabelSet(sbf_index);
 		const TagSet & sbf_rlabelset = sbf_index == -1 ? empty_tagset : rItem.rightPredLabelSet(sbf_index);
 		const Word & sbflh_word = sbflh_word_postag.first();
 		const POSTag & sbflh_postag = sbflh_word_postag.second();
-		const int & sbflh_label = sbf_index == -1 ? 0 : item.leftHeadLabel(sbf_index);
-		const int & sbflh_arity = sbf_index == -1 ? -1 : item.leftHeadArity(sbf_index);
+		const int & sbflh_label = sbf_index == -1 ? 0 : rItem.leftHeadLabel(sbf_index);
+		const int & sbflh_arity = sbf_index == -1 ? -1 : rItem.leftHeadArity(sbf_index);
 		const Word & sbflp_word = sbflp_word_postag.first();
 		const POSTag & sbflp_postag = sbflp_word_postag.second();
-		const POSTag & sbflp2_postag = (sbf_index == -1 || item.leftSubPred(sbf_index) == -1) ? empty_taggedword.second() : m_lSentence[item.leftSubPred(sbf_index)].second();
-		const int & sbflp_label = sbf_index == -1 ? 0 : item.leftPredLabel(sbf_index);
-		const int & sbflp2_label = sbf_index == -1 ? 0 : item.leftSubPredLabel(sbf_index);
-		const int & sbflp_arity = sbf_index == -1 ? -1 : item.leftPredArity(sbf_index);
+		const POSTag & sbflp2_postag = (sbf_index == -1 || rItem.leftSubPred(sbf_index) == -1) ? empty_taggedword.second() : m_lSentence[rItem.leftSubPred(sbf_index)].second();
+		const int & sbflp_label = sbf_index == -1 ? 0 : rItem.leftPredLabel(sbf_index);
+		const int & sbflp2_label = sbf_index == -1 ? 0 : rItem.leftSubPredLabel(sbf_index);
+		const int & sbflp_arity = sbf_index == -1 ? -1 : rItem.leftPredArity(sbf_index);
 		const Word & sbfrh_word = sbfrh_word_postag.first();
 		const POSTag & sbfrh_postag = sbfrh_word_postag.second();
 		const int & sbfrh_label = sbf_index == -1 ? 0 : rItem.rightHeadLabel(sbf_index);

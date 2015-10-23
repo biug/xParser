@@ -187,6 +187,7 @@ namespace graph_transition_both {
 
 		if (m_nState == PARSE && m_pGenerator->size() > 0) {
 			while (true) {
+
 				decode();
 				if (m_pGenerated->size() == 0) {
 					break;

@@ -17,12 +17,12 @@
 
 #include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
 
-//#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
-//#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
-//#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
-//#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
-//#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
-//#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
+#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
+#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
+#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
+#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
+#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
+#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
 
 int main(int argc, char * argv[]) {
 
@@ -35,24 +35,24 @@ int main(int argc, char * argv[]) {
 	if (strcmp(argv[2], "arceager") == 0) {
 		run.reset(new arceager::Run());
 	}
-	//else if (strcmp(argv[2], "eisner") == 0) {
-	//	run.reset(new eisner::Run());
-	//}
-	//else if (strcmp(argv[2], "eisner3rd") == 0) {
-	//	run.reset(new eisner3rd::Run());
-	//}
-	//else if (strcmp(argv[2], "eisnergc") == 0) {
-	//	run.reset(new eisnergc::Run());
-	//}
-	//else if (strcmp(argv[2], "eisnergc3rd") == 0) {
-	//	run.reset(new eisnergc3rd::Run());
-	//}
-	//else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
-	//	run.reset(new emptyeisner3rd::Run());
-	//}
-	//else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
-	//	run.reset(new emptyeisnergc3rd::Run());
-	//}
+	else if (strcmp(argv[2], "eisner") == 0) {
+		run.reset(new eisner::Run());
+	}
+	else if (strcmp(argv[2], "eisner3rd") == 0) {
+		run.reset(new eisner3rd::Run());
+	}
+	else if (strcmp(argv[2], "eisnergc") == 0) {
+		run.reset(new eisnergc::Run());
+	}
+	else if (strcmp(argv[2], "eisnergc3rd") == 0) {
+		run.reset(new eisnergc3rd::Run());
+	}
+	else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
+		run.reset(new emptyeisner3rd::Run());
+	}
+	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
+		run.reset(new emptyeisnergc3rd::Run());
+	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
 			strcmp(argv[2], "both_twostack") == 0) {

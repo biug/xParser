@@ -90,6 +90,7 @@ template<class RET_TYPE> using POSTagSet3IntMap = PackedScoreMap<TwoInts, Action
 template<class RET_TYPE> using POSTagSet4TwoIntsMap = PackedScoreMap<ThreeInts, ActionScores<RET_TYPE>, RET_TYPE, ActionScoreIncrement>;
 
 void initTags(const std::string & sInput);
+void initTags(const std::string & sInput, const std::string & sInputReverse);
 
 std::istream & operator>>(std::istream & input, DependencyGraph & graph);
 std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph);
