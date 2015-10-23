@@ -1,8 +1,8 @@
-#include "graph_transition_state_base.h"
+#include "graph_transition_both_state_base.h"
 
 extern std::vector<int> g_vecGraphLabelMap;
 
-namespace graph_transition {
+namespace graph_transition_both {
 
 	void GraphStateBase::arc(const int & l) {
 		const int & left = m_lStack[m_nStackBack];

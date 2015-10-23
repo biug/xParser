@@ -15,12 +15,14 @@
 #include "common/parser/implementations/graph_transition/std_titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/std_twostack/std_twostack_run.h"
 
-#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
-#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
-#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
-#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
-#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
-#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
+#include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
+
+//#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
+//#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
+//#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
+//#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
+//#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
+//#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
 
 int main(int argc, char * argv[]) {
 
@@ -33,26 +35,27 @@ int main(int argc, char * argv[]) {
 	if (strcmp(argv[2], "arceager") == 0) {
 		run.reset(new arceager::Run());
 	}
-	else if (strcmp(argv[2], "eisner") == 0) {
-		run.reset(new eisner::Run());
-	}
-	else if (strcmp(argv[2], "eisner3rd") == 0) {
-		run.reset(new eisner3rd::Run());
-	}
-	else if (strcmp(argv[2], "eisnergc") == 0) {
-		run.reset(new eisnergc::Run());
-	}
-	else if (strcmp(argv[2], "eisnergc3rd") == 0) {
-		run.reset(new eisnergc3rd::Run());
-	}
-	else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
-		run.reset(new emptyeisner3rd::Run());
-	}
-	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
-		run.reset(new emptyeisnergc3rd::Run());
-	}
+	//else if (strcmp(argv[2], "eisner") == 0) {
+	//	run.reset(new eisner::Run());
+	//}
+	//else if (strcmp(argv[2], "eisner3rd") == 0) {
+	//	run.reset(new eisner3rd::Run());
+	//}
+	//else if (strcmp(argv[2], "eisnergc") == 0) {
+	//	run.reset(new eisnergc::Run());
+	//}
+	//else if (strcmp(argv[2], "eisnergc3rd") == 0) {
+	//	run.reset(new eisnergc3rd::Run());
+	//}
+	//else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
+	//	run.reset(new emptyeisner3rd::Run());
+	//}
+	//else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
+	//	run.reset(new emptyeisnergc3rd::Run());
+	//}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
-			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0) {
+			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
+			strcmp(argv[2], "both_twostack") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -87,6 +90,9 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[2], "std_twostack") == 0) {
 			run.reset(new std_twostack::Run(bChar, bPath, bSuperTag));
 		}
+		else if (strcmp(argv[2], "both_twostack") == 0) {
+			run.reset(new both_twostack::Run(bChar, bPath, bSuperTag));
+		}
 	}
 
 	if (strcmp(argv[1], "goldtest") == 0) {
@@ -100,7 +106,7 @@ int main(int argc, char * argv[]) {
 		std::string next_feature;
 
 		current_feature = next_feature = argv[4];
-		next_feature = next_feature.substr(0, next_feature.rfind("/") + strlen("/")) + argv[2] + "1.feat";
+		next_feature = next_feature.substr(0, next_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
 
 		for (int i = 0; i < iteration; ++i) {
 			run->train(argv[3], current_feature, next_feature);

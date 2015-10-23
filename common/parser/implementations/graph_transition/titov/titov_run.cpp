@@ -29,9 +29,9 @@ namespace titov {
 	void Run::initAction() const {
 
 		A_SW_FIRST = SHIFT + 1;
-		A_SW_END = A_RE_FIRST = A_SW_FIRST + LABEL_COUNT;
-		A_RE_END = A_SH_FIRST = A_RE_FIRST + LABEL_COUNT;
-		A_SH_END = SH_FIRST = (m_bSuperTagFeature ? A_SH_FIRST + LABEL_COUNT * (TSuperTag::count() + 1) : A_SH_FIRST + LABEL_COUNT);
+		A_SW_END = A_RE_FIRST = A_SW_FIRST + g_nGraphLabelCount;
+		A_RE_END = A_SH_FIRST = A_RE_FIRST + g_nGraphLabelCount;
+		A_SH_END = SH_FIRST = (m_bSuperTagFeature ? A_SH_FIRST + g_nGraphLabelCount * (TSuperTag::count() + 1) : A_SH_FIRST + g_nGraphLabelCount);
 		SH_END = m_bSuperTagFeature ? SH_FIRST + TSuperTag::count() + 1 : SH_FIRST + 1;
 
 	}

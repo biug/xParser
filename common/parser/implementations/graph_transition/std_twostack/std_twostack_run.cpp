@@ -25,7 +25,7 @@ namespace std_twostack {
 	void Run::initAction() const {
 
 		A_FIRST = SHIFT + 1;
-		A_END = SH_FIRST = A_FIRST + LABEL_COUNT;
+		A_END = SH_FIRST = A_FIRST + g_nGraphLabelCount;
 		SH_END = m_bSuperTagFeature ? SH_FIRST + TSuperTag::count() + 1 : SH_FIRST + 1;
 
 	}

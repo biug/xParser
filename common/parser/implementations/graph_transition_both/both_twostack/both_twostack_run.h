@@ -1,12 +1,12 @@
-#ifndef _TWOSTACK_RUN_H
-#define _TWOSTACK_RUN_H
+#ifndef _BOTH_TWOSTACK_RUN_H
+#define _BOTH_TWOSTACK_RUN_H
 
-#include "twostack_depparser.h"
-#include "common/parser/implementations/graph_transition/graph_transition_run_base.h"
+#include "both_twostack_depparser.h"
+#include "common/parser/implementations/graph_transition_both/graph_transition_both_run_base.h"
 
-namespace twostack {
+namespace both_twostack {
 
-	using graph_transition::GraphRunBase;
+	using graph_transition_both::GraphRunBase;
 
 	class Run : public GraphRunBase<DepParser<PackedScoreType>, DepParser<PackedSuperTagScoreType>, StateItem> {
 	protected:

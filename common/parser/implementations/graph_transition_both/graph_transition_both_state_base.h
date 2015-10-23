@@ -1,10 +1,10 @@
-#ifndef _GRAPH_TRANSITION_STATE_BASE_H
-#define _GRAPH_TRANSITION_STATE_BASE_H
+#ifndef _GRAPH_TRANSITION_BOTH_STATE_BASE_H
+#define _GRAPH_TRANSITION_BOTH_STATE_BASE_H
 
 #include "common/parser/implementations/graph_macros.h"
 #include "common/token/supertag.h"
 
-namespace graph_transition {
+namespace graph_transition_both {
 	class GraphStateBase {
 	protected:
 		tscore m_nScore;
@@ -82,6 +82,7 @@ namespace graph_transition {
 		virtual void check() const = 0;
 		virtual void move(const int & action) = 0;
 
+		virtual void reverse(int size) = 0;
 		virtual bool extractOracle(const DependencyGraph & graph) = 0;
 		virtual bool extractOneStandard(int (&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & label = 0) = 0;
 	};

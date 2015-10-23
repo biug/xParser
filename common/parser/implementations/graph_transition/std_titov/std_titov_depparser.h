@@ -10,12 +10,14 @@
 
 namespace std_titov {
 
+	using graph_transition::GraphDepParserBase;
+
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
 	protected:
 		RET_TYPE m_lPackedScore;
 
-		UNSIGNED poses_feature;
+		Unsigned poses_feature;
 		Int uni_feature;
 		TwoInts bi_features;
 		ThreeInts tri_features;
@@ -29,7 +31,7 @@ namespace std_titov {
 		void shift(const tscore & score, const int & tokenId);
 
 		void getActionScores(const StateItem & item);
-		void getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount);
+		void getOrUpdateFeatureScore(const StateItem & item, const ActionScoreIncrement & amount);
 
 	public:
 		DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState, const bool & bChar, const bool & bPath, const bool & bSTag);
@@ -100,7 +102,7 @@ namespace std_titov {
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
 		memset(m_lPackedScore, 0, sizeof(m_lPackedScore));
-		getOrUpdateFeatureScore(item, AddScoreType(ACTION_START, 0));
+		getOrUpdateFeatureScore(item, ActionScoreIncrement(ACTION_START, 0));
 	}
 
 	template<class RET_TYPE>
@@ -142,7 +144,7 @@ namespace std_titov {
 	}
 
 	template<class RET_TYPE>
-	void DepParser<RET_TYPE>::getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount) {
+	void DepParser<RET_TYPE>::getOrUpdateFeatureScore(const StateItem & item, const ActionScoreIncrement & amount) {
 
 		Weight<RET_TYPE> * cweight = (Weight<RET_TYPE>*)m_Weight;
 

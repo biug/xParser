@@ -10,12 +10,14 @@
 
 namespace nivre {
 
+	using graph_transition::GraphDepParserBase;
+
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<StateItem> {
 	protected:
 		RET_TYPE m_lPackedScore;
 
-		UNSIGNED poses_feature;
+		Unsigned poses_feature;
 		Int uni_feature;
 		TwoInts bi_features;
 		ThreeInts tri_features;
@@ -31,7 +33,7 @@ namespace nivre {
 		void arcShift(const tscore & score, const int & tokenId);
 
 		void getActionScores(const StateItem & item);
-		void getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount);
+		void getOrUpdateFeatureScore(const StateItem & item, const ActionScoreIncrement & amount);
 
 	public:
 		DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState, const bool & bChar, const bool & bPath, const bool & bSTag);
@@ -115,21 +117,21 @@ namespace nivre {
 		if (m_bSuperTag) {
 			if (g_mapSuperTagCandidatesOfWords.find(m_lSentence[tokenId].first()) != g_mapSuperTagCandidatesOfWords.end()) {
 				for (const auto & tag : g_mapSuperTagCandidatesOfWords[m_lSentence[tokenId].first()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
+					for (int action = A_SH_FIRST + tag * g_nGraphLabelCount, n = action + g_nGraphLabelCount; action < n; ++action) {
 						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
 					}
 				}
 			}
 			else {
 				for (const auto & tag : g_mapSuperTagCandidatesOfPOSTags[m_lSentence[tokenId].second()]) {
-					for (int action = A_SH_FIRST + tag * LABEL_COUNT, n = action + LABEL_COUNT; action < n; ++action) {
+					for (int action = A_SH_FIRST + tag * g_nGraphLabelCount, n = action + g_nGraphLabelCount; action < n; ++action) {
 						m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
 					}
 				}
 			}
 		}
 		else {
-			for (int action = A_SH_FIRST, n = A_SH_FIRST + LABEL_COUNT; action < n; ++action) {
+			for (int action = A_SH_FIRST, n = A_SH_FIRST + g_nGraphLabelCount; action < n; ++action) {
 				m_abScores.insertItem(ScoredAction(action, score + m_lPackedScore[action]));
 			}
 		}
@@ -139,7 +141,7 @@ namespace nivre {
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
 		memset(m_lPackedScore, 0, sizeof(m_lPackedScore));
-		getOrUpdateFeatureScore(item, AddScoreType(ACTION_START, 0));
+		getOrUpdateFeatureScore(item, ActionScoreIncrement(ACTION_START, 0));
 	}
 
 	template<class RET_TYPE>
@@ -186,7 +188,7 @@ namespace nivre {
 	}
 
 	template<class RET_TYPE>
-	void DepParser<RET_TYPE>::getOrUpdateFeatureScore(const StateItem & item, const AddScoreType & amount) {
+	void DepParser<RET_TYPE>::getOrUpdateFeatureScore(const StateItem & item, const ActionScoreIncrement & amount) {
 
 		Weight<RET_TYPE> * cweight = (Weight<RET_TYPE>*)m_Weight;
 

@@ -1,14 +1,17 @@
-#ifndef _STD_TWOSTACK_MACROS_H
-#define _STD_TWOSTACK_MACROS_H
+#ifndef _BOTH_TWOSTACK_MACROS_H
+#define _BOTH_TWOSTACK_MACROS_H
 
 #include "common/parser/agenda.h"
 #include "common/parser/implementations/graph_macros.h"
 
-namespace std_twostack {
+namespace both_twostack {
 
 	enum Action {
 		NO_ACTION = ACTION_START,
-		ARC,
+		A_MM,
+		A_RC,
+		A_SH,
+		A_RE,
 		MEM,
 		RECALL,
 		REDUCE,

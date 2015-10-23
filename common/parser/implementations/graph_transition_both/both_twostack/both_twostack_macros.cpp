@@ -2,19 +2,22 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "nivre_macros.h"
+#include "both_twostack_macros.h"
 
-namespace nivre {
+namespace both_twostack {
 
-	int A_SW_FIRST, A_RE_FIRST, A_SH_FIRST, SH_FIRST;
-	int A_SW_END, A_RE_END, A_SH_END, SH_END;
+	int A_MM_FIRST, A_RC_FIRST, A_RE_FIRST, A_SH_FIRST, SH_FIRST;
+	int A_MM_END, A_RC_END, A_RE_END, A_SH_END, SH_END;
 
 	int decodeAction(const int & action) {
-		if (action < A_SW_FIRST) {
+		if (action < A_MM_FIRST) {
 			return action;
 		}
+		else if (action < A_RC_FIRST) {
+			return A_MM;
+		}
 		else if (action < A_RE_FIRST) {
-			return A_SW;
+			return A_RC;
 		}
 		else if (action < A_SH_FIRST) {
 			return A_RE;
@@ -29,8 +32,11 @@ namespace nivre {
 
 	void printAction(const int & action) {
 		switch (decodeAction(action)) {
-		case SWAP:
-			std::cout << "swap";
+		case MEM:
+			std::cout << "mem";
+			break;
+		case RECALL:
+			std::cout << "recall";
 			break;
 		case SHIFT:
 			std::cout << "shift with tag " << action - SH_FIRST;
@@ -38,8 +44,11 @@ namespace nivre {
 		case REDUCE:
 			std::cout << "reduce";
 			break;
-		case A_SW:
-			std::cout << "arc swap with label " << action - A_SW_FIRST + 1;
+		case A_MM:
+			std::cout << "arc mem with label " << action - A_MM_FIRST + 1;
+			break;
+		case A_RC:
+			std::cout << "arc recall with label " << action - A_RC_FIRST + 1;
 			break;
 		case A_SH:
 			std::cout << "arc shift with label " << (action - A_SH_FIRST) % g_nGraphLabelCount + 1 << " with tag " << (action - A_SH_FIRST) % g_nGraphLabelCount;

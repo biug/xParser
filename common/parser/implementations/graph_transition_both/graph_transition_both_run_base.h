@@ -1,11 +1,11 @@
-#ifndef _GRAPH_TRANSITION_RUN_H
-#define _GRAPH_TRANSITION_RUN_H
+#ifndef _GRAPH_TRANSITION_BOTH_RUN_H
+#define _GRAPH_TRANSITION_BOTH_RUN_H
 
 #include "common/parser/implementations/graph_macros.h"
-#include "graph_transition_depparser_base.h"
+#include "graph_transition_both_depparser_base.h"
 #include "common/parser/run_base.h"
 
-namespace graph_transition {
+namespace graph_transition_both {
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 	class GraphRunBase : public RunBase {
 	protected:
@@ -26,8 +26,8 @@ namespace graph_transition {
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 	GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::GraphRunBase
-	(const bool & bChar, const bool & bPath, const bool & bSuperTag) :
-	m_bCharFeature(bChar), m_bPathFeature(bPath), m_bSuperTagFeature(bSuperTag) {}
+		(const bool & bChar, const bool & bPath, const bool & bSuperTag) :
+		m_bCharFeature(bChar), m_bPathFeature(bPath), m_bSuperTagFeature(bSuperTag) {}
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::initConstant(const std::string & sInputFile) const {
@@ -42,9 +42,10 @@ namespace graph_transition {
 	}
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
-	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
+	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std::string & sInput, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
 		int nRound = 0;
 		DependencyGraph ref_sent;
+		DependencyGraph ref_reverse_sent;
 
 		std::cout << "Training is started..." << std::endl;
 
@@ -53,28 +54,34 @@ namespace graph_transition {
 				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureInput, sFeatureOutput, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
 				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sFeatureInput, sFeatureOutput, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 
+		std::string sInputFile = sInput.substr(0, sInput.find("#"));
+		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
 		initConstant(sInputFile);
 
 		std::ifstream input(sInputFile);
+		std::ifstream inputReverse(sInputReverseFile);
 		if (input) {
 			while (input >> ref_sent) {
+				inputReverse >> ref_reverse_sent;
 				if (!m_bSuperTagFeature) {
 					clearGraphSuperTag(ref_sent);
 				}
-				parser->train(ref_sent, ++nRound);
+				parser->train(ref_sent, ref_reverse_sent, ++nRound);
 			}
 			std::cout << std::endl;
 			parser->finishtraining();
 		}
 		input.close();
+		inputReverse.close();
 
 		std::cout << "Done." << std::endl;
 	}
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
-	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) const {
+	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std::string & sInput, const std::string & sOutputFile, const std::string & sFeatureFile) const {
 
 		DependencyGraph sentence;
+		DependencyGraph reverseSentence;
 		DependencyGraph graph;
 
 		std::cout << "Parsing is started..." << std::endl;
@@ -83,18 +90,22 @@ namespace graph_transition {
 				m_bSuperTagFeature ?
 				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureFile, sFeatureFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
 				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sFeatureFile, sFeatureFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
+		std::string sInputFile = sInput.substr(0, sInput.find("#"));
+		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
 		std::ifstream input(sInputFile);
+		std::ifstream inputReverse(sInputReverseFile);
 		std::ofstream output(sOutputFile);
 
 		initConstant();
 
 		if (input) {
 			while (input >> sentence) {
+				inputReverse >> reverseSentence;
 				if (sentence.size() < MAX_SENTENCE_SIZE) {
 					if (!m_bSuperTagFeature) {
 						clearGraphSuperTag(sentence);
 					}
-					parser->parse(sentence, &graph);
+					parser->parse(sentence, reverseSentence, &graph);
 					output << graph;
 					graph.clear();
 				}

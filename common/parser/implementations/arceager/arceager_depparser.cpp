@@ -221,7 +221,7 @@ namespace arceager {
 		}
 	}
 
-	void DepParser::getOrUpdateStackScore(const StateItem & item, const AddScoreType & amount) {
+	void DepParser::getOrUpdateStackScore(const StateItem & item, const ActionScoreIncrement & amount) {
 
 		Weight * cweight = (Weight*)m_Weight;
 

@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "titov_state.h"
+#include "both_twostack_state.h"
 #include "common/token/deplabel.h"
 
-namespace titov {
+namespace both_twostack {
 
 	StateItem::StateItem() {
 		clear();
@@ -16,6 +16,11 @@ namespace titov {
 		std::cout << "stack(" << m_nStackBack + 1 << ") :";
 		for (int i = 0; i <= m_nStackBack; ++i) {
 			std::cout << " " << m_lStack[i];
+		}
+		std::cout << std::endl;
+		std::cout << "shift buffer(" << m_nSecondStackBack + 1 << ") :";
+		for (int i = 0; i <= m_nSecondStackBack; ++i) {
+			std::cout << " " << m_lSecondStack[i];
 		}
 		std::cout << std::endl;
 		std::cout << "arcs :" << std::endl;
@@ -37,7 +42,7 @@ namespace titov {
 		for (int i = 0; i <= m_nActionBack; ++i) {
 			item.move(m_lActionList[i]);
 		}
-		if (item != *this || m_nStackBack != -1) {
+		if (item != *this || m_nSecondStackBack != -1 || m_nStackBack != -1) {
 			std::cout << "origin" << std::endl;
 			this->print();
 			std::cout << "correct" << std::endl;
@@ -50,6 +55,8 @@ namespace titov {
 		m_nNextWord = 0;
 		//reset stack seek
 		m_nStackBack = -1;
+		m_nSecondStackBack = -1;
+		m_bCanMem = false;
 		//reset score
 		m_nScore = 0;
 		//reset action
@@ -88,11 +95,17 @@ namespace titov {
 		case REDUCE:
 			reduce();
 			return;
-		case SWAP:
-			swap();
+		case MEM:
+			mem();
 			return;
-		case A_SW:
-			arcSwap(action - A_SW_FIRST + 1);
+		case RECALL:
+			recall();
+			return;
+		case A_MM:
+			arcMem(action - A_MM_FIRST + 1);
+			return;
+		case A_RC:
+			arcRecall(action - A_RC_FIRST + 1);
 			return;
 		case A_RE:
 			arcReduce(action - A_RE_FIRST + 1);
@@ -107,13 +120,14 @@ namespace titov {
 	}
 
 	/*
-	 	action priority is : "reduce" > "arc *" > "swap" > "shift"
+	 	action priority is : "reduce" > "arc *" > "memory" > "recall" > "shift"
 		for example
 		| 0 | 1 |					| 2 | 3 | . . .
 		if we have arc 0 - 2, 1 - 3
-		we use swap, get state
-		| 1 | 0 |					| 2 | 3 | . . .
-		we use arc-reduce, get state
+		we use memory, get state
+		| 0 |						| 2 | 3 | . . .
+		| 1 |
+		we use arc-reduce + recall, get state
 		| 1 |						| 2 | 3 | . . .		"0 - 2"
 		we use shift + reduce, get state
 		| 1 |							| 3 | . . .
@@ -145,42 +159,41 @@ namespace titov {
 				++seek;
 				return extractOneStandard(seeks, graph, RIGHTNODE_LABEL(rnwl));
 			}
-			if (m_nStackBack > 0) {
-				int & seek2 = seeks[m_lStack[m_nStackBack - 1]];
-				const DependencyGraphNode & node2 = graph[m_lStack[m_nStackBack - 1]];
-				int size2 = GRAPHNODE_RIGHTNODES(node2).size();
-				if (seek < size && seek2 < size2) {
-					if (RIGHTNODE_POS(GRAPHNODE_RIGHTNODE(node, seek)) > RIGHTNODE_POS(GRAPHNODE_RIGHTNODE(node2, seek2))) {
-						switch(label) {
-						case 0:
-							swap();
-							return true;
-						default:
-							arcSwap(label);
-							return true;
-						}
-					}
-				}
-				else if (seek < size) {
-					switch(label) {
-					case 0:
-						swap();
-						return true;
-					default:
-						arcSwap(label);
-						return true;
-					}
+		}
+		// mem after reduce/arc
+		for (int i = m_nStackBack - 1; i >= 0; --i) {
+			const DependencyGraphNode & node = graph[m_lStack[i]];
+			const int & seek = seeks[m_lStack[i]];
+			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
+				switch (label) {
+				case 0:
+					mem();
+					return true;
+				default:
+					arcMem(label);
+					return true;
 				}
 			}
 		}
-		// shfit after swap
+		// recall after mem/arc
+		for (int i = m_nSecondStackBack; i >= 0; --i) {
+			switch (label) {
+			case 0:
+				recall();
+				return true;
+			default:
+				arcRecall(label);
+				return true;
+			}
+		}
+		// shfit after recall
 		if (m_nNextWord < graph.size()) {
 			switch (label) {
 			case 0:
 				shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
 				return true;
 			default:
-				arcShift(label, TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
+				arcShift(label,TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
 				return true;
 			}
 		}
@@ -191,10 +204,57 @@ namespace titov {
 		int rightNodeSeeks[MAX_SENTENCE_SIZE];
 		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
 		while (extractOneStandard(rightNodeSeeks, graph))
-		{
 			;
-		}
 		return *this == graph;
+	}
+
+	void StateItem::reverse(int size) {
+		for (int i = m_nStackBack; i >= 0; --i) {
+			m_lStack[i] = size - m_lStack[i] - 1;
+		}
+		for (int i = m_nSecondStackBack; i >= 0; --i) {
+			m_lSecondStack[i] = size - m_lSecondStack[i] - 1;
+		}
+		int tval[MAX_SENTENCE_SIZE];
+		TagSet ttag[MAX_SENTENCE_SIZE];
+		for (int i = 0; i < m_nNextWord; ++i) {
+			// head
+			tval[i] = m_lHeadL[i];
+			m_lHeadL[size - i - 1] = m_lHeadR[i];
+			m_lHeadR[size - i - 1] = tval[i];
+			// head label
+			tval[i] = m_lHeadLabelL[i];
+			m_lHeadLabelL[size - i - 1] = m_lHeadR[i];
+			m_lHeadLabelR[size - i - 1] = tval[i];
+			// head arity
+			tval[i] = m_lHeadLNum[i];
+			m_lHeadLNum[size - i - 1] = m_lHeadRNum[i];
+			m_lHeadRNum[size - i - 1] = tval[i];
+			// pred
+			tval[i] = m_lPredL[i];
+			m_lPredL[size - i - 1] = m_lPredR[i];
+			m_lPredR[size - i - 1] = tval[i];
+			// pred label
+			tval[i] = m_lPredLabelL[i];
+			m_lPredLabelL[size - i - 1] = m_lPredR[i];
+			m_lPredLabelR[size - i - 1] = tval[i];
+			// pred arity
+			tval[i] = m_lPredLNum[i];
+			m_lPredLNum[size - i - 1] = m_lPredRNum[i];
+			m_lPredRNum[size - i - 1] = tval[i];
+			// sub pred
+			tval[i] = m_lSubPredL[i];
+			m_lSubPredL[size - i - 1] = m_lSubPredR[i];
+			m_lSubPredR[size - i - 1] = tval[i];
+			// sub pred label
+			tval[i] = m_lSubPredLabelL[i];
+			m_lSubPredLabelL[size - i - 1] = m_lSubPredR[i];
+			m_lSubPredLabelR[size - i - 1] = tval[i];
+			// tagset
+			ttag[i] = m_lPredLabelSetL[i];
+			m_lPredLabelSetL[size - i - 1] = m_lPredLabelSetR[i];
+			m_lPredLabelSetR[size - i - 1] = ttag[i];
+		}
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
@@ -226,13 +286,18 @@ namespace titov {
 
 	StateItem & StateItem::operator=(const StateItem & item) {
 		m_nStackBack = item.m_nStackBack;
+		m_nSecondStackBack = item.m_nSecondStackBack;
 		m_nActionBack = item.m_nActionBack;
 		m_nNextWord = item.m_nNextWord;
 		m_nScore = item.m_nScore;
+		m_bCanMem = item.m_bCanMem;
 
 		size_t len = sizeof(int) * (m_nNextWord + 1);
 		if (m_nStackBack >= 0) {
 			memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
+		}
+		if (m_nSecondStackBack >= 0) {
+			memcpy(m_lSecondStack, item.m_lSecondStack, sizeof(int) * (m_nSecondStackBack + 1));
 		}
 		memcpy(m_lActionList, item.m_lActionList, sizeof(int) * (m_nActionBack + 1));
 

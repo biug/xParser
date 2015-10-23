@@ -4,8 +4,6 @@
 
 #include "titov_macros.h"
 
-extern int LABEL_COUNT;
-
 namespace titov {
 
 	int A_SW_FIRST, A_RE_FIRST, A_SH_FIRST, SH_FIRST;
@@ -44,7 +42,7 @@ namespace titov {
 			std::cout << "arc swap with label " << action - A_SW_FIRST + 1;
 			break;
 		case A_SH:
-			std::cout << "arc shift with label " << (action - A_SH_FIRST) % LABEL_COUNT + 1 << " with tag " << (action - A_SH_FIRST) % LABEL_COUNT;
+			std::cout << "arc shift with label " << (action - A_SH_FIRST) % g_nGraphLabelCount + 1 << " with tag " << (action - A_SH_FIRST) % g_nGraphLabelCount;
 			break;
 		case A_RE:
 			std::cout << "arc reduce with label "<< action - A_RE_FIRST + 1;

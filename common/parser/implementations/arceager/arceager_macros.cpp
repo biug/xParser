@@ -4,7 +4,7 @@
 
 #include "arceager_macros.h"
 
-std::istream & operator>>(std::istream & is, arceager::ScoreArray & s) {
+std::istream & operator>>(std::istream & is, arceager::ActionScores & s) {
 	ttoken token;
 	int index;
 	cscore cs;
@@ -21,7 +21,7 @@ std::istream & operator>>(std::istream & is, arceager::ScoreArray & s) {
 	return is;
 }
 
-std::ostream & operator<<(std::ostream & os, const arceager::ScoreArray & s) {
+std::ostream & operator<<(std::ostream & os, const arceager::ActionScores & s) {
 	bool start = false;
 	for (const auto & score : s.getScores()) {
 		if (!score.second.zero()) {
@@ -41,7 +41,7 @@ std::ostream & operator<<(std::ostream & os, const arceager::ScoreArray & s) {
 
 namespace arceager {
 
-	bool ScoreArray::zero() const {
+	bool ActionScores::zero() const {
 		for (const auto & score : m_mapScores) {
 			if (!score.second.zero()) {
 				return false;

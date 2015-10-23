@@ -6,74 +6,6 @@
 
 #include "common/token/token.h"
 
-template<typename LABEL, typename HASH>
-class SetOfLabels {
-private:
-	HASH m_nHash;
-
-public:
-	SetOfLabels(HASH h = 0) : m_nHash(h) {}
-	SetOfLabels(const SetOfLabels<LABEL, HASH> & sol) : m_nHash(sol.m_nHash) {}
-	~SetOfLabels() = default;
-
-	void add(const LABEL & l) {
-		m_nHash |= (HASH)(1 << l);
-	}
-
-	void remove(const LABEL & l) {
-		m_nHash &= ~(HASH)(1 << l);
-	}
-
-	void clear() {
-		m_nHash = 0;
-	}
-
-	bool contains(const LABEL & l) {
-		return m_nHash & (HASH)(1 << l);
-	}
-
-	const HASH & hash() const {
-		return m_nHash;
-	}
-
-	SetOfLabels<LABEL, HASH> & operator=(const SetOfLabels<LABEL, HASH> & sol) {
-		m_nHash = sol.m_nHash;
-		return *this;
-	}
-
-	inline friend bool operator==(const SetOfLabels<LABEL, HASH> & sol1, const SetOfLabels<LABEL, HASH> & sol2) {
-		return sol1.m_nHash == sol2.m_nHash;
-	}
-};
-
-template<int SIZE, int WIDE, typename TAG>
-class SetOfTags {
-private:
-	TAG m_nHash;
-
-public:
-	SetOfTags(int h = 0) : m_nHash(h) {}
-	SetOfTags(const SetOfTags<SIZE, WIDE, TAG> & sot) : m_nHash(sot.m_nHash) {}
-	~SetOfTags() = default;
-
-	void add(const TAG & t) {
-		m_nHash = (m_nHash << WIDE) | t;
-	}
-
-	const std::size_t & hash() const {
-		return m_nHash;
-	}
-
-	SetOfTags<SIZE, WIDE, TAG> & operator=(const SetOfTags<SIZE, WIDE, TAG> & sot) {
-		m_nHash = sot.m_nHash;
-		return *this;
-	}
-
-	inline friend bool operator==(const SetOfTags<SIZE, WIDE, TAG> & sot1, const SetOfTags<SIZE, WIDE, TAG> & sot2) {
-		return sot1.m_nHash == sot2.m_nHash;
-	}
-};
-
 template<typename KEY_TYPE>
 inline void hash_combine(std::size_t & seed, const KEY_TYPE & key) {
 	seed ^= key + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -590,15 +522,6 @@ namespace std {
 		typedef SeptGram<KEY_TYPE> argument_type;
 		const size_t & operator() (const SeptGram<KEY_TYPE> & g) const {
 			return g.hash();
-		}
-	};
-
-	template <typename TAG, typename HASH>
-	struct hash < SetOfLabels<TAG, HASH> > {
-		typedef size_t result_type;
-		typedef SetOfLabels<TAG, HASH> argument_type;
-		const size_t & operator() (const SetOfLabels<TAG, HASH> & s) const {
-			return s.hash();
 		}
 	};
 }

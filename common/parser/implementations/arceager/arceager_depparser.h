@@ -59,7 +59,7 @@ namespace arceager {
 		void update();
 		void generate(DependencyTree * retval, const DependencyTree & correct);
 
-		void getOrUpdateStackScore(const StateItem & item, const AddScoreType & amount);
+		void getOrUpdateStackScore(const StateItem & item, const ActionScoreIncrement & amount);
 		void updateScoreForState(const StateItem & from, const StateItem & output, const int & amount);
 
 		void reduce(const tscore & score);

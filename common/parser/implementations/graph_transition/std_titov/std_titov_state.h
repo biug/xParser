@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-extern int LABEL_COUNT;
-
 namespace std_titov {
+
+	using graph_transition::GraphStateBase;
 
 	extern int SH_FIRST;
 

@@ -5,9 +5,9 @@
 #include "common/token/deplabel.h"
 #include "common/parser/implementations/graph_transition/graph_transition_state_base.h"
 
-extern int LABEL_COUNT;
-
 namespace twostack {
+
+	using graph_transition::GraphStateBase;
 
 	extern int A_MM_FIRST;
 	extern int A_RC_FIRST;
@@ -110,7 +110,7 @@ namespace twostack {
 	inline void StateItem::arcShift(const int & label, const int & tag) {
 		arc(label);
 		shift(tag);
-		m_lActionList[m_nActionBack] = A_SH_FIRST + tag * LABEL_COUNT + label - 1;
+		m_lActionList[m_nActionBack] = A_SH_FIRST + tag * g_nGraphLabelCount + label - 1;
 	}
 
 	inline const int & StateItem::secondStackTop() const {

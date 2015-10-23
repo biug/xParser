@@ -111,7 +111,7 @@ namespace twostack {
 			arcReduce(action - A_RE_FIRST + 1);
 			return;
 		case A_SH:
-			arcShift((action - A_SH_FIRST) % LABEL_COUNT + 1, (action - A_SH_FIRST) / LABEL_COUNT);
+			arcShift((action - A_SH_FIRST) % g_nGraphLabelCount + 1, (action - A_SH_FIRST) / g_nGraphLabelCount);
 			return;
 		case SHIFT:
 			shift(action - SH_FIRST);

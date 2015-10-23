@@ -10,57 +10,57 @@ namespace arceager {
 
 #define MAX_ACTION 200
 	typedef tscore PackedScoreType[MAX_ACTION];
-	typedef std::pair<int, const int &> AddScoreType;
+	typedef std::pair<int, const int &> ActionScoreIncrement;
 
-	class ScoreArray {
+	class ActionScores {
 
 	private:
 		std::unordered_map<int, Score> m_mapScores;
 
 	public:
-		ScoreArray();
-		ScoreArray(const ScoreArray & s);
-		~ScoreArray();
+		ActionScores();
+		ActionScores(const ActionScores & s);
+		~ActionScores();
 
 		void reset();
 		bool zero() const;
-		void updateCurrent(const AddScoreType & added, const int & round);
+		void updateCurrent(const ActionScoreIncrement & added, const int & round);
 		void updateAverage(const int & round);
 		void updateRetval(PackedScoreType & retval, const int & which);
 		std::unordered_map<int, Score> & getScores();
 		const std::unordered_map<int, Score> & getScores() const;
 
-		ScoreArray & operator=(const ScoreArray & s) {
+		ActionScores & operator=(const ActionScores & s) {
 			m_mapScores.clear();
 			m_mapScores.insert(s.m_mapScores.begin(), s.m_mapScores.end());
 			return *this;
 		}
 	};
 
-	inline ScoreArray::ScoreArray() = default;
+	inline ActionScores::ActionScores() = default;
 
-	inline ScoreArray::ScoreArray(const ScoreArray & s) {
+	inline ActionScores::ActionScores(const ActionScores & s) {
 		m_mapScores.clear();
 		m_mapScores.insert(s.m_mapScores.begin(), s.m_mapScores.end());
 	}
 
-	inline ScoreArray::~ScoreArray() = default;
+	inline ActionScores::~ActionScores() = default;
 
-	inline void ScoreArray::reset() {
+	inline void ActionScores::reset() {
 		m_mapScores.clear();
 	}
 
-	inline void ScoreArray::updateCurrent(const AddScoreType & added, const int & round) {
+	inline void ActionScores::updateCurrent(const ActionScoreIncrement & added, const int & round) {
 		m_mapScores[added.first].updateCurrent(added.second, round);
 	}
 
-	inline void ScoreArray::updateAverage(const int & round) {
+	inline void ActionScores::updateAverage(const int & round) {
 		for (auto & score : m_mapScores) {
 			score.second.updateAverage(round);
 		}
 	}
 
-	inline void ScoreArray::updateRetval(PackedScoreType & retval, const int & which) {
+	inline void ActionScores::updateRetval(PackedScoreType & retval, const int & which) {
 		switch (which) {
 		case eNonAverage:
 			for (auto & score : m_mapScores) {
@@ -75,19 +75,19 @@ namespace arceager {
 		}
 	}
 
-	inline std::unordered_map<int, Score> & ScoreArray::getScores() {
+	inline std::unordered_map<int, Score> & ActionScores::getScores() {
 		return m_mapScores;
 	}
 
-	inline const std::unordered_map<int, Score> & ScoreArray::getScores() const {
+	inline const std::unordered_map<int, Score> & ActionScores::getScores() const {
 		return m_mapScores;
 	}
 }
 
-std::istream & operator>>(std::istream & is, arceager::ScoreArray & s);
-std::ostream & operator<<(std::ostream & os, const arceager::ScoreArray & s);
+std::istream & operator>>(std::istream & is, arceager::ActionScores & s);
+std::ostream & operator<<(std::ostream & os, const arceager::ActionScores & s);
 
-inline bool operator==(const arceager::AddScoreType & s, const int & i) {
+inline bool operator==(const arceager::ActionScoreIncrement & s, const int & i) {
 	return s.second == i;
 }
 
@@ -109,26 +109,26 @@ namespace arceager {
 
 	typedef TagSetN<3> SetOfDepLabels;
 
-	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> IntMap;
-	typedef PackedScoreMap<Word, ScoreArray, PackedScoreType, AddScoreType> WordMap;
-	typedef PackedScoreMap<POSTag, ScoreArray, PackedScoreType, AddScoreType> POSTagMap;
-	typedef PackedScoreMap<TwoWords, ScoreArray, PackedScoreType, AddScoreType> TwoWordsMap;
-	typedef PackedScoreMap<WordPOSTag, ScoreArray, PackedScoreType, AddScoreType> POSTaggedWordMap;
-	typedef PackedScoreMap<WordWordPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordWordPOSTagMap;
-	typedef PackedScoreMap<WordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> WordPOSTagPOSTagMap;
-	typedef PackedScoreMap<WordWordPOSTagPOSTag, ScoreArray, PackedScoreType, AddScoreType> TwoPOSTaggedWordsMap;
+	typedef PackedScoreMap<Int, ActionScores, PackedScoreType, ActionScoreIncrement> IntMap;
+	typedef PackedScoreMap<Word, ActionScores, PackedScoreType, ActionScoreIncrement> WordMap;
+	typedef PackedScoreMap<POSTag, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagMap;
+	typedef PackedScoreMap<TwoWords, ActionScores, PackedScoreType, ActionScoreIncrement> TwoWordsMap;
+	typedef PackedScoreMap<WordPOSTag, ActionScores, PackedScoreType, ActionScoreIncrement> POSTaggedWordMap;
+	typedef PackedScoreMap<WordWordPOSTag, ActionScores, PackedScoreType, ActionScoreIncrement> WordWordPOSTagMap;
+	typedef PackedScoreMap<WordPOSTagPOSTag, ActionScores, PackedScoreType, ActionScoreIncrement> WordPOSTagPOSTagMap;
+	typedef PackedScoreMap<WordWordPOSTagPOSTag, ActionScores, PackedScoreType, ActionScoreIncrement> TwoPOSTaggedWordsMap;
 
-	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet2Map;
-	typedef PackedScoreMap<Int, ScoreArray, PackedScoreType, AddScoreType> POSTagSet3Map;
+	typedef PackedScoreMap<Int, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagSet2Map;
+	typedef PackedScoreMap<Int, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagSet3Map;
 
-	typedef PackedScoreMap<QuarGram<UNSIGNED>, ScoreArray, PackedScoreType, AddScoreType> WordSetOfDepLabelsMap;
-	typedef PackedScoreMap<QuarGram<UNSIGNED>, ScoreArray, PackedScoreType, AddScoreType> POSTagSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<Unsigned>, ActionScores, PackedScoreType, ActionScoreIncrement> WordSetOfDepLabelsMap;
+	typedef PackedScoreMap<QuarGram<Unsigned>, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagSetOfDepLabelsMap;
 
-	typedef PackedScoreMap<WordInt, ScoreArray, PackedScoreType, AddScoreType> WordIntMap;
-	typedef PackedScoreMap<POSTagInt, ScoreArray, PackedScoreType, AddScoreType> POSTagIntMap;
+	typedef PackedScoreMap<WordInt, ActionScores, PackedScoreType, ActionScoreIncrement> WordIntMap;
+	typedef PackedScoreMap<POSTagInt, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagIntMap;
 
-	typedef PackedScoreMap<TwoWordsInt, ScoreArray, PackedScoreType, AddScoreType> WordWordIntMap;
-	typedef PackedScoreMap<POSTagSet2Int, ScoreArray, PackedScoreType, AddScoreType> POSTagPOSTagIntMap;
+	typedef PackedScoreMap<TwoWordsInt, ActionScores, PackedScoreType, ActionScoreIncrement> WordWordIntMap;
+	typedef PackedScoreMap<POSTagSet2Int, ActionScores, PackedScoreType, ActionScoreIncrement> POSTagPOSTagIntMap;
 
 	class StateItem;
 

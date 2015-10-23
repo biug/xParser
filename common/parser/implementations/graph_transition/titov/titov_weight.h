@@ -9,10 +9,8 @@
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
-extern SuperTagCandidates g_mapSuperTagCandidatesOfWords;
-extern SuperTagCandidates g_mapSuperTagCandidatesOfPOSTags;
-
 namespace titov {
+
 	template<class RET_TYPE>
 	class Weight : public WeightBase {
 	public:
