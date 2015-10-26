@@ -53,6 +53,12 @@ public:
 		}
 	}
 
+	void shrink(const double & round, const double & threshold) {
+		for (auto & score : m_mapScores) {
+			score.second.shrink(round, threshold);
+		}
+	}
+
 	friend std::istream& operator>>(std::istream & is, PackedScoreMap<KEY_TYPE, VAL_TYPE, RET_TYPE, UPDATE_TYPE> & psm) {
 		VAL_TYPE sc;
 		int number;

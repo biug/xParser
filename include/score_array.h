@@ -28,6 +28,7 @@ public:
 	void updateCurrent(const ActionScoreIncrement & added, const int & round);
 	void updateAverage(const int & round);
 	void updateRetval(RET_TYPE & retval, const int & which);
+	void shrink(const double & round, const double & threshold);
 	std::unordered_map<int, Score> & getScores();
 	const std::unordered_map<int, Score> & getScores() const;
 
@@ -90,6 +91,13 @@ void ActionScores<RET_TYPE>::updateRetval(RET_TYPE & retval, const int & which) 
 			score.second.updateRetvalTotal(retval[score.first]);
 		}
 		break;
+	}
+}
+
+template<class RET_TYPE>
+void ActionScores<RET_TYPE>::shrink(const double & round, const double & threshold) {
+	for (auto & score : m_mapScores) {
+		score.second.shrink(round, threshold);
 	}
 }
 

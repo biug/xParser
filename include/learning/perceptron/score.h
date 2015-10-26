@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include <unordered_map>
 
 #include "common/token/token.h"
@@ -37,6 +38,7 @@ public:
 	void updateRetval(tscore & retval, const int & which);
 	void updateRetvalCurrent(tscore & retval);
 	void updateRetvalTotal(tscore & retval);
+	void shrink(const double & round, const double & threshold);
 
 	friend std::istream & operator>>(std::istream & is, Score & s) {
 		ttoken token;
@@ -104,6 +106,13 @@ inline void Score::updateRetvalCurrent(tscore & retval) {
 
 inline void Score::updateRetvalTotal(tscore & retval) {
 	retval += m_nTotal;
+}
+
+inline void Score::shrink(const double & round, const double & threshold) {
+	if (fabs((double)m_nTotal / (double)round) < threshold) {
+		m_nCurrent = 0;
+		m_nTotal = 0;
+	}
 }
 
 class ScoreWithSplit {
