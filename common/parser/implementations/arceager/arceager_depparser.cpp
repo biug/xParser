@@ -33,6 +33,8 @@ namespace arceager {
 	void DepParser::train(const DependencyTree & correct, const int & round) {
 		// initialize
 		int idx = 0;
+		int lastTotalErrors = m_nTotalErrors;
+		int lastTrainingRound = m_nTrainingRound;
 		m_nTrainingRound = round;
 		m_nSentenceLength = correct.size();
 		for (const auto & node : correct) {
@@ -40,8 +42,6 @@ namespace arceager {
 		}
 
 		// train
-		int lastTotalErrors = m_nTotalErrors;
-		int lastTrainingRound = m_nTrainingRound;
 		work(nullptr, correct);
 		if (lastTrainingRound > 0) {
 			nBackSpace("error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");

@@ -54,3 +54,8 @@ Temporary Items
 *.prefs
 .settings/org.eclipse.cdt.managedbuilder.core.prefs
 main.cpp
+*.mk
+Release/makefile
+.settings/language.settings.xml
+*.xml
+.settings/language.settings.xml
