@@ -16,6 +16,8 @@
 #include "common/parser/implementations/graph_transition/std_twostack/std_twostack_run.h"
 
 #include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
+#include "common/parser/implementations/graph_transition_two_way/two_way_titov/two_way_titov_run.h"
+#include "common/parser/implementations/graph_transition_two_way/two_way_shift_reduce/two_way_shift_reduce_run.h"
 
 #include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
 #include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
@@ -55,7 +57,7 @@ int main(int argc, char * argv[]) {
 	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
-			strcmp(argv[2], "both_twostack") == 0) {
+			strcmp(argv[2], "both_twostack") == 0 || strcmp(argv[2], "two_way_titov") == 0 || strcmp(argv[2], "two_way_shift_reduce") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -93,6 +95,12 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[2], "both_twostack") == 0) {
 			run.reset(new both_twostack::Run(bChar, bPath, bSuperTag));
 		}
+		else if (strcmp(argv[2], "two_way_titov") == 0) {
+			run.reset(new two_way_titov::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "two_way_shift_reduce") == 0) {
+			run.reset(new two_way_shift_reduce::Run(bChar, bPath, bSuperTag));
+		}
 	}
 
 	if (strcmp(argv[1], "goldtest") == 0) {
@@ -102,16 +110,37 @@ int main(int argc, char * argv[]) {
 
 		int iteration = std::atoi(argv[5]);
 
-		std::string current_feature;
-		std::string next_feature;
+		if (strcmp(argv[2], "two_way_titov") != 0 && strcmp(argv[2], "two_way_shift_reduce") != 0) {
+			std::string current_feature;
+			std::string next_feature;
 
-		current_feature = next_feature = argv[4];
-		next_feature = next_feature.substr(0, next_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
+			current_feature = next_feature = argv[4];
+			next_feature = next_feature.substr(0, next_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
 
-		for (int i = 0; i < iteration; ++i) {
-			run->train(argv[3], current_feature, next_feature);
-			current_feature = next_feature;
-			next_feature = next_feature.substr(0, next_feature.rfind(argv[2]) + strlen(argv[2])) + std::to_string(i + 2) + ".feat";
+			for (int i = 0; i < iteration; ++i) {
+				run->train(argv[3], current_feature, next_feature);
+				current_feature = next_feature;
+				next_feature = next_feature.substr(0, next_feature.rfind(argv[2]) + strlen(argv[2])) + std::to_string(i + 2) + ".feat";
+			}
+		}
+		else {
+			std::string current_feature;
+			std::string next_feature;
+			std::string current_reverse_feature;
+			std::string next_reverse_feature;
+
+			current_feature = next_feature = std::string(argv[4]).substr(0, std::string(argv[4]).find("#"));
+			current_reverse_feature = next_reverse_feature = std::string(argv[4]).substr(std::string(argv[4]).find("#") + 1);
+			next_feature = next_feature.substr(0, next_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
+			next_reverse_feature = next_reverse_feature.substr(0, next_reverse_feature.rfind("\\") + strlen("\\")) + argv[2] + "1.feat";
+
+			for (int i = 0; i < iteration; ++i) {
+				run->train(argv[3], current_feature + "#" + current_reverse_feature, next_feature + "#" + next_reverse_feature);
+				current_feature = next_feature;
+				current_reverse_feature = next_reverse_feature;
+				next_feature = next_feature.substr(0, next_feature.rfind(argv[2]) + strlen(argv[2])) + std::to_string(i + 2) + ".feat";
+				next_reverse_feature = next_reverse_feature.substr(0, next_reverse_feature.rfind(argv[2]) + strlen(argv[2])) + std::to_string(i + 2) + ".feat";
+			}
 		}
 	}
 	else if (strcmp(argv[1], "parse") == 0) {

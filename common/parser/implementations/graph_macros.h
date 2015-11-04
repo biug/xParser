@@ -46,7 +46,7 @@ inline unsigned int encodePOSTagSet4(const unsigned int & t1, const unsigned int
 
 typedef TagSetN<2> TagSet;
 
-typedef tscore PackedScoreType[300];
+typedef tscore PackedScoreType[600];
 typedef tscore PackedSuperTagScoreType[30000];
 
 typedef TriGram<unsigned int> IntTagSet;
@@ -91,6 +91,7 @@ template<class RET_TYPE> using POSTagSet4TwoIntsMap = PackedScoreMap<ThreeInts, 
 
 void initTags(const std::string & sInput);
 void initTags(const std::string & sInput, const std::string & sInputReverse);
+void combineGraph(const DependencyGraph & oracle, const DependencyGraph & reverseOracle, DependencyGraph & combined);
 
 std::istream & operator>>(std::istream & input, DependencyGraph & graph);
 std::ostream & operator<<(std::ostream & output, const DependencyGraph & graph);

@@ -1,8 +1,10 @@
 #ifndef _GRAPH_TRANSITION_TWO_WAY_RUN_H
 #define _GRAPH_TRANSITION_TWO_WAY_RUN_H
 
+#include <unordered_set>
+
 #include "common/parser/implementations/graph_macros.h"
-#include "graph_transition_both_depparser_base.h"
+#include "graph_transition_two_way_depparser_base.h"
 #include "common/parser/run_base.h"
 
 namespace graph_transition_two_way {
@@ -75,13 +77,24 @@ namespace graph_transition_two_way {
 				inputReverse >> ref_reverse_sent;
 				if (!m_bSuperTagFeature) {
 					clearGraphSuperTag(ref_sent);
+					clearGraphSuperTag(ref_reverse_sent);
 				}
+				int last_error = parser->totalError();
+				int last_reverse_error = reverse_parser->totalError();
 				parser->train(ref_sent, ++nRound);
 				reverse_parser->train(ref_reverse_sent, ++nReverseRound);
+				if (nRound > 1) {
+					nBackSpace("normal error rate 0.0000 ( " + std::to_string(last_error) + " / " + std::to_string(nRound - 1) + " ) ");
+					nBackSpace("reverse error rate 0.0000 ( " + std::to_string(last_reverse_error) + " / " + std::to_string(nReverseRound - 1) + " ) ");
+				}
+				std::cout << "normal error rate " << ((double)parser->totalError() / (double)nRound);
+				std::cout << " ( " << parser->totalError() << " / " << nRound << " ) ";
+				std::cout << "reverse error rate " << ((double)reverse_parser->totalError() / (double)nReverseRound);
+				std::cout << " ( " << reverse_parser->totalError() << " / " << nReverseRound << " ) " << std::flush;
 			}
 			std::cout << std::endl;
 			parser->finishtraining();
-			reverse_parser->finishtraning();
+			reverse_parser->finishtraining();
 		}
 		input.close();
 		inputReverse.close();
@@ -92,10 +105,12 @@ namespace graph_transition_two_way {
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std::string & sInput, const std::string & sOutputFile, const std::string & sFeatureInput) const {
 
+		int nRound = 0;
 		DependencyGraph sentence;
 		DependencyGraph reverseSentence;
 		DependencyGraph graph;
 		DependencyGraph reverseGraph;
+		DependencyGraph combined;
 
 		std::cout << "Parsing is started..." << std::endl;
 
@@ -103,12 +118,12 @@ namespace graph_transition_two_way {
 		std::string sReverseFeatureInputFile = sFeatureInput.substr(sFeatureInput.find("#") + 1);
 		std::unique_ptr<GraphDepParserBase<STATE_TYPE>> parser(
 				m_bSuperTagFeature ?
-				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureInputFile, sFeatureInputFile, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
-				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sFeatureInputFile, sFeatureInputFile, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
+				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sFeatureInputFile, sFeatureInputFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
+				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sFeatureInputFile, sFeatureInputFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 		std::unique_ptr<GraphDepParserBase<STATE_TYPE>> reverse_parser(
 				m_bSuperTagFeature ?
-				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sReverseFeatureInputFile, sReverseFeatureInputFile, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
-				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sReverseFeatureInputFile, sReverseFeatureInputFile, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
+				(GraphDepParserBase<STATE_TYPE>*)new SUPERTAG_DEP_PARSER(sReverseFeatureInputFile, sReverseFeatureInputFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature) :
+				(GraphDepParserBase<STATE_TYPE>*)new DEP_PARSER(sReverseFeatureInputFile, sReverseFeatureInputFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 
 		std::string sInputFile = sInput.substr(0, sInput.find("#"));
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
@@ -124,12 +139,19 @@ namespace graph_transition_two_way {
 				if (sentence.size() < MAX_SENTENCE_SIZE) {
 					if (!m_bSuperTagFeature) {
 						clearGraphSuperTag(sentence);
+						clearGraphSuperTag(reverseSentence);
 					}
 					parser->parse(sentence, &graph);
 					reverse_parser->parse(reverseSentence, &reverseGraph);
+					combineGraph(graph, reverseGraph, combined);
 					// should combine graph and reverseGraph
-					output << graph;
+					output << combined;
 					graph.clear();
+					reverseGraph.clear();
+					if (nRound > 0) {
+						nBackSpace("parsing sentence " + std::to_string(nRound));
+					}
+					std::cout << "parsing sentence " << ++nRound << std::flush;
 				}
 			}
 		}
@@ -141,6 +163,8 @@ namespace graph_transition_two_way {
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
 	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::goldtest(const std::string & sInput, const std::string & sFeatureInput) const {
 		int nRound = 0;
+		int nError = 0;
+		DependencyGraph combined;
 		DependencyGraph ref_sent, ref_output;
 		DependencyGraph ref_reverse_sent, ref_reverse_output;
 
@@ -151,6 +175,8 @@ namespace graph_transition_two_way {
 
 		std::string sInputFile = sInput.substr(0, sInput.find("#"));
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
+		std::cout << sInputFile << std::endl;
+		std::cout << sInputReverseFile << std::endl;
 		initConstant(sInputFile, sInputReverseFile);
 
 		std::ifstream input(sInputFile);
@@ -161,12 +187,19 @@ namespace graph_transition_two_way {
 				++nRound;
 				parser->goldCheck(ref_sent, ref_output);
 				reverse_parser->goldCheck(ref_reverse_sent, ref_reverse_output);
-				// combine two sub-graph
+				combineGraph(ref_output, ref_reverse_output, combined);
+				for (int i = 0; i < ref_sent.size(); ++i) {
+					if (GRAPHNODE_RIGHTNODES(ref_sent[i]) != GRAPHNODE_RIGHTNODES(combined[i])) {
+						++nError;
+						break;
+					}
+				}
 			}
 		}
 		input.close();
+		inputReverse.close();
 
-		std::cout << std::endl << "total " << nRound << " round" << std::endl;
+		std::cout << std::endl << "total " << nRound << " round and " << nError << std::endl;
 
 		std::cout << "Done." << std::endl;
 

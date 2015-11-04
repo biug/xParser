@@ -75,6 +75,7 @@ namespace graph_transition_two_way {
 
 		void arc(const int & l);
 		void generateGraph(const DependencyGraph & sent, DependencyGraph & tree) const;
+		bool isSubGraph(GraphStateBase * subgraph) const;
 
 		virtual void clear() = 0;
 		virtual void clearNext() = 0;
@@ -82,7 +83,6 @@ namespace graph_transition_two_way {
 		virtual void check() const = 0;
 		virtual void move(const int & action) = 0;
 
-		virtual void reverse(int size) = 0;
 		virtual bool extractOracle(const DependencyGraph & graph) = 0;
 		virtual bool extractOneStandard(int (&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & label = 0) = 0;
 	};

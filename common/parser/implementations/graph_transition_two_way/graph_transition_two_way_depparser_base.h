@@ -55,17 +55,18 @@ namespace graph_transition_two_way {
 		virtual void getOrUpdateFeatureScore(const STATE_TYPE & item, const ActionScoreIncrement & amount) = 0;
 		void updateScoreForState(const STATE_TYPE & from, const STATE_TYPE & output, int action_index, const int & amount);
 
-		void work(DependencyGraph * retval, const DependencyGraph & correct, const DependencyGraph & correctReverse);
+		void work(DependencyGraph * retval, const DependencyGraph & correct);
 
 	public:
 		GraphDepParserBase(const std::string & sFeatureInput, int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
 			DepParserBase(sFeatureInput, nState), m_bChar(bChar), m_bPath(bPath), m_bSuperTag(bSTag), m_nSentenceLength(0) {}
 		virtual ~GraphDepParserBase() {};
 
+		const int & totalError() const { return m_nTotalErrors; }
 		void decodeArcs() override;
-		void goldCheck(const DependencyGraph & correct);
-		void train(const DependencyGraph & correct, const DependencyGraph & reverseResult, const int & round);
-		void parse(const DependencyGraph & sentence, const DependencyGraph & reverseResult, DependencyGraph * retval);
+		void goldCheck(const DependencyGraph & correct, DependencyGraph & oracleSubGraph);
+		void train(const DependencyGraph & correct, const int & round);
+		void parse(const DependencyGraph & sentence, DependencyGraph * retval);
 	};
 
 
@@ -118,7 +119,7 @@ namespace graph_transition_two_way {
 	}
 
 	template<class STATE_TYPE>
-	void GraphDepParserBase<STATE_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct, const DependencyGraph & correctReverse) {
+	void GraphDepParserBase<STATE_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct) {
 
 		m_abItems[0].clear();
 		m_abItems[1].clear();
@@ -126,24 +127,8 @@ namespace graph_transition_two_way {
 		m_iCandidate.clear();
 
 		m_iCorrect.clear();
-		if (m_nState == TRAIN && !m_iCorrect.extractOracle(correct)) {
-			return;
-		}
-
-		// fetch all reverse state
-		// m_iReverse[i] means buffer start at i
-		int seeks[MAX_SENTENCE_SIZE];
-		memset(seeks, 0, sizeof(seeks));
-		m_iReverse[m_nSentenceLength].clear();
-		for (int i = m_nSentenceLength - 1; i >= 0; --i) {
-			m_iReverse[i] = m_iReverse[i + 1];
-			// stop when stack back is 'size - i'
-			while (m_iReverse[i].stackBack() == -1 || m_iReverse[i].stackTop() != m_nSentenceLength - i - 1) {
-				m_iReverse[i].extractOneStandard(seeks, correctReverse);
-			}
-		}
-		for (int i = 0; i <= m_nSentenceLength; ++i) {
-			m_iReverse[i].reverse(m_nSentenceLength);
+		if (m_nState == TRAIN) {
+			m_iCorrect.extractOracle(correct);
 		}
 
 		// training only if it has an oracle
@@ -187,12 +172,10 @@ namespace graph_transition_two_way {
 
 		if (m_nState == PARSE && m_pGenerator->size() > 0) {
 			while (true) {
-
 				decode();
 				if (m_pGenerated->size() == 0) {
 					break;
 				}
-
 				std::swap(m_pGenerated, m_pGenerator);
 			}
 		}
@@ -213,20 +196,17 @@ namespace graph_transition_two_way {
 	void GraphDepParserBase<STATE_TYPE>::decodeArcs() {}
 
 	template<class STATE_TYPE>
-	void GraphDepParserBase<STATE_TYPE>::goldCheck(const DependencyGraph & correct) {
+	void GraphDepParserBase<STATE_TYPE>::goldCheck(const DependencyGraph & correct, DependencyGraph & oracleSubGraph) {
 		m_iCorrect.clear();
-		if (!m_iCorrect.extractOracle(correct)) {
-			++m_nTotalErrors;
-			if (m_nTotalErrors > 1) {
-				nBackSpace("error No. " + std::to_string(m_nTotalErrors - 1));
-			}
-			std::cout << "error No." << m_nTotalErrors << std::flush;
-		}
+		oracleSubGraph.clear();
+		m_iCorrect.extractOracle(correct);
+		// oracle sub graph should be equal with m_iCorrect
+		m_iCorrect.generateGraph(correct, oracleSubGraph);
 		m_iCorrect.check();
 	}
 
 	template<class STATE_TYPE>
-	void GraphDepParserBase<STATE_TYPE>::train(const DependencyGraph & correct, const DependencyGraph & reverseResult, const int & round) {
+	void GraphDepParserBase<STATE_TYPE>::train(const DependencyGraph & correct, const int & round) {
 		// initialize
 		int idx = 0;
 		m_sSentence.clear();
@@ -243,18 +223,11 @@ namespace graph_transition_two_way {
 		// train
 		int lastTotalErrors = m_nTotalErrors;
 		int lastTrainingRound = m_nTrainingRound;
-		work(nullptr, correct, reverseResult);
-		if (lastTrainingRound > 0) {
-			nBackSpace("error rate 0.0000 ( " + std::to_string(lastTotalErrors) + " / " + std::to_string(lastTrainingRound) + " ) ");
-		}
-		if (m_nTrainingRound > 0) {
-			std::cout << "error rate " << ((double)m_nTotalErrors / (double)m_nTrainingRound);
-			std::cout << " ( " << m_nTotalErrors << " / " << m_nTrainingRound << " ) " << std::flush;
-		}
+		work(nullptr, correct);
 	}
 
 	template<class STATE_TYPE>
-	void GraphDepParserBase<STATE_TYPE>::parse(const DependencyGraph & sentence, const DependencyGraph & reverseResult, DependencyGraph * retval) {
+	void GraphDepParserBase<STATE_TYPE>::parse(const DependencyGraph & sentence, DependencyGraph * retval) {
 		int idx = 0;
 		m_sSentence.clear();
 		m_dtSyntaxTree.clear();
@@ -267,11 +240,7 @@ namespace graph_transition_two_way {
 		if (m_bPath) {
 			m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 		}
-		work(retval, sentence, reverseResult);
-		if (m_nTrainingRound > 1) {
-			nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound - 1));
-		}
-		std::cout << "parsing sentence " << m_nTrainingRound << std::flush;
+		work(retval, sentence);
 	}
 }
 

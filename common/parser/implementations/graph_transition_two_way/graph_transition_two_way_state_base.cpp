@@ -56,4 +56,13 @@ namespace graph_transition_two_way {
 		//add right arcs for stack seek
 		m_lRightNodes[left].push_back(RightNodeWithLabel(m_nNextWord, l));
 	}
+
+	bool GraphStateBase::isSubGraph(GraphStateBase * subgraph) const {
+		for (int i = subgraph->size() - 1; i >= 0; --i) {
+			if (subgraph->m_lRightNodes[i] != m_lRightNodes[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

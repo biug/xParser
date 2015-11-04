@@ -151,6 +151,43 @@ void initTags(const std::string & sInputFile, const std::string & sInputReverseF
 	}
 }
 
+void combineGraph(const DependencyGraph & oracle, const DependencyGraph & reverseOracle, DependencyGraph & combined) {
+	combined.clear();
+	for (const auto & node : oracle) {
+		combined.push_back(node);
+	}
+	int i = 0;
+	std::unordered_set<TriGram<int>> arcs;
+	for (int i = 0; i < oracle.size(); ++i) {
+		GRAPHNODE_RIGHTNODES(combined[i]).clear();
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
+			arcs.insert(TriGram<int>(i, std::get<0>(arc), std::get<1>(arc)));
+		}
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(reverseOracle[i])) {
+			int label = g_vecGraphLabelMap[std::get<1>(arc)];
+			int rightLabel = LEFT_LABEL_ID(label);
+			int leftLabel = RIGHT_LABEL_ID(label);
+			label = ENCODE_LABEL_ID(leftLabel, rightLabel);
+			int lMap = 0;
+			for (int j = 0; j < g_vecGraphLabelMap.size(); ++j) {
+				if (g_vecGraphLabelMap[j] == label) {
+					lMap = j;
+					break;
+				}
+			}
+			arcs.insert(TriGram<int>(oracle.size() - std::get<0>(arc) - 1, oracle.size() - i - 1, lMap));
+		}
+	}
+	std::vector<TriGram<int>> arcsVec;
+	for (const auto & arc : arcs) {
+		arcsVec.push_back(arc);
+	}
+	std::sort(arcsVec.begin(), arcsVec.end(), [](const TriGram<int>& t1, const TriGram<int>& t2){ return t1.second() < t2.second(); });
+	for (const auto & arc : arcsVec) {
+		GRAPHNODE_RIGHTNODES(combined[arc.first()]).push_back(RightNodeWithLabel(arc.second(), arc.third()));
+	}
+}
+
 std::istream & operator>>(std::istream & input, DependencyGraph & graph) {
 	graph.clear();
 	ttoken line, token;
