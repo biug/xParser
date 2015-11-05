@@ -151,18 +151,122 @@ void initTags(const std::string & sInputFile, const std::string & sInputReverseF
 	}
 }
 
+void getPlanar(const DependencyGraph & graph, DependencyGraph & partPlanar, DependencyGraph & partAdd) {
+	DependencyGraph subGraph = graph;
+	std::unordered_map<BiGram<int>, int> arcs;
+	for (int i = 0; i < graph.size(); ++i) {
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(graph[i])) {
+			for (int j = 0; j < graph.size(); ++j) {
+				for (const auto & sarc : GRAPHNODE_RIGHTNODES(graph[j])) {
+					if (i < j && j < std::get<0>(arc) && std::get<0>(arc) < std::get<0>(sarc)) {
+						arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+					}
+					else if (j < i && i < std::get<0>(sarc) && std::get<0>(sarc) < std::get<0>(arc)) {
+						arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+					}
+				}
+			}
+		}
+	}
+	for (const auto & arc : arcs) {
+		auto & rightNodes = GRAPHNODE_RIGHTNODES(subGraph[arc.first.first()]);
+		for (auto itr = rightNodes.begin(); itr != rightNodes.end(); ++itr) {
+			if (std::get<0>(*itr) == arc.first.second()) {
+				rightNodes.erase(itr);
+				break;
+			}
+		}
+	}
+	partPlanar = graph;
+	std::unordered_set<BiGram<int>> removed;
+	while (true) {
+		arcs.clear();
+		for (int i = 0; i < partPlanar.size(); ++i) {
+			for (const auto & arc : GRAPHNODE_RIGHTNODES(partPlanar[i])) {
+				for (int j = 0; j < partPlanar.size(); ++j) {
+					for (const auto & sarc : GRAPHNODE_RIGHTNODES(partPlanar[j])) {
+						if (i < j && j < std::get<0>(arc) && std::get<0>(arc) < std::get<0>(sarc)) {
+							arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+						}
+						else if (j < i && i < std::get<0>(sarc) && std::get<0>(sarc) < std::get<0>(arc)) {
+							arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+						}
+					}
+				}
+			}
+		}
+		if (arcs.size() == 0) {
+			break;
+		}
+		int maxCount = arcs.begin()->second;
+		BiGram<int> maxArc(arcs.begin()->first);
+		for (const auto & arc : arcs) {
+			if (arc.second > maxCount) {
+				maxCount = arc.second;
+				maxArc = arc.first;
+			}
+			else if (arc.second == maxCount) {
+				for (auto & ra : removed) {
+					if (!(ra.first() < arc.first.first() && arc.first.first() < ra.second() && ra.second() < arc.first.second()) &&
+						!(arc.first.first() < ra.first() && ra.first() < arc.first.second() && arc.first.second() < ra.second())) {
+						maxArc = arc.first;
+					}
+				}
+			}
+		}
+		removed.insert(maxArc);
+		auto & deleteNode = GRAPHNODE_RIGHTNODES(partPlanar[maxArc.first()]);
+		for (auto itr = deleteNode.begin(); itr != deleteNode.end(); ++itr) {
+			if (std::get<0>(*itr) == maxArc.second()) {
+				deleteNode.erase(itr);
+				break;
+			}
+		}
+	}
+	partAdd = partPlanar;
+	eraseGraph(subGraph, partAdd);
+}
+
+void eraseGraph(const DependencyGraph & oracle, DependencyGraph & deleted) {
+	for (int i = 0, n = oracle.size(); i < n; ++i) {
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
+			auto & rightNodes = GRAPHNODE_RIGHTNODES(deleted[i]);
+			for (auto itr = rightNodes.begin(); itr != rightNodes.end(); ++itr) {
+				if (std::get<0>(*itr) == std::get<0>(arc)) {
+					rightNodes.erase(itr);
+					break;
+				}
+			}
+		}
+	}
+}
+
+void eraseReverseGraph(const DependencyGraph & oracle, DependencyGraph & reverseGraph) {
+	for (int i = 0, n = oracle.size(); i < n; ++i) {
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
+			auto & rightNodes = GRAPHNODE_RIGHTNODES(reverseGraph[n - std::get<0>(arc) - 1]);
+			for (auto itr = rightNodes.begin(); itr != rightNodes.end(); ++itr) {
+				if (std::get<0>(*itr) == n - i - 1) {
+					rightNodes.erase(itr);
+					break;
+				}
+			}
+		}
+	}
+}
+
 void combineGraph(const DependencyGraph & oracle, const DependencyGraph & reverseOracle, DependencyGraph & combined) {
 	combined.clear();
 	for (const auto & node : oracle) {
 		combined.push_back(node);
 	}
-	int i = 0;
 	std::unordered_set<TriGram<int>> arcs;
+	// add reverse arcs
 	for (int i = 0; i < oracle.size(); ++i) {
 		GRAPHNODE_RIGHTNODES(combined[i]).clear();
-		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
-			arcs.insert(TriGram<int>(i, std::get<0>(arc), std::get<1>(arc)));
-		}
+//		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
+//			arcs.insert(TriGram<int>(i, std::get<0>(arc), std::get<1>(arc)));
+//		}
 		for (const auto & arc : GRAPHNODE_RIGHTNODES(reverseOracle[i])) {
 			int label = g_vecGraphLabelMap[std::get<1>(arc)];
 			int rightLabel = LEFT_LABEL_ID(label);
@@ -176,6 +280,27 @@ void combineGraph(const DependencyGraph & oracle, const DependencyGraph & revers
 				}
 			}
 			arcs.insert(TriGram<int>(oracle.size() - std::get<0>(arc) - 1, oracle.size() - i - 1, lMap));
+		}
+	}
+	// add cross normal arcs
+	for (int i = 0; i < oracle.size(); ++i) {
+		GRAPHNODE_RIGHTNODES(combined[i]).clear();
+		for (const auto & arc : GRAPHNODE_RIGHTNODES(oracle[i])) {
+			bool findCross = false;
+			int l = std::get<0>(arc), r = std::get<0>(arc);
+			for (const auto & a : arcs) {
+				if (a.first() < l && l < a.second() && a.second() < r) {
+					findCross = true;
+					break;
+				}
+				else if (l < a.first() && a.first() < r && r < a.second()) {
+					findCross = true;
+					break;
+				}
+			}
+			if (findCross) {
+				arcs.insert(TriGram<int>(i, std::get<0>(arc), std::get<1>(arc)));
+			}
 		}
 	}
 	std::vector<TriGram<int>> arcsVec;

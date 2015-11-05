@@ -148,7 +148,7 @@ namespace two_way_shift_reduce {
 				shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
 				return true;
 			default:
-				arcShift(label,TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
+				arcShift(label, TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
 				return true;
 			}
 		}

@@ -35,6 +35,7 @@ namespace graph_transition_two_way {
 		Sentence m_sSentence;
 		DependencyTree m_dtSyntaxTree;
 		WordPOSTag m_lSentence[MAX_SENTENCE_SIZE];
+		DependencyGraph m_gTrainBest;
 
 		ScoredAction m_saScoredaction;
 
@@ -63,6 +64,7 @@ namespace graph_transition_two_way {
 		virtual ~GraphDepParserBase() {};
 
 		const int & totalError() const { return m_nTotalErrors; }
+		const DependencyGraph & trainOutput() const { return m_gTrainBest; }
 		void decodeArcs() override;
 		void goldCheck(const DependencyGraph & correct, DependencyGraph & oracleSubGraph);
 		void train(const DependencyGraph & correct, const int & round);
@@ -127,6 +129,7 @@ namespace graph_transition_two_way {
 		m_iCandidate.clear();
 
 		m_iCorrect.clear();
+		m_gTrainBest.clear();
 		if (m_nState == TRAIN) {
 			m_iCorrect.extractOracle(correct);
 		}
@@ -156,6 +159,7 @@ namespace graph_transition_two_way {
 				}
 				if (!bCorrect) {
 					m_iCorrect = clearItem;
+					m_pGenerator->bestUnsortItem().generateGraph(correct, m_gTrainBest);
 					update();
 					return;
 				}
@@ -182,6 +186,7 @@ namespace graph_transition_two_way {
 
 		switch (m_nState) {
 		case ParserState::TRAIN:
+			m_pGenerator->bestUnsortItem().generateGraph(correct, m_gTrainBest);
 			update();
 			break;
 		case ParserState::PARSE:

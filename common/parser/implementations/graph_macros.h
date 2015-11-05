@@ -91,6 +91,9 @@ template<class RET_TYPE> using POSTagSet4TwoIntsMap = PackedScoreMap<ThreeInts, 
 
 void initTags(const std::string & sInput);
 void initTags(const std::string & sInput, const std::string & sInputReverse);
+void getPlanar(const DependencyGraph & graph, DependencyGraph & partPlanar, DependencyGraph & partAdded);
+void eraseGraph(const DependencyGraph & oracle, DependencyGraph & deleted);
+void eraseReverseGraph(const DependencyGraph & oracle, DependencyGraph & reverseOracle);
 void combineGraph(const DependencyGraph & oracle, const DependencyGraph & reverseOracle, DependencyGraph & combined);
 
 std::istream & operator>>(std::istream & input, DependencyGraph & graph);

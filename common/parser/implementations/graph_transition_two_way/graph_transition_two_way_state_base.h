@@ -203,7 +203,7 @@ namespace graph_transition_two_way {
 		int i = 0;
 		tree.clear();
 		for (const auto & token : sent) {
-			tree.push_back(DependencyGraphNode(GRAPHNODE_POSTAGGEDWORD(token), TSuperTag::key(m_lSuperTag[i]), HeadWithLabel(-1, NULL_LABEL), m_lRightNodes[i]));
+			tree.push_back(DependencyGraphNode(GRAPHNODE_POSTAGGEDWORD(token), TSuperTag::key(m_lSuperTag[i]), HeadWithLabel(-1, NULL_LABEL), i < m_nNextWord ? m_lRightNodes[i] : std::vector<RightNodeWithLabel>()));
 			++i;
 		}
 	}

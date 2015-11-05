@@ -48,8 +48,8 @@ namespace graph_transition_two_way {
 	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::train(const std::string & sInput, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
 		int nRound = 0;
 		int nReverseRound = 0;
-		DependencyGraph ref_sent;
-		DependencyGraph ref_reverse_sent;
+		DependencyGraph ref_sent, ref_input;
+		DependencyGraph ref_reverse_sent, ref_reverse_input, ref_reverse_added;
 
 		std::cout << "Training is started..." << std::endl;
 
@@ -81,8 +81,16 @@ namespace graph_transition_two_way {
 				}
 				int last_error = parser->totalError();
 				int last_reverse_error = reverse_parser->totalError();
-				parser->train(ref_sent, ++nRound);
-				reverse_parser->train(ref_reverse_sent, ++nReverseRound);
+				// get reverse planar
+				getPlanar(ref_reverse_sent, ref_reverse_input, ref_reverse_added);
+				// reverse parse
+				reverse_parser->train(ref_reverse_input, ++nRound);
+				// get complementary graph
+				ref_input = ref_sent;
+				// get normal planar
+				eraseReverseGraph(ref_reverse_added, ref_input);
+				// normal parse
+				parser->train(ref_input, ++nReverseRound);
 				if (nRound > 1) {
 					nBackSpace("normal error rate 0.0000 ( " + std::to_string(last_error) + " / " + std::to_string(nRound - 1) + " ) ");
 					nBackSpace("reverse error rate 0.0000 ( " + std::to_string(last_reverse_error) + " / " + std::to_string(nReverseRound - 1) + " ) ");
@@ -103,7 +111,7 @@ namespace graph_transition_two_way {
 	}
 
 	template<class DEP_PARSER, class SUPERTAG_DEP_PARSER, class STATE_TYPE>
-	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std::string & sInput, const std::string & sOutputFile, const std::string & sFeatureInput) const {
+	void GraphRunBase<DEP_PARSER, SUPERTAG_DEP_PARSER, STATE_TYPE>::parse(const std::string & sInput, const std::string & sOutput, const std::string & sFeatureInput) const {
 
 		int nRound = 0;
 		DependencyGraph sentence;
@@ -129,7 +137,11 @@ namespace graph_transition_two_way {
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
 		std::ifstream input(sInputFile);
 		std::ifstream inputReverse(sInputReverseFile);
-		std::ofstream output(sOutputFile);
+		std::ofstream output(sOutput);
+//		std::string sOutputFile = sOutput.substr(0, sOutput.find("#"));
+//		std::string sOutputReverseFile = sOutput.substr(sOutput.find("#") + 1);
+//		std::ofstream output(sOutputFile);
+//		std::ofstream outputReverse(sOutputReverseFile);
 
 		initConstant();
 
@@ -146,6 +158,8 @@ namespace graph_transition_two_way {
 					combineGraph(graph, reverseGraph, combined);
 					// should combine graph and reverseGraph
 					output << combined;
+//					output << graph;
+//					outputReverse << reverseGraph;
 					graph.clear();
 					reverseGraph.clear();
 					if (nRound > 0) {
@@ -165,8 +179,8 @@ namespace graph_transition_two_way {
 		int nRound = 0;
 		int nError = 0;
 		DependencyGraph combined;
-		DependencyGraph ref_sent, ref_output;
-		DependencyGraph ref_reverse_sent, ref_reverse_output;
+		DependencyGraph ref_sent, ref_input, ref_output;
+		DependencyGraph ref_reverse_sent, ref_reverse_input, ref_reverse_added, ref_reverse_output;
 
 		std::cout << "GoldTesting is started..." << std::endl;
 
@@ -175,8 +189,6 @@ namespace graph_transition_two_way {
 
 		std::string sInputFile = sInput.substr(0, sInput.find("#"));
 		std::string sInputReverseFile = sInput.substr(sInput.find("#") + 1);
-		std::cout << sInputFile << std::endl;
-		std::cout << sInputReverseFile << std::endl;
 		initConstant(sInputFile, sInputReverseFile);
 
 		std::ifstream input(sInputFile);
@@ -184,9 +196,21 @@ namespace graph_transition_two_way {
 		if (input) {
 			while (input >> ref_sent) {
 				inputReverse >> ref_reverse_sent;
+				if (!m_bSuperTagFeature) {
+					clearGraphSuperTag(ref_sent);
+					clearGraphSuperTag(ref_reverse_sent);
+				}
 				++nRound;
-				parser->goldCheck(ref_sent, ref_output);
-				reverse_parser->goldCheck(ref_reverse_sent, ref_reverse_output);
+				// get reverse planar
+				getPlanar(ref_reverse_sent, ref_reverse_input, ref_reverse_added);
+				// reverse parse
+				reverse_parser->goldCheck(ref_reverse_input, ref_reverse_output);
+				// get complementary graph
+				ref_input = ref_sent;
+				// get normal planar
+				eraseReverseGraph(ref_reverse_added, ref_input);
+				// normal parse
+				parser->goldCheck(ref_input, ref_output);
 				combineGraph(ref_output, ref_reverse_output, combined);
 				for (int i = 0; i < ref_sent.size(); ++i) {
 					if (GRAPHNODE_RIGHTNODES(ref_sent[i]) != GRAPHNODE_RIGHTNODES(combined[i])) {
@@ -194,6 +218,12 @@ namespace graph_transition_two_way {
 						break;
 					}
 				}
+//				if (nError == 1) {
+//					std::cout << ref_sent << std::endl;
+//					std::cout << ref_output << std::endl;
+//					std::cout << ref_reverse_sent << std::endl;
+//					break;
+//				}
 			}
 		}
 		input.close();
