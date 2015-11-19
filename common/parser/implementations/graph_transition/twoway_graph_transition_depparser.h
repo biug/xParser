@@ -2,6 +2,7 @@
 #define _TWOWAY_GRAPH_TRANSITION_DEPPARSER_BASE_H
 
 #include <tuple>
+#include <cstdio>
 #include <vector>
 #include <fstream>
 #include <unordered_set>
@@ -169,6 +170,9 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(c
 	loadTokens(1, "output1");
 	m_lActions[0].loadConstant(m_tLabels[0]);
 	m_lActions[1].loadConstant(m_tLabels[1]);
+
+	remove("output0");
+	remove("output1");
 
 	std::cout << "constant load complete." << std::endl;
 
