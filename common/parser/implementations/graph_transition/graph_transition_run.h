@@ -32,8 +32,8 @@ void GraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_TYP
 	std::cout << "Training is started..." << std::endl;
 
 	if (m_bSuperTagFeature) {
-		std::unique_ptr<GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>> parser(
-					(GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>*)new DEP_PARSER<RET_TYPE2>
+		std::unique_ptr<DEP_PARSER<RET_TYPE2>> parser(
+					(DEP_PARSER<RET_TYPE2>*)new DEP_PARSER<RET_TYPE2>
 					(sInputFile, sFeatureInput, sFeatureOutput, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 
 		std::ifstream input(sInputFile);
@@ -50,8 +50,8 @@ void GraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_TYP
 		input.close();
 	}
 	else {
-		std::unique_ptr<GraphDepParserBase<RET_TYPE1, STATE_TYPE, ACTION_TYPE>> parser(
-					(GraphDepParserBase<RET_TYPE1, STATE_TYPE, ACTION_TYPE>*)new DEP_PARSER<RET_TYPE1>
+		std::unique_ptr<DEP_PARSER<RET_TYPE1>> parser(
+					(DEP_PARSER<RET_TYPE1>*)new DEP_PARSER<RET_TYPE1>
 					(sInputFile, sFeatureInput, sFeatureOutput, ParserState::TRAIN, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 
 		std::ifstream input(sInputFile);
@@ -81,8 +81,8 @@ void GraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_TYP
 	std::cout << "Parsing is started..." << std::endl;
 
 	if (m_bSuperTagFeature) {
-		std::unique_ptr<GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>> parser(
-					(GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>*)new DEP_PARSER<RET_TYPE2>
+		std::unique_ptr<DEP_PARSER<RET_TYPE2>> parser(
+					(DEP_PARSER<RET_TYPE2>*)new DEP_PARSER<RET_TYPE2>
 					("", sFeatureFile, sFeatureFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 		std::ifstream input(sInputFile);
 		std::ofstream output(sOutputFile);
@@ -104,8 +104,8 @@ void GraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_TYP
 		output.close();
 	}
 	else {
-		std::unique_ptr<GraphDepParserBase<RET_TYPE1, STATE_TYPE, ACTION_TYPE>> parser(
-					(GraphDepParserBase<RET_TYPE1, STATE_TYPE, ACTION_TYPE>*)new DEP_PARSER<RET_TYPE1>
+		std::unique_ptr<DEP_PARSER<RET_TYPE1>> parser(
+					(DEP_PARSER<RET_TYPE1>*)new DEP_PARSER<RET_TYPE1>
 					("", sFeatureFile, sFeatureFile, ParserState::PARSE, m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 		std::ifstream input(sInputFile);
 		std::ofstream output(sOutputFile);
@@ -136,8 +136,8 @@ void GraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_TYP
 
 	std::cout << "GoldTesting is started..." << std::endl;
 
-	std::unique_ptr<GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>> parser(
-			(GraphDepParserBase<RET_TYPE2, STATE_TYPE, ACTION_TYPE>*)new DEP_PARSER<RET_TYPE2>
+	std::unique_ptr<DEP_PARSER<RET_TYPE2>> parser(
+			(DEP_PARSER<RET_TYPE2>*)new DEP_PARSER<RET_TYPE2>
 			(sInputFile, sFeatureInput, sFeatureInput, ParserState::PARSE,
 			m_bCharFeature, m_bPathFeature, m_bSuperTagFeature));
 

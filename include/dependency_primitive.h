@@ -81,6 +81,7 @@ public:
 	const_iterator begin() const { return m_vecNodes.cbegin(); }
 	const_iterator end() const { return m_vecNodes.cend(); }
 
+	CoNLL08DepGraph & operator=(const CoNLL08DepGraph & g);
 	CoNLL08DepGraph & operator+=(const CoNLL08DepGraph & g);
 	CoNLL08DepGraph operator-();
 	std::pair<CoNLL08DepGraph, CoNLL08DepGraph> splitPlanar();

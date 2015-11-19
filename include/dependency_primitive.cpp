@@ -24,6 +24,12 @@ CoNLL08DepGraph::~CoNLL08DepGraph() = default;
 CoNLL08DepGraph::CoNLL08DepGraph(const CoNLL08DepGraph & graph) : m_vecNodes(graph.m_vecNodes) {}
 
 // add crossing edge
+CoNLL08DepGraph & CoNLL08DepGraph::operator=(const CoNLL08DepGraph & g) {
+	m_vecNodes = g.m_vecNodes;
+	return *this;
+}
+
+// add crossing edge
 CoNLL08DepGraph & CoNLL08DepGraph::operator+=(const CoNLL08DepGraph & g) {
 	for (int i = 0, n = size(); i < n; ++i) {
 		for (const auto & arc : g[i].m_vecRightArcs) {
@@ -53,9 +59,10 @@ CoNLL08DepGraph & CoNLL08DepGraph::operator+=(const CoNLL08DepGraph & g) {
 // reverse
 CoNLL08DepGraph CoNLL08DepGraph::operator-() {
 	CoNLL08DepGraph graph;
-	for (const auto & node : *this) {
-		graph.add(node);
+	for (auto && itr = m_vecNodes.rbegin(); itr != m_vecNodes.rend(); ++itr) {
+		graph.add(*itr);
 		graph.back().m_vecRightArcs.clear();
+		graph.back().m_nTreeHead = itr->m_nTreeHead == -1 ? -1 : m_vecNodes.size() - itr->m_nTreeHead - 1;
 	}
 	for (int i = 0, n = size(); i < n; ++i) {
 		for (const auto & arc : m_vecNodes[i].m_vecRightArcs) {
@@ -76,16 +83,46 @@ std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar() {
 	std::pair<CoNLL08DepGraph, CoNLL08DepGraph> parts(*this, *this);
 	std::unordered_map<BiGram<int>, int> arcs;
 	std::unordered_set<BiGram<int>> removed;
+	// record all crossing edges from parts
+	for (int i = 0, n = size(); i < n; ++i) {
+		for (const auto & arc : parts.second[i].m_vecRightArcs) {
+			for (int j = 0; j < n; ++j) {
+				for (const auto & sarc : parts.second[j].m_vecRightArcs) {
+					// crossing with i < j < right(i) < right(j)
+					if (i < j && j < arc.first && arc.first < sarc.first) {
+						arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+					}
+					// crossing with j < i < right(j) < right(i)
+					else if (j < i && i < sarc.first && sarc.first < arc.first) {
+						arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
+					}
+				}
+			}
+		}
+	}
+	// remove all crossing edges from parts
+	for (const auto & arc : arcs) {
+		auto & rightArcs = (parts.second)[arc.first.first()].m_vecRightArcs;
+		for (auto && itr = rightArcs.begin(); itr != rightArcs.end(); ++itr) {
+			if (itr->first == arc.first.second()) {
+				rightArcs.erase(itr);
+				break;
+			}
+		}
+	}
 	while (true) {
+		// save all crossing edges
 		arcs.clear();
 		for (int i = 0, n = size(); i < n; ++i) {
 			for (const auto & arc : parts.first[i].m_vecRightArcs) {
 				for (int j = 0; j < n; ++j) {
 					for (const auto & sarc : parts.first[j].m_vecRightArcs) {
-						if (i < j && j < std::get<0>(arc) && std::get<0>(arc) < std::get<0>(sarc)) {
+						// crossing with i < j < right(i) < right(j)
+						if (i < j && j < arc.first && arc.first < sarc.first) {
 							arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
 						}
-						else if (j < i && i < std::get<0>(sarc) && std::get<0>(sarc) < std::get<0>(arc)) {
+						// crossing with j < i < right(j) < right(i)
+						else if (j < i && i < sarc.first && sarc.first < arc.first) {
 							arcs[BiGram<int>(i, std::get<0>(arc))] += 1;
 						}
 					}
@@ -95,6 +132,7 @@ std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar() {
 		if (arcs.size() == 0) {
 			break;
 		}
+		// find most-corssing edge
 		int maxCount = arcs.begin()->second;
 		BiGram<int> maxArc(arcs.begin()->first);
 		for (const auto & arc : arcs) {
@@ -110,25 +148,41 @@ std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar() {
 					}
 				}
 			}
-			auto & rightNodes = parts.second[arc.first.first()].m_vecRightArcs;
-			for (auto itr = rightNodes.begin(); itr != rightNodes.end(); ++itr) {
-				if (std::get<0>(*itr) == arc.first.second()) {
-					rightNodes.erase(itr);
-					break;
-				}
-			}
 		}
 		removed.insert(maxArc);
 		auto & rightArcs = parts.second[maxArc.first()].m_vecRightArcs;
 		auto & deleteNode = parts.first[maxArc.first()].m_vecRightArcs;
+		// remove max-arc
 		for (auto itr = deleteNode.begin(); itr != deleteNode.end(); ++itr) {
-			if (std::get<0>(*itr) == maxArc.second()) {
+			if (itr->first == maxArc.second()) {
+				// add before delete, avoiding iterator error
+				// add maxArc to parts.second
+				// add only no-crossing
+				bool bNoCrossing = true;
+				// left is maxArc.first(), right is maxArc.second()
+				for (int i = 0, j = maxArc.first(); i < j && bNoCrossing; ++i) {
+					for (const auto & arc : parts.second[i].m_vecRightArcs) {
+						if (j < arc.first && arc.first < maxArc.second()) {
+							bNoCrossing = false;
+							break;
+						}
+					}
+				}
+				for (int j = maxArc.first(), i = j + 1, n = m_vecNodes.size(); i < n && bNoCrossing; ++i) {
+					for (const auto & arc : parts.second[i].m_vecRightArcs) {
+						if (i < maxArc.second() && maxArc.second() < arc.first) {
+							bNoCrossing = false;
+							break;
+						}
+					}
+				}
+				if (bNoCrossing) {
+					rightArcs.push_back(*itr);
+					std::sort(rightArcs.begin(), rightArcs.end(),
+							[](const std::pair<int, ttoken> & p1, const std::pair<int, ttoken> & p2) { return p1.first < p2.first; });
+				}
 				// remove maxArc from parts.first
 				deleteNode.erase(itr);
-				// add maxArc to parts.second
-				rightArcs.push_back(*itr);
-				std::sort(rightArcs.begin(), rightArcs.end(),
-						[](const std::pair<int, ttoken> & p1, const std::pair<int, ttoken> & p2) { return p1.first < p2.first; });
 				break;
 			}
 		}
@@ -213,6 +267,12 @@ CoNLL08DepGraph operator+(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2
 				++itr1;
 				++itr2;
 			}
+		}
+		while (itr1 < bound1) {
+			graph[i].m_vecRightArcs.push_back(*itr1++);
+		}
+		while (itr2 < bound2) {
+			graph[i].m_vecRightArcs.push_back(*itr2++);
 		}
 	}
 	return graph;
