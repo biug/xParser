@@ -5,19 +5,19 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "common/token/supertag.h"
-#include "include/learning//tree/lca.h"
+#include "include/learning/tree/lca.h"
+#include "include/dependency_primitive.h"
 #include "common/parser/implementations/arceager/arceager_run.h"
 #include "common/parser/implementations/graph_transition/nivre/nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/twostack_run.h"
-#include "common/parser/implementations/graph_transition/std_nivre/std_nivre_run.h"
-#include "common/parser/implementations/graph_transition/std_titov/std_titov_run.h"
-#include "common/parser/implementations/graph_transition/std_twostack/std_twostack_run.h"
-
-#include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
-#include "common/parser/implementations/graph_transition_two_way/two_way_titov/two_way_titov_run.h"
-#include "common/parser/implementations/graph_transition_two_way/two_way_shift_reduce/two_way_shift_reduce_run.h"
+#include "common/parser/implementations/graph_transition/nivre/std_nivre_run.h"
+#include "common/parser/implementations/graph_transition/titov/std_titov_run.h"
+#include "common/parser/implementations/graph_transition/twostack/std_twostack_run.h"
+//
+//#include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
+//#include "common/parser/implementations/graph_transition_two_way/two_way_titov/two_way_titov_run.h"
+//#include "common/parser/implementations/graph_transition_two_way/two_way_shift_reduce/two_way_shift_reduce_run.h"
 
 #include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
 #include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
@@ -92,15 +92,15 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[2], "std_twostack") == 0) {
 			run.reset(new std_twostack::Run(bChar, bPath, bSuperTag));
 		}
-		else if (strcmp(argv[2], "both_twostack") == 0) {
-			run.reset(new both_twostack::Run(bChar, bPath, bSuperTag));
-		}
-		else if (strcmp(argv[2], "two_way_titov") == 0) {
-			run.reset(new two_way_titov::Run(bChar, bPath, bSuperTag));
-		}
-		else if (strcmp(argv[2], "two_way_shift_reduce") == 0) {
-			run.reset(new two_way_shift_reduce::Run(bChar, bPath, bSuperTag));
-		}
+//		else if (strcmp(argv[2], "both_twostack") == 0) {
+//			run.reset(new both_twostack::Run(bChar, bPath, bSuperTag));
+//		}
+//		else if (strcmp(argv[2], "two_way_titov") == 0) {
+//			run.reset(new two_way_titov::Run(bChar, bPath, bSuperTag));
+//		}
+//		else if (strcmp(argv[2], "two_way_shift_reduce") == 0) {
+//			run.reset(new two_way_shift_reduce::Run(bChar, bPath, bSuperTag));
+//		}
 	}
 
 	if (strcmp(argv[1], "goldtest") == 0) {

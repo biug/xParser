@@ -55,7 +55,7 @@ namespace arceager {
 	}
 
 	inline void ActionScores::updateAverage(const int & round) {
-		for (auto & score : m_mapScores) {
+		for (auto && score : m_mapScores) {
 			score.second.updateAverage(round);
 		}
 	}
@@ -63,12 +63,12 @@ namespace arceager {
 	inline void ActionScores::updateRetval(PackedScoreType & retval, const int & which) {
 		switch (which) {
 		case eNonAverage:
-			for (auto & score : m_mapScores) {
+			for (auto && score : m_mapScores) {
 				score.second.updateRetvalCurrent(retval[score.first]);
 			}
 			break;
 		case eAverage:
-			for (auto & score : m_mapScores) {
+			for (auto && score : m_mapScores) {
 				score.second.updateRetvalTotal(retval[score.first]);
 			}
 			break;

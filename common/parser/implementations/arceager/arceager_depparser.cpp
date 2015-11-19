@@ -15,12 +15,12 @@ namespace arceager {
 	WordPOSTag DepParser::empty_taggedword = WordPOSTag();
 	SetOfDepLabels DepParser::empty_setoflabels = SetOfDepLabels();
 
-	DepParser::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState) :
-		DepParserBase(sFeatureInput, nState) {
+	DepParser::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOutput, int nState) :
+		DepParserBase(nState) {
 
 		m_nSentenceLength = 0;
 
-		m_Weight = new Weight(sFeatureInput, sFeatureOut);
+		m_Weight = new Weight(sFeatureInput, sFeatureOutput);
 
 		DepParser::empty_taggedword.refer(TWord::code(EMPTY_WORD), TPOSTag::code(EMPTY_POSTAG));
 		empty_setoflabels.add(0);
@@ -176,8 +176,6 @@ namespace arceager {
 			}
 		}
 	}
-
-	void DepParser::decodeArcs() {}
 
 	void DepParser::update() {
 

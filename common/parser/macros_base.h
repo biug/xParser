@@ -7,7 +7,6 @@
 #include "include/ngram.h"
 #include "common/token/token.h"
 #include "common/token/deplabel.h"
-#include "common/token/supertag.h"
 
 #define MAX_SENTENCE_SIZE 256
 #define MAX_SENTENCE_BITS 8
@@ -39,22 +38,8 @@
 #define TREENODE_HEAD(X)			(std::get<1>(X))
 #define TREENODE_LABEL(X)			(std::get<2>(X))
 
-#define RIGHTNODE_POS(X)			(std::get<0>(X))
-#define RIGHTNODE_LABEL(X)			(std::get<1>(X))
-
 #define GRAPH_LEFT	-1
 #define GRAPH_RIGHT 1
-
-#define GRAPHNODE_WORD(X)				(std::get<0>(std::get<0>(X)))
-#define GRAPHNODE_POSTAG(X)				(std::get<1>(std::get<0>(X)))
-#define GRAPHNODE_POSTAGGEDWORD(X)		(std::get<0>(X))
-#define GRAPHNODE_SUPERTAG(X)			(std::get<1>(X))
-#define GRAPHNODE_TREEHEAD(X)			(std::get<0>(std::get<2>(X)))
-#define GRAPHNODE_TREELABEL(X)			(std::get<1>(std::get<2>(X)))
-#define GRAPHNODE_RIGHTNODES(X)			(std::get<3>(X))
-#define GRAPHNODE_RIGHTNODE(X,I)		(std::get<3>(X)[I])
-#define GRAPHNODE_RIGHTNODEPOS(X,I)		(std::get<0>(std::get<3>(X)[I]))
-#define GRAPHNODE_RIGHTNODELABEL(X,I)	(std::get<1>(std::get<3>(X)[I]))
 
 typedef int gtype;
 
@@ -112,19 +97,12 @@ typedef std::tuple<POSTaggedWord, int, ttoken> DependencyTreeNode;
 typedef std::vector<POSTaggedWord> Sentence;
 typedef std::vector<DependencyTreeNode> DependencyTree;
 
-typedef std::tuple<int, ttoken> HeadWithLabel;
-typedef std::tuple<int, int> RightNodeWithLabel;
-typedef std::tuple<POSTaggedWord, ttoken, HeadWithLabel, std::vector<RightNodeWithLabel>> DependencyGraphNode;
-typedef std::vector<DependencyGraphNode> DependencyGraph;
-
 typedef std::unordered_map<int, std::vector<int>> SuperTagCandidates;
 
 int encodeLinkDistance(const int & st, const int & n0);
 int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir);
 std::string nCharPrev(const Sentence & sent, int index, int n);
 std::string nCharNext(const Sentence & sent, int index, int n);
-
-void clearGraphSuperTag(DependencyGraph & graph);
 
 std::istream & operator>>(std::istream & input, Sentence & sentence);
 std::istream & operator>>(std::istream & input, DependencyTree & tree);

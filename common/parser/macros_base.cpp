@@ -39,10 +39,6 @@ int encodeLinkDistanceOrDirection(const int & hi, const int & di, bool dir) {
 	return diff;
 }
 
-void clearGraphSuperTag(DependencyGraph & graph) {
-	for (auto & node : graph) GRAPHNODE_SUPERTAG(node) = NULL_SUPERTAG;
-}
-
 std::string nCharPrev(const Sentence & sent, int index, int n) {
 	std::string str = "";
 	--index;

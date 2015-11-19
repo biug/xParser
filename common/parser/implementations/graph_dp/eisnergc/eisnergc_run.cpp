@@ -12,7 +12,7 @@ namespace eisnergc {
 
 	Run::~Run() = default;
 
-	void Run::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
+	void Run::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) {
 		int nRound = 0;
 		DependencyTree ref_sent;
 
@@ -38,7 +38,7 @@ namespace eisnergc {
 		std::cout << "Training has finished successfully. Total time taken is: " << difftime(time_end, time_begin) << "s" << std::endl;
 	}
 
-	void Run::parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) const {
+	void Run::parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) {
 
 		Sentence sentence;
 		DependencyTree tree;
@@ -69,7 +69,7 @@ namespace eisnergc {
 		std::cout << "Parsing has finished successfully. Total time taken is: " << difftime(time_end, time_begin) << "s" << std::endl;
 	}
 
-	void Run::goldtest(const std::string & sInputFile, const std::string & sFeatureInput) const {
+	void Run::goldtest(const std::string & sInputFile, const std::string & sFeatureInput) {
 		int nRound = 0;
 		DependencyTree ref_sent;
 

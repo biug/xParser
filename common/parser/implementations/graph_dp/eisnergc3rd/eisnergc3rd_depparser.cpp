@@ -14,7 +14,7 @@ namespace eisnergc3rd {
 	WordPOSTag DepParser::end_taggedword = WordPOSTag();
 
 	DepParser::DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState) :
-		DepParserBase(sFeatureInput, nState) {
+		DepParserBase(nState) {
 
 		m_nSentenceLength = 0;
 

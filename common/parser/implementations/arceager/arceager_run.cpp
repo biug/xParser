@@ -18,7 +18,7 @@ namespace arceager {
 
 	Run::~Run() = default;
 
-	void Run::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const {
+	void Run::train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) {
 		int nRound = 0;
 		DependencyTree ref_sent;
 
@@ -52,7 +52,7 @@ namespace arceager {
 		std::cout << "Done." << std::endl;
 	}
 
-	void Run::parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) const {
+	void Run::parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) {
 
 		Sentence sentence;
 		DependencyTree tree;
@@ -80,7 +80,7 @@ namespace arceager {
 		output.close();
 	}
 
-	void Run::goldtest(const std::string & sInputFile, const std::string & sFeatureInput) const {
+	void Run::goldtest(const std::string & sInputFile, const std::string & sFeatureInput) {
 		int nRound = 0;
 		DependencyTree ref_sent;
 

@@ -79,8 +79,8 @@ namespace emptyeisner3rd {
 		DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState);
 		~DepParser();
 
-		void decode() override;
-		void decodeArcs() override;
+		void decode();
+		void decodeArcs();
 
 		void preTrainEmpty(const DependencyTree & correct, const int & round, const int & step);
 

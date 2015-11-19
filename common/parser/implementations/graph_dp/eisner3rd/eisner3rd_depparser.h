@@ -72,8 +72,8 @@ namespace eisner3rd {
 		DepParser(const std::string & sFeatureInput, const std::string & sFeatureOut, int nState);
 		~DepParser();
 
-		void decode() override;
-		void decodeArcs() override;
+		void decode();
+		void decodeArcs();
 
 		void train(const DependencyTree & correct, const int & round);
 		void parse(const Sentence & sentence, DependencyTree * retval);

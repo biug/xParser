@@ -9,9 +9,9 @@ namespace emptyeisnergc3rd {
 		Run();
 		~Run();
 
-		void train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) const override;
-		void parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) const override;
-		void goldtest(const std::string & sInputFile, const std::string & sFeatureInput) const override;
+		void train(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput) override;
+		void parse(const std::string & sInputFile, const std::string & sOutputFile, const std::string & sFeatureFile) override;
+		void goldtest(const std::string & sInputFile, const std::string & sFeatureInput) override;
 	};
 }
 

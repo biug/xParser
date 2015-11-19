@@ -1,7 +1,6 @@
 #include <cstring>
 
-#include "nivre_state.h"
-#include "common/token/deplabel.h"
+#include "nivre_macros.h"
 
 namespace nivre {
 
@@ -11,7 +10,56 @@ namespace nivre {
 
 	StateItem::~StateItem() = default;
 
-	void StateItem::print() const {
+	void StateItem::shift(const int & t, const int & action) {
+		if (m_nShiftBufferBack == -1) {
+			m_lSuperTag[m_nNextWord] = t;
+			m_lStack[++m_nStackBack] = m_nNextWord++;
+			m_bCanSwap = true;
+			clearNext();
+		}
+		else {
+			m_lStack[++m_nStackBack] = m_lShiftBuffer[m_nShiftBufferBack--];
+			m_bCanSwap = false;
+		}
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::reduce(const int & action) {
+		--m_nStackBack;
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::swap(const int & action) {
+		m_lShiftBuffer[++m_nShiftBufferBack] = m_lStack[m_nStackBack - 1];
+		m_lStack[m_nStackBack - 1] = m_lStack[m_nStackBack];
+		--m_nStackBack;
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::arc(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::arcSwap(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		swap(0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::arcReduce(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		reduce(0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::arcShift(const int & label, const int & leftLabel, const int & rightLabel, const int & tag, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		shift(tag, 0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::print(const DLabel & labels, const DSuperTag & supertags) const {
 		std::cout << "complete" << std::endl;
 		std::cout << "stack(" << m_nStackBack + 1 << ") :";
 		for (int i = 0; i <= m_nStackBack; ++i) {
@@ -26,29 +74,16 @@ namespace nivre {
 		std::cout << "buffer top : " << bufferTop() << std::endl;
 		std::cout << "arcs :" << std::endl;
 		for (int i = 0; i < m_nNextWord; ++i) {
-			if (m_lRightNodes[i].size() > 0) {
-				for (const auto & rn : m_lRightNodes[i]) {
-					std::cout << i << " -- " << RIGHTNODE_POS(rn) << "(" << TDepLabel::key(RIGHTNODE_LABEL(rn)) << ")" << std::endl;
+			if (m_vecRightArcs[i].size() > 0) {
+				for (const auto & arc : m_vecRightArcs[i]) {
+					std::cout << i << " -- " << arc.head << "(" << labels.key(arc.label) << ")" << std::endl;
 				}
 			}
 		}
 		std::cout << "last action: ";
-		printAction(m_lActionList[m_nActionBack]);
+//		printAction(m_lActionList[m_nActionBack], labels->count());
 		std::cout << "score : " << m_nScore << std::endl;
 		std::cout << std::endl;
-	}
-
-	void StateItem::check() const {
-		StateItem item;
-		for (int i = 0; i <= m_nActionBack; ++i) {
-			item.move(m_lActionList[i]);
-		}
-		if (item != *this || m_nShiftBufferBack != -1 || m_nStackBack != -1) {
-			std::cout << "origin" << std::endl;
-			this->print();
-			std::cout << "correct" << std::endl;
-			item.print();
-		}
 	}
 
 	void StateItem::clear() {
@@ -86,112 +121,7 @@ namespace nivre {
 		m_lSuperTag[m_nNextWord] = 0;
 		m_lPredLabelSetL[m_nNextWord].clear();
 		m_lPredLabelSetR[m_nNextWord].clear();
-		m_lRightNodes[m_nNextWord].clear();
-	}
-
-	void StateItem::move(const int & action) {
-		switch (decodeAction(action)) {
-		case NO_ACTION:
-			return;
-		case REDUCE:
-			reduce();
-			return;
-		case SWAP:
-			swap();
-			return;
-		case A_SW:
-			arcSwap(action - A_SW_FIRST + 1);
-			return;
-		case A_RE:
-			arcReduce(action - A_RE_FIRST + 1);
-			return;
-		case A_SH:
-			arcShift((action - A_SH_FIRST) % g_nGraphLabelCount + 1, (action - A_SH_FIRST) / g_nGraphLabelCount);
-			return;
-		case SHIFT:
-			shift(action - SH_FIRST);
-			return;
-		}
-	}
-
-	/*
-	 	action priority is : "reduce" > "arc *" > "swap" > "shift"
-		for example
-		| 0 | 1 |					| 2 | 3 | . . .
-		if we have arc 0 - 2, 1 - 3
-		we use swap, get state
-		| 1 |						| 2 | 3 | . . .
-		| 0 |
-		we use shift, get state
-		| 1 | 0 |					| 2 | 3 | . . .
-		we use arc-reduce, get state
-		| 1 |						| 2 | 3 | . . .		"0 - 2"
-		we use shift + reduce, get state
-		| 1 |							| 3 | . . .
-		finally we use arc-reduce, get state
-		|								| 3 | . . .		"1 - 3"
-	*/
-	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & label) {
-		// remove shift-reduce
-		// reduce or draw arc
-		if (m_nStackBack >= 0) {
-			int & seek = seeks[m_lStack[m_nStackBack]];
-			const DependencyGraphNode & node = graph[m_lStack[m_nStackBack]];
-			int size = GRAPHNODE_RIGHTNODES(node).size();
-			while (seek < size && GRAPHNODE_RIGHTNODEPOS(node, seek) < m_nNextWord) {
-				++seek;
-			}
-			if (seek >= size) {
-				switch (label) {
-				case 0:
-					reduce();
-					return true;
-				default:
-					arcReduce(label);
-					return true;
-				}
-			}
-			const RightNodeWithLabel & rnwl = GRAPHNODE_RIGHTNODE(node, seek);
-			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
-				++seek;
-				return extractOneStandard(seeks, graph, RIGHTNODE_LABEL(rnwl));
-			}
-		}
-		// swap after reduce/arc
-		for (int i = m_nStackBack - 1; i >= 0; --i) {
-			const DependencyGraphNode & node = graph[m_lStack[i]];
-			const int & seek = seeks[m_lStack[i]];
-			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
-				switch (label) {
-				case 0:
-					swap();
-					return true;
-				default:
-					arcSwap(label);
-					return true;
-				}
-			}
-		}
-		// shfit after swap
-		if (m_nShiftBufferBack >= 0 || m_nNextWord < graph.size()) {
-			switch (label) {
-			case 0:
-				shift(m_nShiftBufferBack >= 0 || GRAPHNODE_SUPERTAG(graph[m_nNextWord]) == NULL_SUPERTAG ? 0 : TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			default:
-				arcShift(label, m_nShiftBufferBack >= 0 || GRAPHNODE_SUPERTAG(graph[m_nNextWord]) == NULL_SUPERTAG ? 0 : TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool StateItem::extractOracle(const DependencyGraph & graph) {
-		int rightNodeSeeks[MAX_SENTENCE_SIZE];
-		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
-		while (extractOneStandard(rightNodeSeeks, graph))
-			;
-		return *this == graph;
+		m_vecRightArcs[m_nNextWord].clear();
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
@@ -211,11 +141,17 @@ namespace nivre {
 			return false;
 		}
 		for (int i = 0; i < m_nNextWord; ++i) {
-			if (TSuperTag::key(m_lSuperTag[i]) != GRAPHNODE_SUPERTAG(graph[i])) {
+			if (m_lSuperTag[i] != graph[i].m_nSuperTagCode) {
 				return false;
 			}
-			if (m_lRightNodes[i] != GRAPHNODE_RIGHTNODES(graph[i])) {
+			if (m_vecRightArcs[i].size() != graph[i].m_vecRightArcs.size()) {
 				return false;
+			}
+			for (int j = 0; j < m_vecRightArcs[i].size(); ++j) {
+				if (m_vecRightArcs[i][j].head != graph[i].m_vecRightArcs[j].first ||
+					m_vecRightArcs[i][j].label != graph[i].m_vecRightLabels[j].first) {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -257,8 +193,7 @@ namespace nivre {
 		memcpy(m_lSuperTag, item.m_lSuperTag, len);
 
 		for (int index = 0; index <= m_nNextWord; ++index) {
-			m_lRightNodes[index].clear();
-			m_lRightNodes[index].insert(m_lRightNodes[index].end(), item.m_lRightNodes[index].begin(), item.m_lRightNodes[index].end());
+			m_vecRightArcs[index] =  item.m_vecRightArcs[index];
 			m_lPredLabelSetL[index] = item.m_lPredLabelSetL[index];
 			m_lPredLabelSetR[index] = item.m_lPredLabelSetR[index];
 		}

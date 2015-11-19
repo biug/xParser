@@ -1,7 +1,6 @@
 #include <cstring>
 
-#include "twostack_state.h"
-#include "common/token/deplabel.h"
+#include "twostack_macros.h"
 
 namespace twostack {
 
@@ -11,43 +10,84 @@ namespace twostack {
 
 	StateItem::~StateItem() = default;
 
-	void StateItem::print() const {
+	void StateItem::shift(const int & t, const int & action) {
+		m_bCanMem = true;
+		m_lSuperTag[m_nNextWord] = t;
+		m_lStack[++m_nStackBack] = m_nNextWord++;
+		m_lActionList[++m_nActionBack] = action;
+		clearNext();
+	}
+
+	void StateItem::reduce(const int & action) {
+		--m_nStackBack;
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::mem(const int & action) {
+		m_lSecondStack[++m_nSecondStackBack] = m_lStack[m_nStackBack--];
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::recall(const int & action) {
+		m_bCanMem = false;
+		m_lStack[++m_nStackBack] = m_lSecondStack[m_nSecondStackBack--];
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::arc(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		m_lActionList[++m_nActionBack] = action;
+	}
+
+	void StateItem::arcMem(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		mem(0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::arcRecall(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		recall(0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::arcReduce(const int & label, const int & leftLabel, const int & rightLabel, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		reduce(0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::arcShift(const int & label, const int & leftLabel, const int & rightLabel, const int & tag, const int & action) {
+		GraphTransitionStateBase::arc(label, leftLabel, rightLabel);
+		shift(tag, 0);
+		m_lActionList[m_nActionBack] = action;
+	}
+
+	void StateItem::print(const DLabel & labels, const DSuperTag & supertags) const {
 		std::cout << "complete" << std::endl;
 		std::cout << "stack(" << m_nStackBack + 1 << ") :";
 		for (int i = 0; i <= m_nStackBack; ++i) {
 			std::cout << " " << m_lStack[i];
 		}
 		std::cout << std::endl;
-		std::cout << "shift buffer(" << m_nSecondStackBack + 1 << ") :";
+		std::cout << "second stack(" << m_nSecondStackBack + 1 << ") :";
 		for (int i = 0; i <= m_nSecondStackBack; ++i) {
 			std::cout << " " << m_lSecondStack[i];
 		}
 		std::cout << std::endl;
+		std::cout << "second stack top : " << secondStackTop() << std::endl;
 		std::cout << "arcs :" << std::endl;
 		for (int i = 0; i < m_nNextWord; ++i) {
-			if (m_lRightNodes[i].size() > 0) {
-				for (const auto & rn : m_lRightNodes[i]) {
-					std::cout << i << " -- " << RIGHTNODE_POS(rn) << "(" << TDepLabel::key(RIGHTNODE_LABEL(rn)) << ")" << std::endl;
+			if (m_vecRightArcs[i].size() > 0) {
+				for (const auto & arc : m_vecRightArcs[i]) {
+					std::cout << i << " -- " << arc.head << "(" << labels.key(arc.label) << ")" << std::endl;
 				}
 			}
 		}
 		std::cout << "last action: ";
-		printAction(m_lActionList[m_nActionBack]);
+//		printAction(m_lActionList[m_nActionBack], labels->count());
 		std::cout << "score : " << m_nScore << std::endl;
 		std::cout << std::endl;
-	}
-
-	void StateItem::check() const {
-		StateItem item;
-		for (int i = 0; i <= m_nActionBack; ++i) {
-			item.move(m_lActionList[i]);
-		}
-		if (item != *this || m_nSecondStackBack != -1 || m_nStackBack != -1) {
-			std::cout << "origin" << std::endl;
-			this->print();
-			std::cout << "correct" << std::endl;
-			item.print();
-		}
 	}
 
 	void StateItem::clear() {
@@ -85,127 +125,7 @@ namespace twostack {
 		m_lSuperTag[m_nNextWord] = 0;
 		m_lPredLabelSetL[m_nNextWord].clear();
 		m_lPredLabelSetR[m_nNextWord].clear();
-		m_lRightNodes[m_nNextWord].clear();
-	}
-
-	void StateItem::move(const int & action) {
-		switch (decodeAction(action)) {
-		case NO_ACTION:
-			return;
-		case REDUCE:
-			reduce();
-			return;
-		case MEM:
-			mem();
-			return;
-		case RECALL:
-			recall();
-			return;
-		case A_MM:
-			arcMem(action - A_MM_FIRST + 1);
-			return;
-		case A_RC:
-			arcRecall(action - A_RC_FIRST + 1);
-			return;
-		case A_RE:
-			arcReduce(action - A_RE_FIRST + 1);
-			return;
-		case A_SH:
-			arcShift((action - A_SH_FIRST) % g_nGraphLabelCount + 1, (action - A_SH_FIRST) / g_nGraphLabelCount);
-			return;
-		case SHIFT:
-			shift(action - SH_FIRST);
-			return;
-		}
-	}
-
-	/*
-	 	action priority is : "reduce" > "arc *" > "memory" > "recall" > "shift"
-		for example
-		| 0 | 1 |					| 2 | 3 | . . .
-		if we have arc 0 - 2, 1 - 3
-		we use memory, get state
-		| 0 |						| 2 | 3 | . . .
-		| 1 |
-		we use arc-reduce + recall, get state
-		| 1 |						| 2 | 3 | . . .		"0 - 2"
-		we use shift + reduce, get state
-		| 1 |							| 3 | . . .
-		finally we use arc-reduce, get state
-		|								| 3 | . . .		"1 - 3"
-	*/
-	bool StateItem::extractOneStandard(int(&seeks)[MAX_SENTENCE_SIZE], const DependencyGraph & graph, const int & label) {
-		// remove shift-reduce
-		// reduce or draw arc
-		if (m_nStackBack >= 0) {
-			int & seek = seeks[m_lStack[m_nStackBack]];
-			const DependencyGraphNode & node = graph[m_lStack[m_nStackBack]];
-			int size = GRAPHNODE_RIGHTNODES(node).size();
-			while (seek < size && GRAPHNODE_RIGHTNODEPOS(node, seek) < m_nNextWord) {
-				++seek;
-			}
-			if (seek >= size) {
-				switch (label) {
-				case 0:
-					reduce();
-					return true;
-				default:
-					arcReduce(label);
-					return true;
-				}
-			}
-			const RightNodeWithLabel & rnwl = GRAPHNODE_RIGHTNODE(node, seek);
-			if (RIGHTNODE_POS(rnwl) == m_nNextWord) {
-				++seek;
-				return extractOneStandard(seeks, graph, RIGHTNODE_LABEL(rnwl));
-			}
-		}
-		// mem after reduce/arc
-		for (int i = m_nStackBack - 1; i >= 0; --i) {
-			const DependencyGraphNode & node = graph[m_lStack[i]];
-			const int & seek = seeks[m_lStack[i]];
-			if (seek < GRAPHNODE_RIGHTNODES(node).size() && GRAPHNODE_RIGHTNODEPOS(node, seek) == m_nNextWord) {
-				switch (label) {
-				case 0:
-					mem();
-					return true;
-				default:
-					arcMem(label);
-					return true;
-				}
-			}
-		}
-		// recall after mem/arc
-		for (int i = m_nSecondStackBack; i >= 0; --i) {
-			switch (label) {
-			case 0:
-				recall();
-				return true;
-			default:
-				arcRecall(label);
-				return true;
-			}
-		}
-		// shfit after recall
-		if (m_nNextWord < graph.size()) {
-			switch (label) {
-			case 0:
-				shift(TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			default:
-				arcShift(label,TSuperTag::code(GRAPHNODE_SUPERTAG(graph[m_nNextWord])));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool StateItem::extractOracle(const DependencyGraph & graph) {
-		int rightNodeSeeks[MAX_SENTENCE_SIZE];
-		memset(rightNodeSeeks, 0, sizeof(rightNodeSeeks));
-		while (extractOneStandard(rightNodeSeeks, graph))
-			;
-		return *this == graph;
+		m_vecRightArcs[m_nNextWord].clear();
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
@@ -225,11 +145,17 @@ namespace twostack {
 			return false;
 		}
 		for (int i = 0; i < m_nNextWord; ++i) {
-			if (TSuperTag::key(m_lSuperTag[i]) != GRAPHNODE_SUPERTAG(graph[i])) {
+			if (m_lSuperTag[i] != graph[i].m_nSuperTagCode) {
 				return false;
 			}
-			if (m_lRightNodes[i] != GRAPHNODE_RIGHTNODES(graph[i])) {
+			if (m_vecRightArcs[i].size() != graph[i].m_vecRightArcs.size()) {
 				return false;
+			}
+			for (int j = 0; j < m_vecRightArcs[i].size(); ++j) {
+				if (m_vecRightArcs[i][j].head != graph[i].m_vecRightArcs[j].first ||
+					m_vecRightArcs[i][j].label != graph[i].m_vecRightLabels[j].first) {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -271,8 +197,7 @@ namespace twostack {
 		memcpy(m_lSuperTag, item.m_lSuperTag, len);
 
 		for (int index = 0; index <= m_nNextWord; ++index) {
-			m_lRightNodes[index].clear();
-			m_lRightNodes[index].insert(m_lRightNodes[index].end(), item.m_lRightNodes[index].begin(), item.m_lRightNodes[index].end());
+			m_vecRightArcs[index] =  item.m_vecRightArcs[index];
 			m_lPredLabelSetL[index] = item.m_lPredLabelSetL[index];
 			m_lPredLabelSetR[index] = item.m_lPredLabelSetR[index];
 		}

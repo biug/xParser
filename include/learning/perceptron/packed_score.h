@@ -39,7 +39,7 @@ public:
 
 	void computeAverage(const int & round) {
 		m_nCount = 0;
-		for (auto & score : m_mapScores) {
+		for (auto && score : m_mapScores) {
 			score.second.updateAverage(round);
 			if (!score.second.zero()) {
 				++m_nCount;
@@ -48,13 +48,13 @@ public:
 	}
 
 	void clearScore() {
-		for (auto & score : m_mapScores) {
+		for (auto && score : m_mapScores) {
 			score.second.reset();
 		}
 	}
 
 	void shrink(const double & round, const double & threshold) {
-		for (auto & score : m_mapScores) {
+		for (auto && score : m_mapScores) {
 			score.second.shrink(round, threshold);
 		}
 	}

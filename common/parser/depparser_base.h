@@ -15,17 +15,16 @@ protected:
 	WeightBase* m_Weight;
 	int m_nState;
 
+public:
 	int m_nTotalErrors;
 	int m_nScoreIndex;
 	int m_nTrainingRound;
 
 public:
-	DepParserBase(const std::string & sFeaturePath, int nState) :
+	DepParserBase(int nState) :
 		m_Weight(nullptr), m_nState(nState), m_nTotalErrors(0), m_nScoreIndex(nState == ParserState::TRAIN ? ScoreType::eNonAverage : ScoreType::eAverage), m_nTrainingRound(0) {}
 	virtual ~DepParserBase() {};
 
-	virtual void decode() = 0;
-	virtual void decodeArcs() = 0;
 	virtual void finishtraining() {
 		m_Weight->computeAverageFeatureWeights(m_nTrainingRound);
 		m_Weight->saveScores();
