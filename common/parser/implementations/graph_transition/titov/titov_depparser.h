@@ -5,13 +5,13 @@
 #include <unordered_set>
 
 #include "titov_macros.h"
-#include "common/parser/implementations/graph_transition/one_stack_weight.h"
+#include "common/parser/implementations/graph_transition/sim_one_stack_weight.h"
 #include "common/parser/implementations/graph_transition/graph_transition_depparser.h"
 
 namespace titov {
 
 	using ::DependencyGraph;
-	using graph_transition::OneStackWeight;
+	using graph_transition::SimOneStackWeight;
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<RET_TYPE, StateItem, ActionConstant> {
@@ -42,7 +42,7 @@ namespace titov {
 			int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
 		GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>(nState, bChar, bPath, bSTag) {
 
-		this->m_Weight = new OneStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
+		this->m_Weight = new SimOneStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
 				&this->m_tWords, &this->m_tPOSTags, &this->m_tLabels, &this->m_tSuperTags,
 				&this->m_mapSuperTagCandidatesOfWords, &this->m_mapSuperTagCandidatesOfPOSTags);
 
@@ -172,7 +172,7 @@ namespace titov {
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getOrUpdateFeatureScores(const StateItem & item, const ActionScoreIncrement & amount) {
-		OneStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (OneStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
+		SimOneStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (SimOneStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
 		cweight->getOrUpdateFeatureScores((GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>*)this, item, amount);
 	}
 }
