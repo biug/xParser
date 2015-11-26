@@ -105,7 +105,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std
 				// add POS
 				int p = m_tPOSTags.lookup(node.m_sPOSTag);
 				// add super tag
-				int t = m_tSuperTags.lookup(node.m_sSuperTag);
+				int t = node.m_sSuperTag == NULL_SUPERTAG ? 0 : m_tSuperTags.lookup(node.m_sSuperTag);
 				// add label
 				for (const auto & arc : node.m_vecRightArcs) {
 					m_tLabels.lookup(arc.second);

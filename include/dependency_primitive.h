@@ -84,8 +84,11 @@ public:
 	CoNLL08DepGraph & operator=(const CoNLL08DepGraph & g);
 	CoNLL08DepGraph & operator+=(const CoNLL08DepGraph & g);
 	CoNLL08DepGraph operator-();
-	std::pair<CoNLL08DepGraph, CoNLL08DepGraph> splitPlanar();
+	std::pair<CoNLL08DepGraph, CoNLL08DepGraph> splitPlanar(bool planar = true);
 	void setTagsAndLabels(const Token & labels, const Token & supertags, const std::vector<int> & vecLabels);
+
+	CoNLL08DepGraph treeOrderGraph();
+	bool checkArc(const CoNLL08DepGraph & g);
 
 	friend bool operator==(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 	friend bool operator!=(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
@@ -93,6 +96,17 @@ public:
 	friend std::istream & operator>>(std::istream & is, CoNLL08DepGraph & graph);
 	friend std::ostream & operator<<(std::ostream & os, const CoNLL08DepGraph & graph);
 };
+
+//struct CoNLL08DepTreeOrderGraph {
+//	CoNLL08DepGraph m_gGraph;
+//	CoNLL08DepGraph m_gTreeOrderGraph;
+//
+//	CoNLL08DepTreeOrderGraph();
+//	~CoNLL08DepTreeOrderGraph();
+//	CoNLL08DepTreeOrderGraph(const CoNLL08DepTreeOrderGraph & gs);
+//
+//	void readTree
+//};
 
 bool operator==(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 bool operator!=(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);

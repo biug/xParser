@@ -121,7 +121,7 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(con
 				// add POS
 				int p = m_tPOSTags[inputIndex].lookup(node.m_sPOSTag);
 				// add super tag
-				int t = m_tSuperTags[inputIndex].lookup(node.m_sSuperTag);
+				int t = node.m_sSuperTag == NULL_SUPERTAG ? 0 : m_tSuperTags[inputIndex].lookup(node.m_sSuperTag);
 				// add label
 				for (const auto & arc : node.m_vecRightArcs) {
 					m_tLabels[inputIndex].lookup(arc.second);
@@ -365,14 +365,13 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(Dependen
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
 void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGraph & sentence, DependencyGraph * retval) {
-	DependencyGraph graph[2];
 	auto sentencePair = sentence.splitPlanar();
 	sentencePair.second = -sentencePair.second;
 	sentencePair.first.setTagsAndLabels(m_tLabels[0], m_tSuperTags[0], m_lActions[0].m_vecLabelMap);
 	sentencePair.second.setTagsAndLabels(m_tLabels[1], m_tSuperTags[1], m_lActions[1].m_vecLabelMap);
 	for (m_nInputIndex = 0; m_nInputIndex < 2; ++m_nInputIndex) {
 		int idx = 0;
-		retval->clear();
+		retval[m_nInputIndex].clear();
 		m_cActions = m_lActions[m_nInputIndex];
 		sentence = m_nInputIndex == 0 ? sentencePair.first : sentencePair.second;
 		m_sSentence.clear();
@@ -386,10 +385,11 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(Dependen
 		if (m_bPath) {
 			m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 		}
-		work(retval, sentence);
-		graph[m_nInputIndex] = *retval;
+		work(&retval[m_nInputIndex], sentence);
 	}
-	*retval = graph[0] + (-graph[1]);
+	retval[1] = -retval[1];
+	retval[2] = retval[1];
+	retval[2] += retval[0];
 	if (m_nTrainingRound > 0) {
 		nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound));
 	}

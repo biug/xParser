@@ -233,6 +233,8 @@ namespace arceager {
 		const int & n0_index = ((item.size() == m_nSentenceLength) ? -1 : item.size());
 		const int & n0ld_index = n0_index == -1 ? -1 : item.leftDep(n0_index);
 		const int & n0l2d_index = n0ld_index == -1 ? -1 : item.sibling(n0ld_index);
+		const int & s1_index = ((st_index + 1 < m_nSentenceLength) ? st_index + 1 : -1);
+		const int & s2_index = ((st_index + 2 < m_nSentenceLength) ? st_index + 2 : -1);
 		const int & n1_index = ((n0_index + 1 < m_nSentenceLength) ? n0_index + 1 : -1);
 		const int & n2_index = ((n0_index + 2 < m_nSentenceLength) ? n0_index + 2 : -1);
 
@@ -246,6 +248,8 @@ namespace arceager {
 		const WordPOSTag & n0_word_tag = n0_index == -1 ? empty_taggedword : m_lSentence[n0_index];
 		const WordPOSTag & n0ld_word_tag = n0ld_index == -1 ? empty_taggedword : m_lSentence[n0ld_index];
 		const WordPOSTag & n0l2d_word_tag = n0l2d_index == -1 ? empty_taggedword : m_lSentence[n0l2d_index];
+		const WordPOSTag & s1_word_tag = s1_index == -1 ? empty_taggedword : m_lSentence[s1_index];
+		const WordPOSTag & s2_word_tag = s2_index == -1 ? empty_taggedword : m_lSentence[s2_index];
 		const WordPOSTag & n1_word_tag = n1_index == -1 ? empty_taggedword : m_lSentence[n1_index];
 		const WordPOSTag & n2_word_tag = n2_index == -1 ? empty_taggedword : m_lSentence[n2_index];
 
@@ -259,6 +263,8 @@ namespace arceager {
 		const Word & n0_word = n0_word_tag.first();
 		const Word & n0ld_word = n0ld_word_tag.first();
 		const Word & n0l2d_word = n0l2d_word_tag.first();
+		const Word & s1_word = s1_word_tag.first();
+		const Word & s2_word = s2_word_tag.first();
 		const Word & n1_word = n1_word_tag.first();
 		const Word & n2_word = n2_word_tag.first();
 
@@ -272,6 +278,8 @@ namespace arceager {
 		const POSTag & n0_tag = n0_word_tag.second();
 		const POSTag & n0ld_tag = n0ld_word_tag.second();
 		const POSTag & n0l2d_tag = n0l2d_word_tag.second();
+		const POSTag & s1_tag = s1_word_tag.second();
+		const POSTag & s2_tag = s2_word_tag.second();
 		const POSTag & n1_tag = n1_word_tag.second();
 		const POSTag & n2_tag = n2_word_tag.second();
 
@@ -280,7 +288,7 @@ namespace arceager {
 		const int & stld_label = stld_index == -1 ? 0 : item.label(stld_index);
 		const int & strd_label = strd_index == -1 ? 0 : item.label(strd_index);
 		const int & stl2d_label = stl2d_index == -1 ? 0 : item.label(stl2d_index);
-		const int & str2d_label = str2d_index == -1 ? 0 : item.label(strd_index); //PROBLEM!
+		const int & str2d_label = str2d_index == -1 ? 0 : item.label(str2d_index); //PROBLEM!
 		const int & n0ld_label = n0ld_index == -1 ? 0 : item.label(n0ld_index);
 		const int & n0l2d_label = n0l2d_index == -1 ? 0 : item.label(n0l2d_index);
 
@@ -306,6 +314,20 @@ namespace arceager {
 			cweight->m_mapN0t.getOrUpdateScore(m_mapPackedScore, n0_tag, m_nScoreIndex, amount, m_nTrainingRound);
 			word_tag.refer(n0_word, n0_tag);
 			cweight->m_mapN0wt.getOrUpdateScore(m_mapPackedScore, word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+		}
+
+		if (s1_index != -1) {
+			cweight->m_mapS1w.getOrUpdateScore(m_mapPackedScore, s1_word, m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_mapS1t.getOrUpdateScore(m_mapPackedScore, s1_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_tag.refer(s1_word, s1_tag);
+			cweight->m_mapS1wt.getOrUpdateScore(m_mapPackedScore, word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+		}
+
+		if (s2_index != -1) {
+			cweight->m_mapS2w.getOrUpdateScore(m_mapPackedScore, s2_word, m_nScoreIndex, amount, m_nTrainingRound);
+			cweight->m_mapS2t.getOrUpdateScore(m_mapPackedScore, s2_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_tag.refer(s2_word, s2_tag);
+			cweight->m_mapS2wt.getOrUpdateScore(m_mapPackedScore, word_tag, m_nScoreIndex, amount, m_nTrainingRound);
 		}
 
 		if (n1_index != -1) {

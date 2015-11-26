@@ -21,6 +21,14 @@ namespace arceager {
 		POSTagMap m_mapN0t;
 		POSTaggedWordMap m_mapN0wt;
 
+		WordMap m_mapS1w;
+		POSTagMap m_mapS1t;
+		POSTaggedWordMap m_mapS1wt;
+
+		WordMap m_mapS2w;
+		POSTagMap m_mapS2t;
+		POSTaggedWordMap m_mapS2wt;
+
 		WordMap m_mapN1w;
 		POSTagMap m_mapN1t;
 		POSTaggedWordMap m_mapN1wt;

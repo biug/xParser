@@ -6,10 +6,7 @@
 #include <unordered_map>
 
 #include "test.h"
-//
-//#include "common/parser/implementations/graph_transition_both/both_twostack/both_twostack_run.h"
-//#include "common/parser/implementations/graph_transition_two_way/two_way_titov/two_way_titov_run.h"
-//#include "common/parser/implementations/graph_transition_two_way/two_way_shift_reduce/two_way_shift_reduce_run.h"
+#include "common/parser/fittings/pseudo_tree.h"
 
 
 int main(int argc, char * argv[]) {
@@ -18,13 +15,28 @@ int main(int argc, char * argv[]) {
 	std::cin.tie(NULL);
 	std::cout << std::fixed << std::setprecision(4);
 
-//	testGraph(argv[1], argv[2]);
-//	if (strcmp(argv[1], "split") == 0) {
-//		splitGraph(argv[2], argv[3], argv[4]);
-//	}
-//	else if (strcmp(argv[1], "combine") == 0) {
-//		testCrossing(argv[2], argv[3], argv[4]);
-//	}
-
-	runner(argc, argv);
+	if (argc == 1) {
+		return 0;
+	}
+	else if ((strcmp(argv[1], "train") == 0 || strcmp(argv[1], "parse") == 0 || strcmp(argv[1], "goldtest") == 0)) {
+		runner(argc, argv);
+	}
+	else {
+		if (strcmp(argv[1], "pseudotree") == 0) {
+			std::ifstream input(argv[2]);
+			std::ofstream output(argv[3]);
+			DependencyGraph graph;
+			while (input >> graph) {
+				output << PseudoTreeFitting().extractPseudoTree(graph);
+			}
+		}
+		else if (strcmp(argv[1], "restoregraph") == 0) {
+			std::ifstream input(argv[2]);
+			std::ofstream output(argv[3]);
+			DependencyTree tree;
+			while (input >> tree) {
+				output << PseudoTreeFitting().pseudoTreeToGraph(tree);
+			}
+		}
+	}
 }

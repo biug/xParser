@@ -3,6 +3,7 @@
 
 #include "include/learning/tree/lca.h"
 #include "include/dependency_primitive.h"
+#include "common/parser/fittings/pseudo_tree.h"
 #include "common/parser/implementations/arceager/arceager_run.h"
 #include "common/parser/implementations/graph_transition/nivre/nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/titov_run.h"
@@ -11,13 +12,14 @@
 #include "common/parser/implementations/graph_transition/titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/std_twostack_run.h"
 #include "common/parser/implementations/graph_transition/sr/twoway_sr_run.h"
+#include "common/parser/implementations/graph_transition/titov/twoway_titov_run.h"
 
-#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
-#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
-#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
-#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
-#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
-#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
+//#include "common/parser/implementations/graph_dp/eisner/eisner_run.h"
+//#include "common/parser/implementations/graph_dp/eisnergc/eisnergc_run.h"
+//#include "common/parser/implementations/graph_dp/eisner3rd/eisner3rd_run.h"
+//#include "common/parser/implementations/graph_dp/eisnergc3rd/eisnergc3rd_run.h"
+//#include "common/parser/implementations/graph_dp/emptyeisner3rd/emptyeisner3rd_run.h"
+//#include "common/parser/implementations/graph_dp/emptyeisnergc3rd/emptyeisnergc3rd_run.h"
 
 void testGraph(const std::string & sInput, const std::string & sOutput) {
 	std::ifstream input(sInput);
@@ -55,6 +57,34 @@ void testCrossing(const std::string & sInput1, const std::string & sInput2, cons
 	}
 }
 
+void testTreeOrder(const std::string & sInput, const std::string & sOutput) {
+	std::ifstream input(sInput);
+	std::ofstream output(sOutput);
+	CoNLL08DepGraph graph, treeOrderGraph;
+	int count = 0;
+	if (input) {
+		while (input >> graph) {
+			treeOrderGraph = graph.treeOrderGraph();
+			output << treeOrderGraph;
+			std::cout << ++count << std::endl;
+			if (!treeOrderGraph.checkArc(graph)) {
+				break;
+			}
+		}
+	}
+}
+
+void testPseudoTree(const std::string & sInput) {
+	std::ifstream input(sInput);
+	CoNLL08DepGraph graph;
+	PseudoTreeFitting ptf;
+	while (input >> graph) {
+		auto tree = ptf.extractPseudoTree(graph);
+		std::cout << tree << std::endl;
+		break;
+	}
+}
+
 void runner(int argc, char * argv[]) {
 
 	std::unique_ptr<RunBase> run(nullptr);
@@ -62,27 +92,27 @@ void runner(int argc, char * argv[]) {
 	if (strcmp(argv[2], "arceager") == 0) {
 		run.reset(new arceager::Run());
 	}
-	else if (strcmp(argv[2], "eisner") == 0) {
-		run.reset(new eisner::Run());
-	}
-	else if (strcmp(argv[2], "eisner3rd") == 0) {
-		run.reset(new eisner3rd::Run());
-	}
-	else if (strcmp(argv[2], "eisnergc") == 0) {
-		run.reset(new eisnergc::Run());
-	}
-	else if (strcmp(argv[2], "eisnergc3rd") == 0) {
-		run.reset(new eisnergc3rd::Run());
-	}
-	else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
-		run.reset(new emptyeisner3rd::Run());
-	}
-	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
-		run.reset(new emptyeisnergc3rd::Run());
-	}
+//	else if (strcmp(argv[2], "eisner") == 0) {
+//		run.reset(new eisner::Run());
+//	}
+//	else if (strcmp(argv[2], "eisner3rd") == 0) {
+//		run.reset(new eisner3rd::Run());
+//	}
+//	else if (strcmp(argv[2], "eisnergc") == 0) {
+//		run.reset(new eisnergc::Run());
+//	}
+//	else if (strcmp(argv[2], "eisnergc3rd") == 0) {
+//		run.reset(new eisnergc3rd::Run());
+//	}
+//	else if (strcmp(argv[2], "emptyeisner3rd") == 0) {
+//		run.reset(new emptyeisner3rd::Run());
+//	}
+//	else if (strcmp(argv[2], "emptyeisnergc3rd") == 0) {
+//		run.reset(new emptyeisnergc3rd::Run());
+//	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
-			strcmp(argv[2], "twoway_sr") == 0) {
+			strcmp(argv[2], "twoway_sr") == 0 || strcmp(argv[2], "twoway_titov") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -117,11 +147,11 @@ void runner(int argc, char * argv[]) {
 		else if (strcmp(argv[2], "std_twostack") == 0) {
 			run.reset(new std_twostack::Run(bChar, bPath, bSuperTag));
 		}
-//		else if (strcmp(argv[2], "both_twostack") == 0) {
-//			run.reset(new both_twostack::Run(bChar, bPath, bSuperTag));
-//		}
 		else if (strcmp(argv[2], "twoway_sr") == 0) {
 			run.reset(new twoway_sr::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "twoway_titov") == 0) {
+			run.reset(new twoway_titov::Run(bChar, bPath, bSuperTag));
 		}
 	}
 

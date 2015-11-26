@@ -14,6 +14,12 @@ namespace arceager {
 		m_mapN0w("NextWord"),
 		m_mapN0t("NextTag"),
 		m_mapN0wt("NextWordTag"),
+		m_mapS1w("Stack+1Word"),
+		m_mapS1t("Stack+1Tag"),
+		m_mapS1wt("Stack+1WordTag"),
+		m_mapS2w("Stack+2Word"),
+		m_mapS2t("Stack+2Tag"),
+		m_mapS2wt("Stack+2WordTag"),
 		m_mapN1w("Next+1Word"),
 		m_mapN1t("Next+1Tag"),
 		m_mapN1wt("Next+1WordTag"),
@@ -116,6 +122,12 @@ namespace arceager {
 		input >> m_mapN0w;
 		input >> m_mapN0t;
 		input >> m_mapN0wt;
+		input >> m_mapS1w;
+		input >> m_mapS1t;
+		input >> m_mapS1wt;
+		input >> m_mapS2w;
+		input >> m_mapS2t;
+		input >> m_mapS2wt;
 		input >> m_mapN1w;
 		input >> m_mapN1t;
 		input >> m_mapN1wt;
@@ -212,6 +224,12 @@ namespace arceager {
 		output << m_mapN0w;
 		output << m_mapN0t;
 		output << m_mapN0wt;
+		output << m_mapS1w;
+		output << m_mapS1t;
+		output << m_mapS1wt;
+		output << m_mapS2w;
+		output << m_mapS2t;
+		output << m_mapS2wt;
 		output << m_mapN1w;
 		output << m_mapN1t;
 		output << m_mapN1wt;
@@ -293,6 +311,12 @@ namespace arceager {
 		m_mapN0w.computeAverage(round);
 		m_mapN0t.computeAverage(round);
 		m_mapN0wt.computeAverage(round);
+		m_mapS1w.computeAverage(round);
+		m_mapS1t.computeAverage(round);
+		m_mapS1wt.computeAverage(round);
+		m_mapS2w.computeAverage(round);
+		m_mapS2t.computeAverage(round);
+		m_mapS2wt.computeAverage(round);
 		m_mapN1w.computeAverage(round);
 		m_mapN1t.computeAverage(round);
 		m_mapN1wt.computeAverage(round);

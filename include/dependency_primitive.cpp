@@ -1,6 +1,6 @@
 #include "dependency_primitive.h"
 
-CoNLL08DepNode::CoNLL08DepNode() : m_sWord(""), m_sPOSTag(""), m_sSuperTag(""), m_nTreeHead(-1), m_nSuperTagCode(0) {}
+CoNLL08DepNode::CoNLL08DepNode() : m_sWord(""), m_sPOSTag(""), m_sSuperTag(NULL_SUPERTAG), m_nTreeHead(-1), m_nSuperTagCode(0) {}
 
 CoNLL08DepNode::~CoNLL08DepNode() = default;
 
@@ -79,7 +79,7 @@ CoNLL08DepGraph CoNLL08DepGraph::operator-() {
 	return graph;
 }
 
-std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar() {
+std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar(bool planar) {
 	std::pair<CoNLL08DepGraph, CoNLL08DepGraph> parts(*this, *this);
 	std::unordered_map<BiGram<int>, int> arcs;
 	std::unordered_set<BiGram<int>> removed;
@@ -176,7 +176,7 @@ std::pair<CoNLL08DepGraph, CoNLL08DepGraph> CoNLL08DepGraph::splitPlanar() {
 						}
 					}
 				}
-				if (bNoCrossing) {
+				if (!planar || bNoCrossing) {
 					rightArcs.push_back(*itr);
 					std::sort(rightArcs.begin(), rightArcs.end(),
 							[](const std::pair<int, ttoken> & p1, const std::pair<int, ttoken> & p2) { return p1.first < p2.first; });
@@ -201,6 +201,129 @@ void CoNLL08DepGraph::setTagsAndLabels(const Token & labels, const Token & super
 					(label, std::pair<int, int>(LEFT_LABEL_ID(vecLabels[label]), RIGHT_LABEL_ID(vecLabels[label]))));
 		}
 	}
+}
+
+CoNLL08DepGraph CoNLL08DepGraph::treeOrderGraph() {
+	int len = size();
+	CoNLL08DepGraph graph;
+	std::vector<int> treeOrder;
+	std::vector<int> treeOrderInverse;
+	std::vector<std::set<int>> childrens;
+	typedef std::tuple<int, int, ttoken> tArc;
+	std::vector<tArc> arcs;
+	for (int i = 0; i < len; ++i) {
+		childrens.push_back(std::set<int>());
+		treeOrderInverse.push_back(0);
+		for (const auto & arc : m_vecNodes[i].m_vecRightArcs) {
+			arcs.push_back(tArc(i, arc.first, arc.second));
+		}
+	}
+	childrens.push_back(std::set<int>());
+	for (int i = 0; i < len; ++i) {
+		if (m_vecNodes[i].m_nTreeHead != -1) {
+			childrens[m_vecNodes[i].m_nTreeHead].insert(i);
+		}
+		else {
+			childrens[len].insert(i);
+		}
+	}
+	// most-children firsts
+	int pivot = len;
+	while (!childrens[len].empty()) {
+		if (childrens[pivot].empty()) {
+			treeOrder.push_back(pivot);
+			int head = m_vecNodes[pivot].m_nTreeHead;
+			if (head == -1) head = len;
+			childrens[head].erase(pivot);
+			pivot = head;
+		}
+		else {
+			int newPivot = *childrens[pivot].begin();
+			for (const auto & child : childrens[pivot]) {
+				if (childrens[child].size() >= childrens[newPivot].size()) {
+					newPivot = child;
+				}
+			}
+			pivot = newPivot;
+		}
+	}
+	for (int i = 0; i < len; ++i) {
+		treeOrderInverse[treeOrder[i]] = i;
+	}
+	for (auto && arc : arcs) {
+		std::get<0>(arc) = treeOrderInverse[std::get<0>(arc)];
+		std::get<1>(arc) = treeOrderInverse[std::get<1>(arc)];
+		if (std::get<0>(arc) > std::get<1>(arc)) {
+			std::swap(std::get<0>(arc), std::get<1>(arc));
+			std::get<2>(arc) =
+					IS_LEFT_LABEL(std::get<2>(arc)) ? ENCODE_RIGHT_LABEL(DECODE_LEFT_LABEL(std::get<2>(arc))) :
+							IS_RIGHT_LABEL(std::get<2>(arc)) ? ENCODE_LEFT_LABEL(DECODE_RIGHT_LABEL(std::get<2>(arc))) :
+									ENCODE_TWOWAY_LABEL(DECODE_TWOWAY_RIGHT_LABEL(std::get<2>(arc)), DECODE_TWOWAY_LEFT_LABEL(std::get<2>(arc)));
+		}
+	}
+	std::sort(arcs.begin(), arcs.end(), [](const tArc & arc1, const tArc & arc2) {
+		if (std::get<0>(arc1) != std::get<0>(arc2))
+			return std::get<0>(arc1) < std::get<0>(arc2);
+		else
+			return std::get<1>(arc1) < std::get<1>(arc2);
+	});
+	for (int i = 0; i < len; ++i) {
+		graph.add(m_vecNodes[treeOrder[i]]);
+		auto & node = graph.back();
+		node.m_nTreeHead = graph.back().m_nTreeHead == -1 ? -1 : treeOrderInverse[node.m_nTreeHead];
+		node.m_vecRightArcs.clear();
+		for (const auto & arc : arcs) {
+			if (std::get<0>(arc) == i) {
+				node.m_vecRightArcs.push_back(std::pair<int, ttoken>(std::get<1>(arc), std::get<2>(arc)));
+			}
+		}
+	}
+	return graph;
+}
+
+
+bool CoNLL08DepGraph::checkArc(const CoNLL08DepGraph & g) {
+	std::set<std::string> arcs1, arcs2;
+	for (const auto & node : m_vecNodes) {
+		for (const auto & arc : node.m_vecRightArcs) {
+			if (IS_LEFT_LABEL(arc.second)) {
+				arcs1.insert(m_vecNodes[arc.first].m_sWord + DECODE_LEFT_LABEL(arc.second) + node.m_sWord);
+			}
+			else if (IS_RIGHT_LABEL(arc.second)) {
+				arcs1.insert(node.m_sWord + DECODE_RIGHT_LABEL(arc.second) + m_vecNodes[arc.first].m_sWord);
+			}
+			else {
+				arcs1.insert(m_vecNodes[arc.first].m_sWord + DECODE_TWOWAY_LEFT_LABEL(arc.second) + node.m_sWord);
+				arcs1.insert(node.m_sWord + DECODE_TWOWAY_RIGHT_LABEL(arc.second) + m_vecNodes[arc.first].m_sWord);
+			}
+		}
+	}
+	for (const auto & node : g.m_vecNodes) {
+		for (const auto & arc : node.m_vecRightArcs) {
+			if (IS_LEFT_LABEL(arc.second)) {
+				arcs2.insert(g.m_vecNodes[arc.first].m_sWord + DECODE_LEFT_LABEL(arc.second) + node.m_sWord);
+			}
+			else if (IS_RIGHT_LABEL(arc.second)) {
+				arcs2.insert(node.m_sWord + DECODE_RIGHT_LABEL(arc.second) + g.m_vecNodes[arc.first].m_sWord);
+			}
+			else {
+				arcs2.insert(g.m_vecNodes[arc.first].m_sWord + DECODE_TWOWAY_LEFT_LABEL(arc.second) + node.m_sWord);
+				arcs2.insert(node.m_sWord + DECODE_TWOWAY_RIGHT_LABEL(arc.second) + g.m_vecNodes[arc.first].m_sWord);
+			}
+		}
+	}
+	bool equal = true;
+	for (const auto arc : arcs1) {
+		if (arcs2.find(arc) == arcs2.end()) {
+			equal = false;
+		}
+	}
+	for (const auto arc : arcs2) {
+		if (arcs1.find(arc) == arcs1.end()) {
+			equal = false;
+		}
+	}
+	return equal;
 }
 
 // equal
