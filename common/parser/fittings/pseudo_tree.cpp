@@ -1,22 +1,32 @@
 #include "pseudo_tree.h"
 
-int PseudoTreeFitting::arcScore(const int & head, const int & pred, const CoNLL08DepGraph & graph) {
+int PseudoTreeFitting::arcScore(const int & head, const int & pred, const CoNLL08DepGraph & goldGraph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs) {
+	bool bAppear = pGraphs.empty() && nGraphs.empty();
+	int scoreIndex = 0;
 	int l = head < pred ? head : pred;
 	int r = head > pred ? head : pred;
-	for (const auto & arc : graph[l].m_vecRightArcs) {
-		if (arc.first == r) {
-			if (IS_LEFT_LABEL(arc.second)) {
-				return r == head ? CORRECT_ARC_SCORE : REVERSE_ARC_SCORE;
-			}
-			else if (IS_RIGHT_LABEL(arc.second)) {
-				return l == head ? CORRECT_ARC_SCORE : REVERSE_ARC_SCORE;
-			}
-			else {
-				return CORRECT_ARC_SCORE;
+	for (const auto & graph : pGraphs) {
+		for (const auto & arc : graph[l].m_vecRightArcs) {
+			if (arc.first == r) {
+				bAppear = true;
+				++scoreIndex;
 			}
 		}
 	}
-	return ARC_SCORE(l, r, graph.size());
+	for (const auto & graph : nGraphs) {
+		for (const auto & arc : graph[l].m_vecRightArcs) {
+			if (arc.first == r) {
+				--scoreIndex;
+			}
+		}
+	}
+	scoreIndex += 1;
+	for (const auto & arc : goldGraph[l].m_vecRightArcs) {
+		if (arc.first == r && bAppear) {
+			return CORRECT_ARC_SCORE * scoreIndex;
+		}
+	}
+	return ARC_SCORE(l, r, goldGraph.size());
 }
 
 ttoken PseudoTreeFitting::arcLabel(const int & head, const int & pred, const CoNLL08DepGraph & graph) {
@@ -38,7 +48,7 @@ ttoken PseudoTreeFitting::arcLabel(const int & head, const int & pred, const CoN
 	return PSEUDO_LABEL;
 }
 
-std::vector<PseudoTreeFitting::tEisnerArc> PseudoTreeFitting::decodeEisnerArcs(const CoNLL08DepGraph & graph) {
+std::vector<PseudoTreeFitting::tEisnerArc> PseudoTreeFitting::decodeEisnerArcs(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs) {
 	// decode
 	std::vector<std::vector<State>> vecStates;
 	vecStates.push_back(std::vector<State>());
@@ -55,8 +65,8 @@ std::vector<PseudoTreeFitting::tEisnerArc> PseudoTreeFitting::decodeEisnerArcs(c
 
 			State item(i, i + d - 1);
 
-			const int & l2r_arc_score = arcScore(i, i + d - 1, graph);
-			const int & r2l_arc_score = arcScore(i + d - 1, i, graph);
+			const int & l2r_arc_score = arcScore(i, i + d - 1, graph, pGraphs, nGraphs);
+			const int & r2l_arc_score = arcScore(i + d - 1, i, graph, pGraphs, nGraphs);
 
 			for (int s = i, j = i + d; s < j - 1; ++s) {
 
@@ -142,10 +152,10 @@ std::vector<PseudoTreeFitting::tEisnerArc> PseudoTreeFitting::decodeEisnerArcs(c
 	return vecArcs;
 }
 
-DependencyTree PseudoTreeFitting::extractPseudoTree(const CoNLL08DepGraph & graph) {
+DependencyTree PseudoTreeFitting::extractPseudoTree(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo) {
 	DependencyTree tree;
 
-	auto vecArcs = decodeEisnerArcs(graph);
+	auto vecArcs = decodeEisnerArcs(graph, pGraphs, nGraphs);
 
 	// get tree
 	for (const auto & node : graph) {
@@ -153,12 +163,16 @@ DependencyTree PseudoTreeFitting::extractPseudoTree(const CoNLL08DepGraph & grap
 	}
 	for (const auto & arc : vecArcs) {
 		TREENODE_HEAD(tree[std::get<1>(arc)]) = std::get<0>(arc);
-		TREENODE_LABEL(tree[std::get<1>(arc)]) = std::get<0>(arc) == -1 ? "PROOT" : arcLabel(std::get<0>(arc), std::get<1>(arc), graph);
+		ttoken label = std::get<0>(arc) == -1 ? "PROOT" : arcLabel(std::get<0>(arc), std::get<1>(arc), graph);
+		if (keepPseudo && std::get<0>(arc) != -1) {
+			label = DECODE_FORE_LABEL(label);
+		}
+		TREENODE_LABEL(tree[std::get<1>(arc)]) = label;
 	}
 	return tree;
 }
 
-CoNLL08DepGraph PseudoTreeFitting::pseudoTreeToGraph(const DependencyTree & tree) {
+CoNLL08DepGraph PseudoTreeFitting::pseudoTreeToGraph(const DependencyTree & tree, bool keepPseudo) {
 	CoNLL08DepGraph pseudoGraph;
 
 	std::vector<tEisnerArc> vecArcs;
@@ -179,19 +193,33 @@ CoNLL08DepGraph PseudoTreeFitting::pseudoTreeToGraph(const DependencyTree & tree
 		if (h == -1) continue;
 		ttoken label = TREENODE_LABEL(tree[p]);
 		if (IS_FORE_LABEL(label)) {
-			pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
-					std::pair<int, ttoken>(h > p ? h : p,
-							h > p ? ENCODE_LEFT_LABEL(DECODE_FORE_LABEL(label)) : ENCODE_RIGHT_LABEL(DECODE_FORE_LABEL(label))));
+			if (keepPseudo) {
+				pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
+						std::pair<int, ttoken>(h > p ? h : p,
+								h > p ? ENCODE_LEFT_LABEL(label) : ENCODE_RIGHT_LABEL(label)));
+			}
+			else {
+				pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
+						std::pair<int, ttoken>(h > p ? h : p,
+								h > p ? ENCODE_LEFT_LABEL(DECODE_FORE_LABEL(label)) : ENCODE_RIGHT_LABEL(DECODE_FORE_LABEL(label))));
+			}
 		}
 		else if (IS_BACK_LABEL(label)) {
+			if (keepPseudo) {
+				pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
+						std::pair<int, ttoken>(h > p ? h : p,
+								h > p ? ENCODE_LEFT_LABEL(label) : ENCODE_RIGHT_LABEL(label)));
+			}
+			else {
+				pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
+						std::pair<int, ttoken>(h > p ? h : p,
+								h < p ? ENCODE_LEFT_LABEL(DECODE_BACK_LABEL(label)) : ENCODE_RIGHT_LABEL(DECODE_BACK_LABEL(label))));
+			}
+		}
+		else if (keepPseudo) {
 			pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
 					std::pair<int, ttoken>(h > p ? h : p,
-							h < p ? ENCODE_LEFT_LABEL(DECODE_BACK_LABEL(label)) : ENCODE_RIGHT_LABEL(DECODE_BACK_LABEL(label))));
-		}
-		else {
-//			pseudoGraph[h < p ? h : p].m_vecRightArcs.push_back(
-//					std::pair<int, ttoken>(h > p ? h : p,
-//							h > p ? ENCODE_LEFT_LABEL(std::string("PSEUDO")) : ENCODE_RIGHT_LABEL(std::string("PSEUDO"))));
+							h > p ? ENCODE_LEFT_LABEL(std::string("PSEUDO")) : ENCODE_RIGHT_LABEL(std::string("PSEUDO"))));
 		}
 	}
 	for (auto && node : pseudoGraph) {

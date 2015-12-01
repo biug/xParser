@@ -7,7 +7,6 @@
 #include "include/dependency_primitive.h"
 
 #define CORRECT_ARC_SCORE	1000
-#define REVERSE_ARC_SCORE	1000
 #define ARC_SCORE(L,R,S)	((S) + (L) - (R))
 
 #define PSEUDO_LABEL			("PSEUDO")
@@ -53,15 +52,15 @@ protected:
 		}
 	};
 
-	int arcScore(const int & head, const int & pred, const CoNLL08DepGraph & graph);
+	int arcScore(const int & head, const int & pred, const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
 	ttoken arcLabel(const int & head, const int & pred, const CoNLL08DepGraph & graph);
 
-	std::vector<tEisnerArc> decodeEisnerArcs(const CoNLL08DepGraph & graph);
+	std::vector<tEisnerArc> decodeEisnerArcs(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
 
 public:
 
-	DependencyTree extractPseudoTree(const CoNLL08DepGraph & graph);
-	CoNLL08DepGraph pseudoTreeToGraph(const DependencyTree & tree);
+	DependencyTree extractPseudoTree(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo = false);
+	CoNLL08DepGraph pseudoTreeToGraph(const DependencyTree & tree, bool keepPseudo = false);
 };
 
 #endif

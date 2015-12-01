@@ -102,7 +102,9 @@ namespace arceager {
 			// early update check
 			if (m_nState == TRAIN) {
 				bool bCorrect = false;
+
 				for (const auto & item : *m_pGenerator) {
+
 					if (*item == m_iCorrect) {
 						bCorrect = true;
 						break;

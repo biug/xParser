@@ -23,20 +23,10 @@ int main(int argc, char * argv[]) {
 	}
 	else {
 		if (strcmp(argv[1], "pseudotree") == 0) {
-			std::ifstream input(argv[2]);
-			std::ofstream output(argv[3]);
-			DependencyGraph graph;
-			while (input >> graph) {
-				output << PseudoTreeFitting().extractPseudoTree(graph);
-			}
+			extractPseudoTree(argc, argv);
 		}
 		else if (strcmp(argv[1], "restoregraph") == 0) {
-			std::ifstream input(argv[2]);
-			std::ofstream output(argv[3]);
-			DependencyTree tree;
-			while (input >> tree) {
-				output << PseudoTreeFitting().pseudoTreeToGraph(tree);
-			}
+			restoreGraph(argc, argv);
 		}
 	}
 }

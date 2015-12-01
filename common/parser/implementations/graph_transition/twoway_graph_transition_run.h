@@ -3,6 +3,8 @@
 
 #include "graph_transition_macros.h"
 
+#include <memory>
+
 template<template<typename RET_TYPE> class DEP_PARSER, class RET_TYPE1, class RET_TYPE2, class STATE_TYPE, class ACTION_TYPE>
 class TwoWayGraphTransitionRun : public RunBase {
 protected:

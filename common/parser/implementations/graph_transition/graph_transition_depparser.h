@@ -153,10 +153,12 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 
 	int index = 0;
 	if (output != m_iCorrect) {
+
 		while (m_iStatesItem != output && index <= output.actionBack() && index <= m_iCorrect.actionBack()) {
 			const int & action = output.action(index);
 			const int & correct_action = m_iCorrect.action(index);
 			if (action == correct_action) {
+
 				m_cActions.doAction(&m_iStatesItem, action);
 			}
 			else {
@@ -217,9 +219,10 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 		decode();
 
 		if (m_nState == TRAIN) {
-			// early update check
 			bool bCorrect = false;
+
 			for (const auto & item : *m_pGenerator) {
+
 				if (*item == clearItem) {
 					bCorrect = true;
 					break;
@@ -243,6 +246,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 
 	if (m_nState == PARSE && m_pGenerator->size() > 0) {
 		while (true) {
+
 			decode();
 			if (m_pGenerated->size() == 0) {
 				break;
