@@ -75,7 +75,7 @@ public:
 	void arc(const int & label, const int & leftLabel, const int & rightLabel);
 	void arcLeft(const int & label);
 	void arcRight(const int & label);
-	void generateGraph(const DependencyGraph & sent, DependencyGraph & tree, const DLabel & labels) const;
+	void generateGraph(const DependencyGraph & sent, DependencyGraph & tree, const DLabel & labels, const DSuperTag & supertags) const;
 
 	virtual void print(const DLabel & labels, const DSuperTag & supertags) const = 0;
 };
@@ -196,12 +196,15 @@ inline bool GraphTransitionStateBase::stackEmpty() const {
 	return m_nStackBack == -1;
 }
 
-inline void GraphTransitionStateBase::generateGraph(const DependencyGraph & sent, DependencyGraph & tree, const DLabel & labels) const {
+inline void GraphTransitionStateBase::generateGraph(const DependencyGraph & sent, DependencyGraph & tree, const DLabel & labels, const DSuperTag & supertags) const {
 	for (int i = 0, n = sent.size(); i < n; ++i) {
 		tree.add(sent[i]);
 		tree.back().m_vecRightArcs.clear();
 		for (const auto & arc : m_vecRightArcs[i]) {
 			tree.back().m_vecRightArcs.push_back(std::pair<int, ttoken>(arc.head, labels.key(arc.label)));
+		}
+		if (supertags.count() > 0) {
+			tree.back().m_sSuperTag = supertags.key(m_lSuperTag[i]);
 		}
 	}
 }

@@ -93,9 +93,13 @@ typedef HexaGram<gtype> WordPOSTagPOSTagPOSTagPOSTagInt;
 
 typedef std::tuple<ttoken, ttoken> POSTaggedWord;
 typedef std::tuple<POSTaggedWord, int, ttoken> DependencyTreeNode;
+typedef std::pair<DependencyTreeNode, int> DependencyPathTreeNode;
+typedef std::pair<DependencyTreeNode, ttoken> DependencyTaggedTreeNode;
 
 typedef std::vector<POSTaggedWord> Sentence;
 typedef std::vector<DependencyTreeNode> DependencyTree;
+typedef std::vector<DependencyPathTreeNode> DependencyPathTree;
+typedef std::vector<DependencyTaggedTreeNode> DependencyTaggedTree;
 
 typedef std::unordered_map<int, std::vector<int>> SuperTagCandidates;
 
@@ -106,9 +110,13 @@ std::string nCharNext(const Sentence & sent, int index, int n);
 
 std::istream & operator>>(std::istream & input, Sentence & sentence);
 std::istream & operator>>(std::istream & input, DependencyTree & tree);
+std::istream & operator>>(std::istream & input, DependencyPathTree & tree);
+std::istream & operator>>(std::istream & input, DependencyTaggedTree & tree);
 
 std::ostream & operator<<(std::ostream & output, const Sentence & sentence);
 std::ostream & operator<<(std::ostream & output, const DependencyTree & tree);
+std::ostream & operator<<(std::ostream & output, const DependencyPathTree & tree);
+std::ostream & operator<<(std::ostream & output, const DependencyTaggedTree & tree);
 
 void nBackSpace(const std::string & str);
 

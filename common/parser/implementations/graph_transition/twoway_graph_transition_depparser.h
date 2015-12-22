@@ -209,7 +209,7 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
 void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
-	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels[m_nInputIndex]);
+	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels[m_nInputIndex], m_bSuperTag ? m_tSuperTags[m_nInputIndex] : DSuperTag());
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
@@ -310,8 +310,8 @@ void TwoWayGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(Depe
 	correctPair.second.setTagsAndLabels(m_tLabels[1], m_tSuperTags[1], m_lActions[1].m_vecLabelMap);
 	m_lActions[0].extractOracle(&item0, correctPair.first);
 	m_lActions[1].extractOracle(&item1, correctPair.second);
-	item0.generateGraph(correctPair.first, g0, m_tLabels[0]);
-	item1.generateGraph(correctPair.second, g1, m_tLabels[1]);
+	item0.generateGraph(correctPair.first, g0, m_tLabels[0], m_bSuperTag ? m_tSuperTags[0] : DSuperTag());
+	item1.generateGraph(correctPair.second, g1, m_tLabels[1], m_bSuperTag ? m_tSuperTags[0] : DSuperTag());
 	g = g0 + (-g1);
 	if (g != correct) {
 		++m_nTotalErrors;

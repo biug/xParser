@@ -1,14 +1,14 @@
-#ifndef _ARCEAGER_WEIGHT_H
-#define _ARCEAGER_WEIGHT_H
+#ifndef _ARCEAGERPATH_WEIGHT_H
+#define _ARCEAGERPATH_WEIGHT_H
 
-#include "arceager_macros.h"
+#include "arceagerpath_macros.h"
 #include "common/parser/weight_base.h"
 
 #include "common/token/word.h"
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
-namespace arceager {
+namespace arceagerpath {
 	class Weight : public WeightBase {
 	public:
 
@@ -113,6 +113,15 @@ namespace arceager {
 		POSTagSetOfDepLabelsMap m_mapSTtlp;
 		WordSetOfDepLabelsMap m_mapN0wlp;
 		POSTagSetOfDepLabelsMap m_mapN0tlp;
+
+		StringMap m_mapSTPOSPath;
+		StringMap m_mapSTFPOSPath;
+		WordWordPOSTagMap m_mapSTwN0ptSTsynhw;
+		WordWordPOSTagMap m_mapSTwN0wSTsynhpt;
+		WordWordPOSTagMap m_mapSTptN0wSTsynhw;
+		WordWordPOSTagMap m_mapSTwN0ptN0synhw;
+		WordWordPOSTagMap m_mapSTwN0wN0synhpt;
+		WordWordPOSTagMap m_mapSTptN0wN0synhw;
 
 	public:
 		Weight(const std::string & sRead, const std::string & sRecord);

@@ -93,6 +93,7 @@ public:
 	friend bool operator==(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 	friend bool operator!=(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 	friend CoNLL08DepGraph operator+(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
+	friend CoNLL08DepGraph operator-(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 	friend std::istream & operator>>(std::istream & is, CoNLL08DepGraph & graph);
 	friend std::ostream & operator<<(std::ostream & os, const CoNLL08DepGraph & graph);
 };

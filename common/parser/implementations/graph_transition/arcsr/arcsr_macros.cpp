@@ -7,9 +7,10 @@
 namespace arcsr {
 	ActionConstant::ActionConstant(const int & superTagCount) :
 			LabelCount(0), LeftLabelCount(0), RightLabelCount(0), m_nSuperTagCount(superTagCount),
-			AL_FIRST(POP_ROOT + 1), AL_END(AL_FIRST + (superTagCount + 1) * LabelCount),
+			AL_FIRST(POP_ROOT + 1), AL_END(AL_FIRST + (m_nSuperTagCount == 0 ? LeftLabelCount : (m_nSuperTagCount * LeftLabelCount))),
 			AR_FIRST(AL_END), AR_END(AR_FIRST + LabelCount),
-			RE_FIRST(AR_END), RE_END(RE_FIRST + superTagCount + 1) {}
+			RE_FIRST(AR_END), RE_END(RE_FIRST + (m_nSuperTagCount == 0 ? 1 : m_nSuperTagCount)),
+			PP_FIRST(RE_END), PP_END(PP_FIRST + (m_nSuperTagCount == 0 ? 1 : m_nSuperTagCount)) {}
 
 	ActionConstant::ActionConstant(const ActionConstant & actions) : ActionConstant(actions.m_nSuperTagCount) {}
 
@@ -17,25 +18,36 @@ namespace arcsr {
 
 	void ActionConstant::loadConstant(const DLabel & labels) {
 		loadLabels(*this, labels);
-		m_mapLeftLabelMap.clear();
-		m_mapRightLabelMap.clear();
+		m_vecLeftLabelMap.clear();
+		m_vecRightLabelMap.clear();
+		m_vecLeftLabelMap.push_back(0);
+		m_vecRightLabelMap.push_back(0);
 		LeftLabelCount = RightLabelCount = 0;
 		for (int i = labels.start(); i < labels.end(); ++i) {
 			if (IS_LEFT_LABEL(labels.key(i))) {
 				++LeftLabelCount;
-				int labelId = LEFT_LABEL_ID(m_vecLabelMap[i]);
-				m_mapLeftLabelMap[labelId] = i;
+				m_vecLeftLabelMap.push_back(0);
 			}
 			else if (IS_RIGHT_LABEL(labels.key(i))) {
 				++RightLabelCount;
-				int labelId = RIGHT_LABEL_ID(m_vecLabelMap[i]);
-				m_mapRightLabelMap[labelId] = i;
+				m_vecRightLabelMap.push_back(0);
+			}
+		}
+		for (int i = labels.start(); i < labels.end(); ++i) {
+			if (IS_LEFT_LABEL(labels.key(i))) {
+				m_vecLeftLabelMap[LEFT_LABEL_ID(m_vecLabelMap[i])] = i;
+			}
+			else if (IS_RIGHT_LABEL(labels.key(i))) {
+				m_vecRightLabelMap[RIGHT_LABEL_ID(m_vecLabelMap[i])] = i;
 			}
 		}
 
-		AL_FIRST = POP_ROOT + 1;	AL_END = AL_FIRST + (m_nSuperTagCount + 1) * LeftLabelCount;
+		AL_FIRST = POP_ROOT + 1;	AL_END = AL_FIRST + (m_nSuperTagCount == 0 ? LeftLabelCount : (m_nSuperTagCount * LeftLabelCount));
 		AR_FIRST = AL_END;			AR_END = AR_FIRST + RightLabelCount;
-		RE_FIRST = AR_END;			RE_END = RE_FIRST + m_nSuperTagCount + 1;
+		RE_FIRST = AR_END;			RE_END = RE_FIRST + (m_nSuperTagCount == 0 ? 1 : m_nSuperTagCount);
+		PP_FIRST = RE_END;			PP_END = PP_FIRST + (m_nSuperTagCount == 0 ? 1 : m_nSuperTagCount);
+
+		print();
 	}
 
 	bool ActionConstant::extractOracle(StateItem * item, const DependencyGraph & graph) const {
@@ -63,13 +75,13 @@ namespace arcsr {
 											const std::vector<int> & heads) const {
 		// reduce or draw arc
 		if (item->size() == graph.size()) {
+			int tag = graph[item->stackTop()].m_nSuperTagCode;
 			if (item->stackBack() > 0) {
-				int tag = graph[item->stackTop()].m_nSuperTagCode;
-				item->reduce(tag, RE_FIRST + tag);
+				item->reduce(tag, RE_FIRST + (tag == 0 ? 0 : (tag - 1)));
 				return true;
 			}
 			else {
-				item->popRoot(POP_ROOT);
+				item->popRoot(tag, PP_FIRST + (tag == 0 ? 0 : (tag - 1)));
 				return false;
 			}
 		}
@@ -82,10 +94,10 @@ namespace arcsr {
 				int tag = graph[item->stackTop()].m_nSuperTagCode;
 				if (top == item->stackTop()) {
 					auto labels = graph[top].m_vecRightLabels[seeks[top]++];
-					item->arcLeft(labels.first, labels.second.first, tag, AL_FIRST + tag * LeftLabelCount + labels.second.first - 1);
+					item->arcLeft(labels.first, labels.second.first, tag, AL_FIRST + (tag == 0 ? 0 : (tag - 1)) * LeftLabelCount + labels.second.first - 1);
 				}
 				else {
-					item->reduce(tag, RE_FIRST + tag);
+					item->reduce(tag, RE_FIRST + (tag == 0 ? 0 : (tag - 1)));
 				}
 				return true;
 			}
@@ -102,7 +114,7 @@ namespace arcsr {
 			}
 			else {
 				int tag = graph[top].m_nSuperTagCode;
-				item->reduce(tag, RE_FIRST + tag);
+				item->reduce(tag, RE_FIRST + (tag == 0 ? 0 : (tag - 1)));
 			}
 			return true;
 		}
@@ -114,9 +126,6 @@ namespace arcsr {
 			case SHIFT:
 				item->shift(action);
 				break;
-			case POP_ROOT:
-				item->popRoot(action);
-				break;
 			default:
 				break;
 			}
@@ -124,19 +133,22 @@ namespace arcsr {
 		else if (action < AL_END) {
 			if (m_nSuperTagCount > 0) {
 				int label = (action - AL_FIRST) % LeftLabelCount + 1;
-				item->arcLeft(m_mapLeftLabelMap.at(label), label, (action - AL_FIRST) / LeftLabelCount, action);
+				item->arcLeft(m_vecLeftLabelMap[label], label, (action - AL_FIRST) / LeftLabelCount + 1, action);
 			}
 			else {
 				int label = action - AL_FIRST + 1;
-				item->arcLeft(m_mapLeftLabelMap.at(label), label, 0, action);
+				item->arcLeft(m_vecLeftLabelMap[label], label, 0, action);
 			}
 		}
 		else if (action < AR_END) {
 			int label = action - AR_FIRST + 1;
-			item->arcRight(m_mapRightLabelMap.at(label), label, action);
+			item->arcRight(m_vecRightLabelMap[label], label, action);
+		}
+		else if (action < RE_END) {
+			item->reduce(action - RE_FIRST + 1, action);
 		}
 		else {
-			item->reduce(action - RE_FIRST, action);
+			item->popRoot(action - PP_FIRST + 1, action);
 		}
 	}
 
@@ -149,22 +161,22 @@ namespace arcsr {
 			case SHIFT:
 				std::cout << "shift";
 				break;
-			case POP_ROOT:
-				std::cout << "pop root";
-				break;
 			default:
 				std::cout << "wrong action";
 				break;
 			}
 		}
 		else if (action < AL_END) {
-			std::cout << "arc left with label " << (action - AL_FIRST) % LeftLabelCount + 1 << " with tag " << (action - AL_FIRST) / LeftLabelCount;
+			std::cout << "arc left with label " << (action - AL_FIRST) % LeftLabelCount + 1 << " with tag " << (action - AL_FIRST) / LeftLabelCount + 1;
 		}
 		else if (action < AR_END) {
 			std::cout << "arc right with label "<< action - AR_FIRST + 1;
 		}
 		else if (action < RE_END) {
-			std::cout << "reduce with tag " << action - RE_FIRST;
+			std::cout << "reduce with tag " << action - RE_FIRST + 1;
+		}
+		else if (action < PP_END) {
+			std::cout << "pop root with tag " << action - PP_FIRST + 1;
 		}
 		else {
 			std::cout << "wrong action";
@@ -174,6 +186,7 @@ namespace arcsr {
 
 	void ActionConstant::print() const {
 		std::cout << "label count is " << LabelCount << std::endl;
+		std::cout << "super tag count is " << m_nSuperTagCount << std::endl;
 		std::cout << "left label count is " << LeftLabelCount << std::endl;
 		std::cout << "right label count is " << RightLabelCount << std::endl;
 		std::cout << "arc left first is " << AL_FIRST << std::endl;

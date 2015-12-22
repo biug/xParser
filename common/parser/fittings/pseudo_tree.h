@@ -20,7 +20,7 @@
 class PseudoTreeFitting {
 protected:
 
-	typedef std::tuple<int, int> tEisnerArc;
+	typedef std::tuple<int, int, int> tEisnerArc;
 
 	struct State {
 		typedef std::pair<int, int> tScoreWithSplit;
@@ -52,15 +52,19 @@ protected:
 		}
 	};
 
-	int arcScore(const int & head, const int & pred, const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
+	int arcScore(const int & head, const int & pred, const CoNLL08DepGraph & graph, const CoNLL08DepGraph & cGraph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
 	ttoken arcLabel(const int & head, const int & pred, const CoNLL08DepGraph & graph);
 
-	std::vector<tEisnerArc> decodeEisnerArcs(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
+	std::vector<tEisnerArc> decodeEisnerArcs(const CoNLL08DepGraph & graph, const CoNLL08DepGraph & cGraph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs);
 
 public:
 
 	DependencyTree extractPseudoTree(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo = false);
+	DependencyTree extractPseudoTree(const CoNLL08DepGraph & graph, const CoNLL08DepGraph & cGraph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo = false);
+	DependencyPathTree extractPseudoScoreTree(const CoNLL08DepGraph & graph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo = false);
+	DependencyPathTree extractPseudoScoreTree(const CoNLL08DepGraph & graph, const CoNLL08DepGraph & cGraph, const std::vector<CoNLL08DepGraph> & pGraphs, const std::vector<CoNLL08DepGraph> & nGraphs, bool keepPseudo = false);
 	CoNLL08DepGraph pseudoTreeToGraph(const DependencyTree & tree, bool keepPseudo = false);
+	CoNLL08DepGraph addPseudoTag(const CoNLL08DepGraph & gold, const CoNLL08DepGraph & pseudo);
 };
 
 #endif

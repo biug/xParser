@@ -28,5 +28,20 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[1], "restoregraph") == 0) {
 			restoreGraph(argc, argv);
 		}
+		else if (strcmp(argv[1], "addtag") == 0) {
+			addTag(argc, argv);
+		}
+		else if (strcmp(argv[1], "testtag") == 0) {
+			testTag(argc, argv);
+		}
+		else if (strcmp(argv[1], "reversegraph") == 0) {
+			reverseGraph(argc, argv);
+		}
+		else if (strcmp(argv[1], "combine") == 0) {
+			combineGraph(argc, argv);
+		}
+		else if (strcmp(argv[1], "remove") == 0) {
+			removeTree(argc, argv);
+		}
 	}
 }

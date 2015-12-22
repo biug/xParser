@@ -14,11 +14,14 @@ namespace arcsr {
 		StateItem();
 		~StateItem();
 
+		void arcLeft(const int & label, const int & leftLabel);
+		void arcRight(const int & label, const int & rightLabel);
+
 		void reduce(const int & tag, const int & action);
 		void shift(const int & action);
 		void arcLeft(const int & label, const int & leftLabel, const int & tag, const int & action);
 		void arcRight(const int & label, const int & rightLabel, const int & action);
-		void popRoot(const int & action);
+		void popRoot(const int & tag, const int & action);
 
 		void clear();
 		void clearNext();

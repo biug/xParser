@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "arceager_state.h"
+#include "arceagerpath_state.h"
 #include "common/token/deplabel.h"
 
-namespace arceager {
+namespace arceagerpath {
 
 	extern int AL_FIRST;
 	extern int AR_FIRST;
@@ -97,16 +97,16 @@ namespace arceager {
 		}
 	}
 
-	void StateItem::generateTree(const DependencyTree & sent, DependencyTree & tree) const {
+	void StateItem::generateTree(const DependencyPathTree & sent, DependencyTree & tree) const {
 		int i = 0;
 		tree.clear();
 		for (const auto & token : sent) {
-			tree.push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token), m_lHeads[i], TDepLabel::key(m_lLabels[i])));
+			tree.push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token.first), m_lHeads[i], TDepLabel::key(m_lLabels[i])));
 			++i;
 		}
 	}
 
-	bool StateItem::standardMove(const DependencyTree & tree) {
+	bool StateItem::standardMove(const DependencyPathTree & tree) {
 		int top;
 		if (m_nNextWord == tree.size()) {
 			if (m_nStackBack > 0) {
@@ -123,9 +123,9 @@ namespace arceager {
 			while (!(m_lHeads[top] == -1)) {
 				top = m_lHeads[top];
 			}
-			if (TREENODE_HEAD(tree[top]) == m_nNextWord) {
+			if (TREENODE_HEAD(tree[top].first) == m_nNextWord) {
 				if (top == m_lStack[m_nStackBack]) {
-					arcLeft(TDepLabel::code(TREENODE_LABEL(tree[top])));
+					arcLeft(TDepLabel::code(TREENODE_LABEL(tree[top].first)));
 					return true;
 				}
 				else {
@@ -134,14 +134,14 @@ namespace arceager {
 				}
 			}
 		}
-		if (TREENODE_HEAD(tree[m_nNextWord]) == -1 || TREENODE_HEAD(tree[m_nNextWord]) > m_nNextWord) {
+		if (TREENODE_HEAD(tree[m_nNextWord].first) == -1 || TREENODE_HEAD(tree[m_nNextWord].first) > m_nNextWord) {
 			shift();
 			return true;
 		}
 		else {
 			top = m_lStack[m_nStackBack];
-			if (TREENODE_HEAD(tree[m_nNextWord]) == top) {
-				arcRight(TDepLabel::code(TREENODE_LABEL(tree[m_nNextWord])));
+			if (TREENODE_HEAD(tree[m_nNextWord].first) == top) {
+				arcRight(TDepLabel::code(TREENODE_LABEL(tree[m_nNextWord].first)));
 				return true;
 			}
 			else {

@@ -65,7 +65,9 @@ namespace arcsr {
 
 	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::popRoot(const tscore & score) {
-		this->m_abScores.insertItem(ScoredAction(POP_ROOT, score + this->m_lPackedScore[POP_ROOT]));
+		for (int action = this->m_cActions.PP_FIRST; action < this->m_cActions.PP_END; ++action) {
+			this->m_abScores.insertItem(ScoredAction(action, score + this->m_lPackedScore[action]));
+		}
 	}
 
 	template<class RET_TYPE>

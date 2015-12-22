@@ -120,7 +120,37 @@ std::istream & operator>>(std::istream & input, DependencyTree & tree) {
 	return input;
 }
 
+std::istream & operator>>(std::istream & input, DependencyPathTree & tree) {
+	tree.clear();
+	ttoken line, token;
+	while (true) {
+		std::getline(input, line);
+		if (line.empty()) {
+			break;
+		}
+		DependencyPathTreeNode node;
+		std::istringstream iss(line);
+		iss >> TREENODE_WORD(node.first) >> TREENODE_POSTAG(node.first) >> TREENODE_HEAD(node.first) >> TREENODE_LABEL(node.first) >> node.second;
+		tree.push_back(node);
+	}
+	return input;
+}
 
+std::istream & operator>>(std::istream & input, DependencyTaggedTree & tree) {
+	tree.clear();
+	ttoken line, token;
+	while (true) {
+		std::getline(input, line);
+		if (line.empty()) {
+			break;
+		}
+		DependencyTaggedTreeNode node;
+		std::istringstream iss(line);
+		iss >> TREENODE_WORD(node.first) >> TREENODE_POSTAG(node.first) >> TREENODE_HEAD(node.first) >> TREENODE_LABEL(node.first) >> node.second;
+		tree.push_back(node);
+	}
+	return input;
+}
 
 std::ostream & operator<<(std::ostream & output, const Sentence & sentence) {
 	auto itr = sentence.begin();
@@ -140,6 +170,22 @@ std::ostream & operator<<(std::ostream & output, const Sentence & sentence) {
 std::ostream & operator<<(std::ostream & output, const DependencyTree & tree) {
 	for (auto itr = tree.begin(); itr != tree.end(); ++itr) {
 		output << TREENODE_WORD(*itr) << "\t" << TREENODE_POSTAG(*itr) << "\t" << TREENODE_HEAD(*itr) << "\t" << TREENODE_LABEL(*itr) << std::endl;
+	}
+	output << std::endl;
+	return output;
+}
+
+std::ostream & operator<<(std::ostream & output, const DependencyPathTree & tree) {
+	for (auto itr = tree.begin(); itr != tree.end(); ++itr) {
+		output << TREENODE_WORD(itr->first) << "\t" << TREENODE_POSTAG(itr->first) << "\t" << TREENODE_HEAD(itr->first) << "\t" << TREENODE_LABEL(itr->first) << "\t" << itr->second << std::endl;
+	}
+	output << std::endl;
+	return output;
+}
+
+std::ostream & operator<<(std::ostream & output, const DependencyTaggedTree & tree) {
+	for (auto itr = tree.begin(); itr != tree.end(); ++itr) {
+		output << TREENODE_WORD(itr->first) << "\t" << TREENODE_POSTAG(itr->first) << "\t" << TREENODE_HEAD(itr->first) << "\t" << TREENODE_LABEL(itr->first) << "\t" << itr->second << std::endl;
 	}
 	output << std::endl;
 	return output;

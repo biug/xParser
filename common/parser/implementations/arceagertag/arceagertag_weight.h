@@ -1,14 +1,15 @@
-#ifndef _ARCEAGER_WEIGHT_H
-#define _ARCEAGER_WEIGHT_H
+#ifndef _ARCEAGERTAG_WEIGHT_H
+#define _ARCEAGERTAG_WEIGHT_H
 
-#include "arceager_macros.h"
+#include "arceagertag_macros.h"
 #include "common/parser/weight_base.h"
+#include "include/learning/perceptron/packed_score.h"
 
 #include "common/token/word.h"
 #include "common/token/pos.h"
 #include "common/token/deplabel.h"
 
-namespace arceager {
+namespace arceagertag {
 	class Weight : public WeightBase {
 	public:
 

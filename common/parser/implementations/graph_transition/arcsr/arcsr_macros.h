@@ -24,11 +24,12 @@ namespace arcsr {
 		int RightLabelCount;
 		int m_nSuperTagCount;
 		std::vector<int> m_vecLabelMap;
-		std::unordered_map<int, int> m_mapLeftLabelMap;
-		std::unordered_map<int, int> m_mapRightLabelMap;
+		std::vector<int> m_vecLeftLabelMap;
+		std::vector<int> m_vecRightLabelMap;
 		int AL_FIRST, AL_END;
 		int AR_FIRST, AR_END;
 		int RE_FIRST, RE_END;
+		int PP_FIRST, PP_END;
 
 		ActionConstant(const int & superTagCount = 0);
 		ActionConstant(const ActionConstant & actions);

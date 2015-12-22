@@ -127,6 +127,20 @@ namespace graph_transition {
 		WordTagsetMap<RET_TYPE> m_mapN0wlp;
 		POSTagTagsetMap<RET_TYPE> m_mapN0tlp;
 
+//		// supertag feature
+//		SuperTagMap<RET_TYPE> m_mapSTst;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTw;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTpt;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstN0w;
+//		POSTagSuperTagMap<RET_TYPE> m_mapSTstN0pt;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTHw;
+//		POSTagSuperTagMap<RET_TYPE> m_mapSTstSTHpt;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTLDw;
+//		POSTagSuperTagMap<RET_TYPE> m_mapSTstSTLDpt;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTRDw;
+//		POSTagSuperTagMap<RET_TYPE> m_mapSTstSTRDpt;
+//		WordSuperTagMap<RET_TYPE> m_mapSTstSTDi;
+
 	public:
 		TreeWeight(const std::string & sRead, const std::string & sRecord,
 				DWord * pWords, DPOSTag * pPOSTags, DLabel * pLables, DSuperTag * pSuperTags,
@@ -233,6 +247,18 @@ namespace graph_transition {
 		m_mapSTtlp("StackTagLeftSetoftags"),
 		m_mapN0wlp("Next0WordLeftSetoftags"),
 		m_mapN0tlp("Next0TagLeftSetoftags")
+//		m_mapSTst("StackSuperTagNextWordWord"),
+//		m_mapSTstSTw("StackSuperTagNextWord"),
+//		m_mapSTstSTpt("StackSuperTagNextTag"),
+//		m_mapSTstN0w("StackSuperTagNextWord"),
+//		m_mapSTstN0pt("StackSuperTagNextTag"),
+//		m_mapSTstSTHw("StackSuperTagStackHeadWord"),
+//		m_mapSTstSTHpt("StackSuperTagStackHeadTag"),
+//		m_mapSTstSTLDw("StackSuperTagStackHeadWord"),
+//		m_mapSTstSTLDpt("StackSuperTagStackHeadTag"),
+//		m_mapSTstSTRDw("StackSuperTagStackHeadWord"),
+//		m_mapSTstSTRDpt("StackSuperTagStackHeadTag"),
+//		m_mapSTstSTDi("StackSuperTagStackHeadWord")
 	{
 
 		empty_taggedword.refer(m_pWords->lookup(EMPTY_WORD), m_pPOSTags->lookup(EMPTY_POSTAG));
@@ -356,6 +382,18 @@ namespace graph_transition {
 		input >> m_mapSTtlp;
 		input >> m_mapN0wlp;
 		input >> m_mapN0tlp;
+//		input >> m_mapSTst;
+//		input >> m_mapSTstSTw;
+//		input >> m_mapSTstSTpt;
+//		input >> m_mapSTstN0w;
+//		input >> m_mapSTstN0pt;
+//		input >> m_mapSTstSTHw;
+//		input >> m_mapSTstSTHpt;
+//		input >> m_mapSTstSTLDw;
+//		input >> m_mapSTstSTLDpt;
+//		input >> m_mapSTstSTRDw;
+//		input >> m_mapSTstSTRDpt;
+//		input >> m_mapSTstSTDi;
 
 		input.close();
 	}
@@ -465,6 +503,18 @@ namespace graph_transition {
 		output << m_mapSTtlp;
 		output << m_mapN0wlp;
 		output << m_mapN0tlp;
+//		output << m_mapSTst;
+//		output << m_mapSTstSTw;
+//		output << m_mapSTstSTpt;
+//		output << m_mapSTstN0w;
+//		output << m_mapSTstN0pt;
+//		output << m_mapSTstSTHw;
+//		output << m_mapSTstSTHpt;
+//		output << m_mapSTstSTLDw;
+//		output << m_mapSTstSTLDpt;
+//		output << m_mapSTstSTRDw;
+//		output << m_mapSTstSTRDpt;
+//		output << m_mapSTstSTDi;
 
 		output.close();
 	}
@@ -553,6 +603,18 @@ namespace graph_transition {
 		m_mapSTtlp.computeAverage(round);
 		m_mapN0wlp.computeAverage(round);
 		m_mapN0tlp.computeAverage(round);
+//		m_mapSTst.computeAverage(round);
+//		m_mapSTstSTw.computeAverage(round);
+//		m_mapSTstSTpt.computeAverage(round);
+//		m_mapSTstN0w.computeAverage(round);
+//		m_mapSTstN0pt.computeAverage(round);
+//		m_mapSTstSTHw.computeAverage(round);
+//		m_mapSTstSTHpt.computeAverage(round);
+//		m_mapSTstSTLDw.computeAverage(round);
+//		m_mapSTstSTLDpt.computeAverage(round);
+//		m_mapSTstSTRDw.computeAverage(round);
+//		m_mapSTstSTRDpt.computeAverage(round);
+//		m_mapSTstSTDi.computeAverage(round);
 	}
 
 	template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
@@ -561,6 +623,7 @@ namespace graph_transition {
 		const int outIndex = -1;
 		const int emptyLabel = 0;
 		const int emptyArity = -1;
+		const int emptySuperTag = 0;
 
 		WordPOSTag (&sentence)[MAX_SENTENCE_SIZE] = parser->m_lSentence;
 		RET_TYPE & packedScore = parser->m_lPackedScore;
@@ -832,6 +895,44 @@ namespace graph_transition {
 			uni_tagset.refer(n0_tag, n0_ltagset.bits(0), n0_ltagset.bits(1));
 			m_mapN0tlp.getOrUpdateScore(packedScore, uni_tagset, scoreIndex, amount, trainingRound);
 		}
+
+//		if (parser->m_bSuperTag) {
+//			const SuperTag & st_supertag = st_index == -1 ? emptySuperTag : item.superTag(st_index);
+//
+//			m_mapSTst.getOrUpdateScore(packedScore, st_supertag, scoreIndex, amount, trainingRound);
+//			if (st_index != -1) {
+//				bi_features.refer(st_supertag, st_word);
+//				m_mapSTstSTw.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//				bi_features.refer(st_supertag, st_tag);
+//				m_mapSTstSTpt.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//			}
+//			if (n0_index != -1) {
+//				bi_features.refer(st_supertag, n0_word);
+//				m_mapSTstN0w.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//				bi_features.refer(st_supertag, n0_tag);
+//				m_mapSTstN0pt.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//			}
+//			if (sth_index != -1) {
+//				bi_features.refer(st_supertag, sth_word);
+//				m_mapSTstSTHw.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//				bi_features.refer(st_supertag, sth_tag);
+//				m_mapSTstSTHpt.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//			}
+//			if (stld_index != -1) {
+//				bi_features.refer(st_supertag, stld_word);
+//				m_mapSTstSTLDw.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//				bi_features.refer(st_supertag, stld_tag);
+//				m_mapSTstSTLDpt.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//			}
+//			if (strd_index != -1) {
+//				bi_features.refer(st_supertag, strd_word);
+//				m_mapSTstSTRDw.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//				bi_features.refer(st_supertag, strd_tag);
+//				m_mapSTstSTRDpt.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//			}
+//			bi_features.refer(st_supertag, st_larity + st_rarity);
+//			m_mapSTstSTDi.getOrUpdateScore(packedScore, bi_features, scoreIndex, amount, trainingRound);
+//		}
 	}
 }
 

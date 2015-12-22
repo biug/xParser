@@ -137,6 +137,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
 void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(const std::string & sInputFile) {
 	loadTokens(sInputFile);
+	m_cActions.m_nSuperTagCount = m_bSuperTag ? m_tSuperTags.count() : 0;
 	m_cActions.loadConstant(m_tLabels);
 
 	std::cout << "constant load complete." << std::endl;
@@ -176,7 +177,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
 void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
-	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels);
+	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels, m_bSuperTag ? m_tSuperTags : DSuperTag());
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>

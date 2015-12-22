@@ -1,12 +1,16 @@
 #include <cstring>
 
-#include "arceager_state.h"
+#include "arceagertag_state.h"
 #include "common/token/deplabel.h"
+#include "common/token/supertag.h"
 
-namespace arceager {
+namespace arceagertag {
 
+	extern int LABEL_COUNT;
 	extern int AL_FIRST;
 	extern int AR_FIRST;
+	extern int RE_FIRST;
+	extern int PP_FIRST;
 
 	StateItem::StateItem() {
 		clear();
@@ -14,29 +18,32 @@ namespace arceager {
 
 	StateItem::~StateItem() = default;
 
-	void StateItem::arcLeft(const int & l) {
+	void StateItem::arcLeft(const int & t, const int & l, const tscore & hscore) {
 		int left = m_lStack[m_nStackBack--];
 		--m_nHeadStackBack;
+		m_lSuperTag[left] = t;
 		m_lHeads[left] = m_nNextWord;
 		m_lLabels[left] = l;
 		m_lDepTagL[m_nNextWord].add(l);
 		m_lSibling[left] = m_lDepsL[m_nNextWord];
 		m_lDepsL[m_nNextWord] = left;
+		m_lHeadScore[left] = hscore;
 		++m_lDepsNumL[m_nNextWord];
-		m_nLastAction = AL_FIRST + l - 1;
+		m_lActions[++m_nActionBack] = AL_FIRST + (t - 1) * LABEL_COUNT + l - 1;
 	}
 
-	void StateItem::arcRight(const int & l) {
+	void StateItem::arcRight(const int & l, const tscore & hscore) {
 		int left = m_lStack[m_nStackBack];
 		m_lStack[++m_nStackBack] = m_nNextWord;
 		m_lHeads[m_nNextWord] = left;
 		m_lLabels[m_nNextWord] = l;
 		m_lDepTagR[left].add(l);
 		m_lSibling[m_nNextWord] = m_lDepsR[left];
+		m_lHeadScore[m_nNextWord] = hscore;
 		m_lDepsR[left] = m_nNextWord++;
 		++m_lDepsNumR[left];
 		clearNext();
-		m_nLastAction = AR_FIRST + l - 1;
+		m_lActions[++m_nActionBack] = AR_FIRST + l - 1;
 	}
 
 	void StateItem::print() const {
@@ -49,8 +56,10 @@ namespace arceager {
 			std::cout << " " << m_lStack[i];
 		}
 		if (m_nStackBack >= 0) std::cout << std::endl;
-		std::cout << "last action is ";
-		printAction(m_nLastAction);
+		std::cout << "action list is" << std::endl;;
+		for (int i = 0; i <= m_nActionBack; ++i) {
+			printAction(m_lActions[i], 0);
+		}
 		std::cout << "score is " << m_nScore << std::endl;
 	}
 
@@ -59,7 +68,7 @@ namespace arceager {
 		m_nStackBack = -1;
 		m_nHeadStackBack = -1;
 		m_nScore = 0;
-		m_nLastAction = NO_ACTION;
+		m_lActions[m_nActionBack = 0] = NO_ACTION;
 		clearNext();
 	}
 
@@ -75,7 +84,7 @@ namespace arceager {
 		m_lLabels[m_nNextWord] = 0;
 	}
 
-	void StateItem::move(const int & action) {
+	void StateItem::move(const int & action, const tscore & hscore) {
 		switch (decodeAction(action)) {
 		case NO_ACTION:
 			return;
@@ -83,38 +92,38 @@ namespace arceager {
 			shift();
 			return;
 		case REDUCE:
-			reduce();
+			reduce(action - RE_FIRST + 1);
 			return;
 		case ARC_LEFT:
-			arcLeft(action - AL_FIRST + 1);
+			arcLeft((action - AL_FIRST) / LABEL_COUNT + 1, (action - AL_FIRST) % LABEL_COUNT + 1, hscore);
 			return;
 		case ARC_RIGHT:
-			arcRight(action - AR_FIRST + 1);
+			arcRight(action - AR_FIRST + 1, hscore);
 			return;
 		case POP_ROOT:
-			popRoot();
+			popRoot(action - PP_FIRST + 1);
 			return;
 		}
 	}
 
-	void StateItem::generateTree(const DependencyTree & sent, DependencyTree & tree) const {
+	void StateItem::generateTree(const DependencyTaggedTree & sent, DependencyTaggedTree & tree) const {
 		int i = 0;
 		tree.clear();
 		for (const auto & token : sent) {
-			tree.push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token), m_lHeads[i], TDepLabel::key(m_lLabels[i])));
+			tree.push_back(DependencyTaggedTreeNode(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token.first), m_lHeads[i], TDepLabel::key(m_lLabels[i])), TSuperTag::key(m_lSuperTag[i]) + "#" + std::to_string(m_lHeadScore[i])));
 			++i;
 		}
 	}
 
-	bool StateItem::standardMove(const DependencyTree & tree) {
+	bool StateItem::standardMove(const DependencyTaggedTree & tree) {
 		int top;
 		if (m_nNextWord == tree.size()) {
 			if (m_nStackBack > 0) {
-				reduce();
+				reduce(TSuperTag::code(tree[m_lStack[m_nStackBack]].second));
 				return true;
 			}
 			else {
-				popRoot();
+				popRoot(TSuperTag::code(tree[m_lStack[m_nStackBack]].second));
 				return false;
 			}
 		}
@@ -123,29 +132,29 @@ namespace arceager {
 			while (!(m_lHeads[top] == -1)) {
 				top = m_lHeads[top];
 			}
-			if (TREENODE_HEAD(tree[top]) == m_nNextWord) {
+			if (TREENODE_HEAD(tree[top].first) == m_nNextWord) {
 				if (top == m_lStack[m_nStackBack]) {
-					arcLeft(TDepLabel::code(TREENODE_LABEL(tree[top])));
+					arcLeft(TSuperTag::code(tree[top].second), TDepLabel::code(TREENODE_LABEL(tree[top].first)), 1);
 					return true;
 				}
 				else {
-					reduce();
+					reduce(TSuperTag::code(tree[m_lStack[m_nStackBack]].second));
 					return true;
 				}
 			}
 		}
-		if (TREENODE_HEAD(tree[m_nNextWord]) == -1 || TREENODE_HEAD(tree[m_nNextWord]) > m_nNextWord) {
+		if (TREENODE_HEAD(tree[m_nNextWord].first) == -1 || TREENODE_HEAD(tree[m_nNextWord].first) > m_nNextWord) {
 			shift();
 			return true;
 		}
 		else {
 			top = m_lStack[m_nStackBack];
-			if (TREENODE_HEAD(tree[m_nNextWord]) == top) {
-				arcRight(TDepLabel::code(TREENODE_LABEL(tree[m_nNextWord])));
+			if (TREENODE_HEAD(tree[m_nNextWord].first) == top) {
+				arcRight(TDepLabel::code(TREENODE_LABEL(tree[m_nNextWord].first)), 1);
 				return true;
 			}
 			else {
-				reduce();
+				reduce(TSuperTag::code(tree[top].second));
 				return true;
 			}
 		}
@@ -153,16 +162,18 @@ namespace arceager {
 
 	int StateItem::followMove(const StateItem & item) {
 		int top;
+		int tag;
 		if (m_nNextWord == item.m_nNextWord) {
 			top = m_lStack[m_nStackBack];
+			tag = item.m_lSuperTag[top];
 			if (item.m_lHeads[top] == m_nNextWord) {
-				return AL_FIRST + item.m_lLabels[top] - 1;
+				return AL_FIRST + (tag - 1) * LABEL_COUNT + item.m_lLabels[top] - 1;
 			}
 			else if (item.m_lHeads[top] != -1) {
-				return REDUCE;
+				return RE_FIRST + tag - 1;
 			}
 			else {
-				return POP_ROOT;
+				return PP_FIRST + tag - 1;
 			}
 		}
 		if (m_nStackBack >= 0) {
@@ -171,11 +182,12 @@ namespace arceager {
 				top = m_lHeads[top];
 			}
 			if (item.m_lHeads[top] == m_nNextWord) {
+				tag = item.m_lSuperTag[m_lStack[m_nStackBack]];
 				if (top == m_lStack[m_nStackBack]) {
-					return AL_FIRST + item.m_lLabels[top] - 1;
+					return AL_FIRST + (tag - 1) * LABEL_COUNT + item.m_lLabels[top] - 1;
 				}
 				else {
-					return REDUCE;
+					return RE_FIRST + tag - 1;
 				}
 			}
 		}
@@ -184,29 +196,24 @@ namespace arceager {
 		}
 		else {
 			top = m_lStack[m_nStackBack];
+			tag = item.m_lSuperTag[top];
 			if (item.m_lHeads[m_nNextWord] == top) {
 				return AR_FIRST + item.m_lLabels[m_nNextWord] - 1;
 			}
 			else {
-				return REDUCE;
+				return RE_FIRST + tag - 1;
 			}
 		}
 	}
 
 	bool StateItem::operator==(const StateItem & item) const {
-		if (m_nNextWord != item.m_nNextWord) {
+		if (m_nActionBack != item.m_nActionBack) {
 			return false;
 		}
-		for (int i = 0; i < m_nNextWord; ++i) {
-			if (m_lHeads[i] != item.m_lHeads[i] || m_lLabels[i] != item.m_lLabels[i]) {
+		for (int i = m_nActionBack; i >= 0; --i) {
+			if (m_lActions[i] != item.m_lActions[i]) {
 				return false;
 			}
-		}
-		if (m_nStackBack != item.m_nStackBack) {
-			return false;
-		}
-		if (m_nStackBack >= 0 && m_lStack[m_nStackBack] != item.m_lStack[m_nStackBack]) {
-			return false;
 		}
 		return true;
 	}
@@ -215,12 +222,13 @@ namespace arceager {
 		m_nStackBack = item.m_nStackBack;
 		m_nHeadStackBack = item.m_nHeadStackBack;
 		m_nNextWord = item.m_nNextWord;
-		m_nLastAction = item.m_nLastAction;
+		m_nActionBack = item.m_nActionBack;
 		m_nScore = item.m_nScore;
 
 		size_t len = sizeof(int) * (m_nNextWord + 1);
 		memcpy(m_lStack, item.m_lStack, sizeof(int) * (m_nStackBack + 1));
 		memcpy(m_lHeadStack, item.m_lHeadStack, sizeof(int) * (m_nHeadStackBack + 1));
+		memcpy(m_lActions, item.m_lActions, sizeof(int) * (m_nActionBack + 1));
 
 		memcpy(m_lHeads, item.m_lHeads, len);
 		memcpy(m_lDepsL, item.m_lDepsL, len);
@@ -229,6 +237,8 @@ namespace arceager {
 		memcpy(m_lDepsNumR, item.m_lDepsNumR, len);
 		memcpy(m_lSibling, item.m_lSibling, len);
 		memcpy(m_lLabels, item.m_lLabels, len);
+		memcpy(m_lSuperTag, item.m_lSuperTag, len);
+		memcpy(m_lHeadScore, item.m_lHeadScore, sizeof(tscore) * (m_nNextWord + 1));
 
 		for (int index = 0; index <= m_nNextWord; ++index) {
 			m_lDepTagL[index] = item.m_lDepTagL[index];

@@ -401,6 +401,24 @@ CoNLL08DepGraph operator+(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2
 	return graph;
 }
 
+// remove arcs
+CoNLL08DepGraph operator-(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2) {
+	CoNLL08DepGraph graph;
+	for (int i = 0, n = g1.size(); i < n; ++i) {
+		graph.add(g1[i]);
+		graph.back().m_sSuperTag = g2[i].m_sSuperTag;
+		for (const auto & arc : g2[i].m_vecRightArcs) {
+			for (auto itr = graph.back().m_vecRightArcs.begin(); itr != graph.back().m_vecRightArcs.end(); ++itr) {
+				if (itr->first == arc.first) {
+					graph.back().m_vecRightArcs.erase(itr);
+					break;
+				}
+			}
+		}
+	}
+	return graph;
+}
+
 std::istream & operator>>(std::istream & is, CoNLL08DepGraph & graph) {
 	ttoken line, token;
 	std::vector<int> heads;
