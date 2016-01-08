@@ -89,6 +89,9 @@ public:
 
 	CoNLL08DepGraph treeOrderGraph();
 	bool checkArc(const CoNLL08DepGraph & g);
+	std::vector<std::vector<int>> stronglyComponet(bool connected = false);
+	std::vector<std::vector<std::vector<int>>> shortestPaths(bool connected = false);
+	std::string labelPath(std::vector<int>& path, std::string type);
 
 	friend bool operator==(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);
 	friend bool operator!=(const CoNLL08DepGraph & g1, const CoNLL08DepGraph & g2);

@@ -7,4 +7,5 @@ void testTag(int argc, char * argv[]);
 void reverseGraph(int argc, char * argv[]);
 void combineGraph(int argc, char * argv[]);
 void removeTree(int argc, char * argv[]);
-
+void stronglyComponents(int argc, char * argv[]);
+void graphPath(int argc, char * argv[]);

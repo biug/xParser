@@ -1,5 +1,5 @@
-#ifndef _GRAPH_TRANSITION_DEPPARSER_BASE_H
-#define _GRAPH_TRANSITION_DEPPARSER_BASE_H
+#ifndef _BIGRAPH_TRANSITION_DEPPARSER_BASE_H
+#define _BIGRAPH_TRANSITION_DEPPARSER_BASE_H
 
 #include <tuple>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "include/learning/perceptron/score.h"
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-class GraphDepParserBase : public DepParserBase {
+class BiGraphDepParserBase : public DepParserBase {
 public:
 	bool m_bChar;
 	bool m_bPath;
@@ -21,6 +21,9 @@ public:
 
 	LCA m_lcaAnalyzer;
 	RET_TYPE m_lPackedScore;
+	std::vector<std::vector<int>> m_vecDis, m_vecUnDis;
+	std::vector<std::vector<std::string>> m_vecLabelPath, m_vecPOSPath, m_vecFPOSPath;
+	std::vector<std::vector<std::string>> m_vecUnLabelPath, m_vecUnPOSPath, m_vecUnFPOSPath;
 
 	int m_nSentenceLength;
 	Sentence m_sSentence;
@@ -63,18 +66,18 @@ protected:
 	void work(DependencyGraph * retval, const DependencyGraph & correct);
 
 public:
-	GraphDepParserBase(int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
+	BiGraphDepParserBase(int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
 		DepParserBase(nState), m_bChar(bChar), m_bPath(bPath), m_bSuperTag(bSTag), m_nSentenceLength(0),
 		m_tWords(1), m_tPOSTags(1), m_tLabels(1), m_tSuperTags(1), m_pGenerator(nullptr), m_pGenerated(nullptr) { }
-	virtual ~GraphDepParserBase() {};
+	virtual ~BiGraphDepParserBase() {};
 
 	void goldCheck(DependencyGraph & correct);
-	void train(DependencyGraph & correct, const int & round);
-	void parse(DependencyGraph & sentence, DependencyGraph * retval);
+	void train(DependencyGraph & correct, DependencyGraph & revValidation, const int & round);
+	void parse(DependencyGraph & sentence, DependencyGraph & revParse, DependencyGraph * retval);
 };
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std::string & sInputFile) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std::string & sInputFile) {
 	if (sInputFile.empty()) {
 		return;
 	}
@@ -135,7 +138,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(const std::string & sInputFile) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(const std::string & sInputFile) {
 	loadTokens(sInputFile);
 	m_cActions.m_nSuperTagCount = m_bSuperTag ? m_tSuperTags.count() : 0;
 	m_cActions.loadConstant(m_tLabels);
@@ -148,7 +151,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(const s
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 	m_iStatesItem.clear();
 	const STATE_TYPE & output = m_pGenerator->bestUnsortItem();
 
@@ -176,12 +179,12 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
 	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels, m_bSuperTag ? m_tSuperTags : DSuperTag());
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(const STATE_TYPE & from, const STATE_TYPE & output, int action_index, const int & amount) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(const STATE_TYPE & from, const STATE_TYPE & output, int action_index, const int & amount) {
 	m_iStateItem = from;
 	std::pair<int, int> m_pairAmount(ACTION_START, amount);
 	while (m_iStateItem != output && action_index <= output.actionBack()) {
@@ -192,7 +195,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct) {
 
 	m_abItems[0].clear();
 	m_abItems[1].clear();
@@ -270,7 +273,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(DependencyGraph & correct) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(DependencyGraph & correct) {
 	m_iCorrect.clear();
 	correct.setTagsAndLabels(m_tLabels, m_tSuperTags, m_cActions.m_vecLabelMap);
 	if (!m_cActions.extractOracle(&m_iCorrect, correct)) {
@@ -290,7 +293,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(Dependency
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGraph & correct, const int & round) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGraph & correct, DependencyGraph & revValidation, const int & round) {
 	// initialize
 	int idx = 0;
 	m_sSentence.clear();
@@ -304,6 +307,29 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGrap
 	}
 	if (m_bPath) {
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
+	}
+	// initialize reverse graph
+	m_vecDis = std::vector<std::vector<int>>(m_nSentenceLength, std::vector<int>(m_nSentenceLength, -1));
+	m_vecUnDis = std::vector<std::vector<int>>(m_nSentenceLength, std::vector<int>(m_nSentenceLength, -1));
+	m_vecPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	auto paths = revValidation.shortestPaths(true);
+	auto unpaths = revValidation.shortestPaths(false);
+	for (int i = 0; i < m_nSentenceLength; ++i) {
+		for (int j = 0; j < m_nSentenceLength; ++j) {
+			m_vecDis[i][j] = paths[i][j].size();
+			m_vecUnDis[i][j] = paths[i][j].size();
+			m_vecPOSPath[i][j] = revValidation.labelPath(paths[i][j], "pos");
+			m_vecFPOSPath[i][j] = revValidation.labelPath(paths[i][j], "fpos");
+			m_vecLabelPath[i][j] = revValidation.labelPath(paths[i][j], "label");
+			m_vecUnPOSPath[i][j] = revValidation.labelPath(unpaths[i][j], "pos");
+			m_vecUnFPOSPath[i][j] = revValidation.labelPath(unpaths[i][j], "fpos");
+			m_vecUnLabelPath[i][j] = revValidation.labelPath(unpaths[i][j], "label");
+		}
 	}
 	// train
 	int lastTotalErrors = m_nTotalErrors;
@@ -319,7 +345,8 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGrap
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGraph & sentence, DependencyGraph * retval) {
+void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGraph & sentence, DependencyGraph & revParse, DependencyGraph * retval) {
+	// initialize
 	int idx = 0;
 	m_sSentence.clear();
 	m_dtSyntaxTree.clear();
@@ -333,6 +360,26 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGrap
 	if (m_bPath) {
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 	}
+	// initialize reverse graph
+	m_vecPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	m_vecUnLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
+	auto paths = revParse.shortestPaths(true);
+	auto unpaths = revParse.shortestPaths(false);
+	for (int i = 0; i < m_nSentenceLength; ++i) {
+		for (int j = 0; j < m_nSentenceLength; ++j) {
+			m_vecPOSPath[i][j] = revParse.labelPath(paths[i][j], "pos");
+			m_vecFPOSPath[i][j] = revParse.labelPath(paths[i][j], "fpos");
+			m_vecLabelPath[i][j] = revParse.labelPath(paths[i][j], "label");
+			m_vecUnPOSPath[i][j] = revParse.labelPath(unpaths[i][j], "pos");
+			m_vecUnFPOSPath[i][j] = revParse.labelPath(unpaths[i][j], "fpos");
+			m_vecUnLabelPath[i][j] = revParse.labelPath(unpaths[i][j], "label");
+		}
+	}
+	// parse
 	work(retval, sentence);
 	if (m_nTrainingRound > 1) {
 		nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound - 1));

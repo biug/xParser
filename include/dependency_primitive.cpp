@@ -1,3 +1,5 @@
+#include <stack>
+
 #include "dependency_primitive.h"
 
 CoNLL08DepNode::CoNLL08DepNode() : m_sWord(""), m_sPOSTag(""), m_sSuperTag(NULL_SUPERTAG), m_nTreeHead(-1), m_nSuperTagCode(0) {}
@@ -201,6 +203,197 @@ void CoNLL08DepGraph::setTagsAndLabels(const Token & labels, const Token & super
 					(label, std::pair<int, int>(LEFT_LABEL_ID(vecLabels[label]), RIGHT_LABEL_ID(vecLabels[label]))));
 		}
 	}
+}
+
+std::vector<std::vector<int>> CoNLL08DepGraph::stronglyComponet(bool connected) {
+	int n = m_vecNodes.size();
+	std::vector<std::vector<int>> components;
+	// tarjan
+	int nTime = 0;
+	std::stack<int> stack;
+	std::vector<bool> inStack(n, false);
+	std::vector<int> vecDFN(n, -1), vecLow(n, -1);
+	std::vector<std::vector<int>> vecChildren(n);
+	// init children
+	for (int i = 0; i < n; ++i) {
+		for (const auto & arc : m_vecNodes[i].m_vecRightArcs) {
+			if (connected) {
+				if (IS_LEFT_LABEL(arc.second)) {
+					vecChildren[arc.first].push_back(i);
+				}
+				else if (IS_RIGHT_LABEL(arc.second)) {
+					vecChildren[i].push_back(arc.first);
+				}
+				else if (IS_TWOWAY_LABEL(arc.second)) {
+					vecChildren[arc.first].push_back(i);
+					vecChildren[i].push_back(arc.first);
+				}
+			}
+			else {
+				vecChildren[arc.first].push_back(i);
+				vecChildren[i].push_back(arc.first);
+			}
+		}
+	}
+	// search
+	for (int i = 0; i < n; ++i) {
+		typedef std::pair<int, int> Info;
+		std::stack<Info> pseudoRecursion;
+		if (vecDFN[i] == -1) {
+			pseudoRecursion.push(Info(i, -1));
+			while (!pseudoRecursion.empty()) {
+				Info info = pseudoRecursion.top();
+				pseudoRecursion.pop();
+				int v = info.first;
+				std::vector<int>& vecLink = vecChildren[v];
+				// first visit
+				if (vecDFN[v] == -1) {
+					vecDFN[v] = vecLow[v] = nTime++;
+					stack.push(v);
+					inStack[v] = true;
+				}
+				// from last recursion
+				if (info.second != -1) {
+					vecLow[v] = std::min(vecLow[v], vecLow[vecLink[info.second]]);
+				}
+				bool nextRecursion = false;
+				for (int j = info.second + 1, max_j = vecLink.size(); j < max_j; ++j) {
+					int& link = vecLink[j];
+					if (vecDFN[link] == -1) {
+						pseudoRecursion.push(Info(v, j));
+						pseudoRecursion.push(Info(link, -1));
+						nextRecursion = true;
+						break;
+					}
+					else if (inStack[link]) {
+						vecLow[v] = std::min(vecLow[v], vecDFN[link]);
+					}
+				}
+				if (nextRecursion) {
+					continue;
+				}
+				else if (vecDFN[v] == vecLow[v]) {
+					std::vector<int> component;
+					do {
+						v = stack.top();
+						stack.pop();
+						inStack[v] = false;
+						component.push_back(v);
+					} while (vecDFN[v] != vecLow[v]);
+					components.push_back(component);
+				}
+			}
+		}
+	}
+	return components;
+}
+
+std::vector<std::vector<std::vector<int>>> CoNLL08DepGraph::shortestPaths(bool connected) {
+	int n = m_vecNodes.size();
+	std::vector<std::vector<std::vector<int>>> vecShortestPaths(n, std::vector<std::vector<int>>(n, std::vector<int>()));
+	auto components = connected ? std::vector<std::vector<int>>(1) : stronglyComponet();
+	if (components.size() == 1) {
+		components.front().clear();
+		for (int i = 0; i < n; ++i) {
+			components.front().push_back(i);
+		}
+	}
+	std::vector<std::vector<int>> vecChildren(n);
+	// init children
+	for (int i = 0; i < n; ++i) {
+		for (const auto & arc : m_vecNodes[i].m_vecRightArcs) {
+			if (connected) {
+				if (IS_LEFT_LABEL(arc.second)) {
+					vecChildren[arc.first].push_back(i);
+				}
+				else if (IS_RIGHT_LABEL(arc.second)) {
+					vecChildren[i].push_back(arc.first);
+				}
+				else if (IS_TWOWAY_LABEL(arc.second)) {
+					vecChildren[arc.first].push_back(i);
+					vecChildren[i].push_back(arc.first);
+				}
+			}
+			else {
+				vecChildren[arc.first].push_back(i);
+				vecChildren[i].push_back(arc.first);
+			}
+		}
+	}
+	for (const auto & component : components) {
+		for (const auto & v : component) {
+			std::vector<bool> vecVisit(n, false);
+			std::vector<int> candidates;
+			candidates.push_back(v);
+			vecShortestPaths[v][v] = std::vector<int>(1, v);
+			vecVisit[v] = true;
+			while (!candidates.empty()) {
+				std::vector<int> temp;
+				for (const auto & c : candidates) {
+					for (const auto & l : vecChildren[c]) {
+						if (!vecVisit[l]) {
+							temp.push_back(l);
+							auto path = vecShortestPaths[v][c];
+							path.push_back(l);
+							vecShortestPaths[v][l] = path;
+							vecVisit[l] = true;
+						}
+					}
+				}
+				candidates = temp;
+			}
+		}
+	}
+	return vecShortestPaths;
+}
+
+std::string CoNLL08DepGraph::labelPath(std::vector<int>& path, std::string type) {
+	if (path.empty()) return "#n";
+	if (path.size() == 1 && type == "label") return "#n";
+	std::string result;
+	if (type == "pos") result = m_vecNodes[path[0]].m_sPOSTag;
+	else if (type == "fpos") result = m_vecNodes[path[0]].m_sPOSTag.substr(0, 1);
+	for (int i = 1, n = path.size(); i < n; ++i) {
+		int l = path[i - 1], r = path[i];
+		if (l > r) std::swap(l, r);
+		std::string label;
+		for (const auto & arc : m_vecNodes[l].m_vecRightArcs) {
+			if (arc.first == r) {
+				label = arc.second;
+				break;
+			}
+		}
+		if (IS_LEFT_LABEL(label)) {
+			if (type == "label")
+				label = DECODE_LEFT_LABEL(label);
+			else if (type == "pos")
+				label = m_vecNodes[path[i]].m_sPOSTag;
+			else if (type == "fpos")
+				label = m_vecNodes[path[i]].m_sPOSTag.substr(0, 1);
+			if (path[i] == r) label = "r" + label;
+		}
+		else if (IS_RIGHT_LABEL(label)) {
+			if (type == "label")
+				label = DECODE_RIGHT_LABEL(label);
+			else if (type == "pos")
+				label = m_vecNodes[path[i]].m_sPOSTag;
+			else if (type == "fpos")
+				label = m_vecNodes[path[i]].m_sPOSTag.substr(0, 1);
+			if (path[i] == l) label = "r" + label;
+		}
+		else if (IS_TWOWAY_LABEL(label)) {
+			if (type == "label") {
+				if (path[i] == r) label = DECODE_TWOWAY_RIGHT_LABEL(label);
+				else label = DECODE_TWOWAY_LEFT_LABEL(label);
+			}
+			else if (type == "pos")
+				label = m_vecNodes[path[i]].m_sPOSTag;
+			else if (type == "fpos")
+				label = m_vecNodes[path[i]].m_sPOSTag.substr(0, 1);
+		}
+		result = result + "#" + label;
+	}
+	return result;
 }
 
 CoNLL08DepGraph CoNLL08DepGraph::treeOrderGraph() {

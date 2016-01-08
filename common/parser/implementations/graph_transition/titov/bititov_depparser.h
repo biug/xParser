@@ -1,20 +1,23 @@
-#ifndef _TITOV_DEPPARSER_H
-#define _TITOV_DEPPARSER_H
+#ifndef _BITITOV_DEPPARSER_H
+#define _BITITOV_DEPPARSER_H
 
 #include <vector>
 #include <unordered_set>
 
 #include "titov_macros.h"
-#include "common/parser/implementations/graph_transition/one_stack_weight.h"
-#include "common/parser/implementations/graph_transition/graph_transition_depparser.h"
+#include "common/parser/implementations/graph_transition/bi_one_stack_weight.h"
+#include "common/parser/implementations/graph_transition/bigraph_transition_depparser.h"
 
-namespace titov {
+namespace bititov {
 
 	using ::DependencyGraph;
-	using graph_transition::OneStackWeight;
+	using graph_transition::BiOneStackWeight;
+	using titov::StateItem;
+	using titov::ActionConstant;
+	using titov::Action;
 
 	template<class RET_TYPE>
-	class DepParser : public GraphDepParserBase<RET_TYPE, StateItem, ActionConstant> {
+	class DepParser : public BiGraphDepParserBase<RET_TYPE, StateItem, ActionConstant> {
 	protected:
 
 		void swap(const tscore & score);
@@ -40,9 +43,9 @@ namespace titov {
 	template<class RET_TYPE>
 	DepParser<RET_TYPE>::DepParser(const std::string & sInputFile, const std::string & sFeatureInput, const std::string & sFeatureOutput,
 			int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
-		GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>(nState, bChar, bPath, bSTag) {
+		BiGraphDepParserBase<RET_TYPE, StateItem, ActionConstant>(nState, bChar, bPath, bSTag) {
 
-		this->m_Weight = new OneStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
+		this->m_Weight = new BiOneStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
 				&this->m_tWords, &this->m_tPOSTags, &this->m_tLabels, &this->m_tSuperTags,
 				&this->m_mapSuperTagCandidatesOfWords, &this->m_mapSuperTagCandidatesOfPOSTags);
 
@@ -56,7 +59,7 @@ namespace titov {
 
 	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::swap(const tscore & score) {
-		this->m_abScores.insertItem(ScoredAction(SWAP, score + this->m_lPackedScore[SWAP]));
+		this->m_abScores.insertItem(ScoredAction(Action::SWAP, score + this->m_lPackedScore[Action::SWAP]));
 	}
 
 	template<class RET_TYPE>
@@ -68,7 +71,7 @@ namespace titov {
 
 	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::reduce(const tscore & score) {
-		this->m_abScores.insertItem(ScoredAction(REDUCE, score + this->m_lPackedScore[REDUCE]));
+		this->m_abScores.insertItem(ScoredAction(Action::REDUCE, score + this->m_lPackedScore[Action::REDUCE]));
 	}
 
 	template<class RET_TYPE>
@@ -125,7 +128,7 @@ namespace titov {
 	template<class RET_TYPE>
 	inline void DepParser<RET_TYPE>::getActionScores(const StateItem & item) {
 		memset(this->m_lPackedScore, 0, sizeof(this->m_lPackedScore));
-		getOrUpdateFeatureScores(item, ActionScoreIncrement(NO_ACTION, 0));
+		getOrUpdateFeatureScores(item, ActionScoreIncrement(Action::NO_ACTION, 0));
 	}
 
 	template<class RET_TYPE>
@@ -172,8 +175,8 @@ namespace titov {
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getOrUpdateFeatureScores(const StateItem & item, const ActionScoreIncrement & amount) {
-		OneStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (OneStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
-		cweight->getOrUpdateFeatureScores((GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>*)this, item, amount);
+		BiOneStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (BiOneStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
+		cweight->getOrUpdateFeatureScores((BiGraphDepParserBase<RET_TYPE, StateItem, ActionConstant>*)this, item, amount);
 	}
 }
 

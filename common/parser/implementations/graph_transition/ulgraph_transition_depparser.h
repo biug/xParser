@@ -1,5 +1,5 @@
-#ifndef _GRAPH_TRANSITION_DEPPARSER_BASE_H
-#define _GRAPH_TRANSITION_DEPPARSER_BASE_H
+#ifndef _ULGRAPH_TRANSITION_DEPPARSER_BASE_H
+#define _ULGRAPH_TRANSITION_DEPPARSER_BASE_H
 
 #include <tuple>
 #include <vector>
@@ -13,11 +13,10 @@
 #include "include/learning/perceptron/score.h"
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-class GraphDepParserBase : public DepParserBase {
+class ULGraphDepParserBase : public DepParserBase {
 public:
 	bool m_bChar;
 	bool m_bPath;
-	bool m_bSuperTag;
 
 	LCA m_lcaAnalyzer;
 	RET_TYPE m_lPackedScore;
@@ -41,18 +40,11 @@ protected:
 
 	DWord m_tWords;
 	DPOSTag m_tPOSTags;
-	DLabel m_tLabels;
-	DSuperTag m_tSuperTags;
 
 	ACTION_TYPE m_cActions;
-	SuperTagCandidates m_mapSuperTagCandidatesOfWords;
-	SuperTagCandidates m_mapSuperTagCandidatesOfPOSTags;
 
 	AgendaBeam<STATE_TYPE, AGENDA_SIZE> * m_pGenerator;
 	AgendaBeam<STATE_TYPE, AGENDA_SIZE> * m_pGenerated;
-
-	void loadTokens(const std::string & sInput = "");
-	void initConstant(const std::string & sInput = "");
 
 	void update();
 	void generate(DependencyGraph * retval, const DependencyGraph & correct);
@@ -63,10 +55,10 @@ protected:
 	void work(DependencyGraph * retval, const DependencyGraph & correct);
 
 public:
-	GraphDepParserBase(int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
-		DepParserBase(nState), m_bChar(bChar), m_bPath(bPath), m_bSuperTag(bSTag), m_nSentenceLength(0),
-		m_tWords(1), m_tPOSTags(1), m_tLabels(1), m_tSuperTags(1), m_pGenerator(nullptr), m_pGenerated(nullptr) { }
-	virtual ~GraphDepParserBase() {};
+	ULGraphDepParserBase(int nState, const bool & bChar, const bool & bPath) :
+		DepParserBase(nState), m_bChar(bChar), m_bPath(bPath), m_nSentenceLength(0),
+		m_tWords(1), m_tPOSTags(1), m_pGenerator(nullptr), m_pGenerated(nullptr) { }
+	virtual ~ULGraphDepParserBase() {};
 
 	void goldCheck(DependencyGraph & correct);
 	void train(DependencyGraph & correct, const int & round);
@@ -74,81 +66,7 @@ public:
 };
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::loadTokens(const std::string & sInputFile) {
-	if (sInputFile.empty()) {
-		return;
-	}
-	DependencyGraph graph;
-	std::ifstream input(sInputFile);
-
-	if (input) {
-		// initialize super tag candidates
-		std::unordered_map<int, std::unordered_set<int>> wordsCandidates;
-		std::unordered_map<int, std::unordered_set<int>> postagsCandidates;
-		// load candidates
-		for (const auto & word_vec : m_mapSuperTagCandidatesOfWords) {
-			auto & word_set = wordsCandidates[word_vec.first];
-			for (const auto & t : word_vec.second) {
-				word_set.insert(t);
-			}
-		}
-		for (const auto & postag_vec : m_mapSuperTagCandidatesOfPOSTags) {
-			auto & postag_set = wordsCandidates[postag_vec.first];
-			for (const auto & t : postag_vec.second) {
-				postag_set.insert(t);
-			}
-		}
-		while (input >> graph) {
-			for (const auto & node : graph) {
-				// add word
-				int w = m_tWords.lookup(node.m_sWord);
-				// add POS
-				int p = m_tPOSTags.lookup(node.m_sPOSTag);
-				// add super tag
-				int t = node.m_sSuperTag == NULL_SUPERTAG ? 0 : m_tSuperTags.lookup(node.m_sSuperTag);
-				// add label
-				for (const auto & arc : node.m_vecRightArcs) {
-					m_tLabels.lookup(arc.second);
-				}
-				if (t != 0) {
-					wordsCandidates[w].insert(t);
-					postagsCandidates[p].insert(t);
-				}
-			}
-			if (!input) {
-				break;
-			}
-		}
-		m_mapSuperTagCandidatesOfWords.clear();
-		for (const auto & word_set : wordsCandidates) {
-			for (const auto & t : word_set.second) {
-				m_mapSuperTagCandidatesOfWords[word_set.first].push_back(t);
-			}
-		}
-		m_mapSuperTagCandidatesOfPOSTags.clear();
-		for (const auto & postag_set : postagsCandidates) {
-			for (const auto & t : postag_set.second) {
-				m_mapSuperTagCandidatesOfPOSTags[postag_set.first].push_back(t);
-			}
-		}
-	}
-}
-
-template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::initConstant(const std::string & sInputFile) {
-	loadTokens(sInputFile);
-	m_cActions.m_nSuperTagCount = m_bSuperTag ? m_tSuperTags.count() : 0;
-	m_cActions.loadConstant(m_tLabels);
-
-	std::cout << "constant load complete." << std::endl;
-
-	std::cout << (m_bChar ? "use char" : "without char") << std::endl;
-	std::cout << (m_bPath ? "use path" : "without path") << std::endl;
-	std::cout << (m_bSuperTag ? "use supertag" : "without supertag") << std::endl;
-}
-
-template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 	m_iStatesItem.clear();
 	const STATE_TYPE & output = m_pGenerator->bestUnsortItem();
 
@@ -176,12 +94,12 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::update() {
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
-	m_abFinished.bestUnsortItem().generateGraph(correct, *retval, m_tLabels, m_bSuperTag ? m_tSuperTags : DSuperTag());
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::generate(DependencyGraph * retval, const DependencyGraph & correct) {
+	m_abFinished.bestUnsortItem().generateGraph(correct, *retval);
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(const STATE_TYPE & from, const STATE_TYPE & output, int action_index, const int & amount) {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(const STATE_TYPE & from, const STATE_TYPE & output, int action_index, const int & amount) {
 	m_iStateItem = from;
 	std::pair<int, int> m_pairAmount(ACTION_START, amount);
 	while (m_iStateItem != output && action_index <= output.actionBack()) {
@@ -192,7 +110,7 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::updateScoreForState(
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct) {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph * retval, const DependencyGraph & correct) {
 
 	m_abItems[0].clear();
 	m_abItems[1].clear();
@@ -204,6 +122,8 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 	if (m_nState == TRAIN && !m_cActions.extractOracle(&m_iCorrect, correct)) {
 		return;
 	}
+
+//	m_iCorrect.print();
 
 	// training only if it has an oracle
 	++m_nTrainingRound;
@@ -232,6 +152,15 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 			if (!bCorrect) {
 				m_iCorrect = clearItem;
 				update();
+
+				std::cout << std::endl << step << std::endl;
+				std::cout << "gold" << std::endl;
+				clearItem.print();
+				std::cout << "beam" << std::endl;
+				for (const auto & item : *m_pGenerator) {
+					item->print();
+				}
+
 				return;
 			}
 		}
@@ -244,6 +173,8 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 
 		m_cActions.doAction(&clearItem, m_iCorrect.action(step++));
 	}
+
+	std::cout << std::endl << step << std::endl;
 
 	if (m_nState == PARSE && m_pGenerator->size() > 0) {
 		while (true) {
@@ -270,33 +201,25 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::work(DependencyGraph
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(DependencyGraph & correct) {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(DependencyGraph & correct) {
 	m_iCorrect.clear();
-	correct.setTagsAndLabels(m_tLabels, m_tSuperTags, m_cActions.m_vecLabelMap);
 	if (!m_cActions.extractOracle(&m_iCorrect, correct)) {
 		++m_nTotalErrors;
-//		if (m_nTotalErrors > 1) {
-//			nBackSpace("error No. " + std::to_string(m_nTotalErrors - 1));
-//		}
-//		std::cout << "error No." << m_nTotalErrors << std::flush;
-		std::cout << "error" << std::endl;
-	}
-	else {
-		for (int i = 1; i <= m_iCorrect.actionBack(); ++i) {
-			m_cActions.print(m_iCorrect.action(i));
+		if (m_nTotalErrors > 1) {
+			nBackSpace("error No. " + std::to_string(m_nTotalErrors - 1));
 		}
-		std::cout << std::endl;
+		std::cout << "error No." << m_nTotalErrors << std::flush;
+//		std::cout << "error" << std::endl;
 	}
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGraph & correct, const int & round) {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGraph & correct, const int & round) {
 	// initialize
 	int idx = 0;
 	m_sSentence.clear();
 	m_dtSyntaxTree.clear();
 	m_nSentenceLength = correct.size();
-	correct.setTagsAndLabels(m_tLabels, m_tSuperTags, m_cActions.m_vecLabelMap);
 	for (const auto & node : correct) {
 		m_sSentence.push_back(POSTaggedWord(node.m_sWord, node.m_sPOSTag));
 		m_dtSyntaxTree.push_back(DependencyTreeNode(m_sSentence.back(), node.m_nTreeHead, "_"));
@@ -319,12 +242,11 @@ void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGrap
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>
-void GraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGraph & sentence, DependencyGraph * retval) {
+void ULGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGraph & sentence, DependencyGraph * retval) {
 	int idx = 0;
 	m_sSentence.clear();
 	m_dtSyntaxTree.clear();
 	m_nSentenceLength = sentence.size();
-	sentence.setTagsAndLabels(m_tLabels, m_tSuperTags, m_cActions.m_vecLabelMap);
 	for (const auto & token : sentence) {
 		m_sSentence.push_back(POSTaggedWord(token.m_sWord, token.m_sPOSTag));
 		m_dtSyntaxTree.push_back(DependencyTreeNode(m_sSentence.back(), token.m_nTreeHead, "_"));

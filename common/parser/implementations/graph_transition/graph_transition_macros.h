@@ -11,7 +11,7 @@
 #include "include/learning/perceptron/score_array.h"
 
 // agenda
-#define AGENDA_SIZE		64
+#define AGENDA_SIZE		16
 // action start
 #define ACTION_START	0
 

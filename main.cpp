@@ -43,5 +43,11 @@ int main(int argc, char * argv[]) {
 		else if (strcmp(argv[1], "remove") == 0) {
 			removeTree(argc, argv);
 		}
+		else if (strcmp(argv[1], "components") == 0) {
+			stronglyComponents(argc, argv);
+		}
+		else if (strcmp(argv[1], "graphpath") == 0) {
+			graphPath(argc, argv);
+		}
 	}
 }

@@ -129,15 +129,27 @@ namespace std_titov {
 			}
 		}
 		else if (action < A_END) {
-			std::cout << "arc with label " << action - A_FIRST + 1;
+			int label = action - A_FIRST + 1;
+			int labelId = m_vecLabelMap[label];
+			if (LEFT_LABEL_ID(labelId) == 0) {
+				std::cout << "arc(R" << RIGHT_LABEL_ID(labelId) << ")";
+			}
+			else if (RIGHT_LABEL_ID(labelId) == 0) {
+				std::cout << "arc(L" << LEFT_LABEL_ID(labelId) << ")";
+			}
+			else {
+				std::cout << "arc(L" << LEFT_LABEL_ID(labelId) << "R" << RIGHT_LABEL_ID(labelId) << ")";
+			}
 		}
 		else if (action < SH_END) {
-			std::cout << "shift with tag " << action - SH_FIRST;
+//			std::cout << "shift with tag " << action - SH_FIRST;
+			std::cout << "shift";
 		}
 		else {
 			std::cout << "wrong action";
 		}
-		std::cout << " (" << action << ")" << std::endl;
+		std::cout << " ";
+//		std::cout << " (" << action << ")" << std::endl;
 	}
 
 	void ActionConstant::print() const {

@@ -11,6 +11,8 @@
 #include "common/parser/implementations/graph_transition/nivre/nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/twostack_run.h"
+#include "common/parser/implementations/graph_transition/titov/bititov_run.h"
+#include "common/parser/implementations/graph_transition/titov/srtitov_run.h"
 #include "common/parser/implementations/graph_transition/nivre/std_nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/std_twostack_run.h"
@@ -41,7 +43,8 @@ void runner(int argc, char * argv[]) {
 	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
-			strcmp(argv[2], "twoway_sr") == 0 || strcmp(argv[2], "twoway_titov") == 0 || strcmp(argv[2], "arcsr") == 0) {
+			strcmp(argv[2], "twoway_sr") == 0 || strcmp(argv[2], "twoway_titov") == 0 || strcmp(argv[2], "arcsr") == 0 ||
+			strcmp(argv[2], "bititov") == 0 || strcmp(argv[2], "srtitov") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -84,6 +87,12 @@ void runner(int argc, char * argv[]) {
 		}
 		else if (strcmp(argv[2], "arcsr") == 0) {
 			run.reset(new arcsr::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "bititov") == 0) {
+			run.reset(new bititov::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "srtitov") == 0) {
+			run.reset(new srtitov::Run(bChar, bPath, bSuperTag));
 		}
 	}
 
@@ -306,5 +315,40 @@ void removeTree(int argc, char * argv[]) {
 	while (inputT >> tree) {
 		inputG >> graph;
 		output << graph - PseudoTreeFitting().pseudoTreeToGraph(tree);
+	}
+}
+
+void stronglyComponents(int argc, char * argv[]) {
+	bool bConnected = strcmp(argv[2], "connected") == 0;
+	std::ifstream inputG(argv[3]);
+	CoNLL08DepGraph graph;
+	while (inputG >> graph) {
+		auto components = graph.stronglyComponet(bConnected);
+		for (const auto & component : components) {
+			for (const auto & v : component) {
+				std::cout << v << ' ';
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		break;
+	}
+}
+
+void graphPath(int argc, char * argv[]) {
+	bool bConnected = strcmp(argv[2], "connected") == 0;
+	std::ifstream inputG(argv[3]);
+	CoNLL08DepGraph graph;
+	while (inputG >> graph) {
+		auto paths = graph.shortestPaths(bConnected);
+		int n = graph.size();
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < n; ++j) {
+				if (i != j && !paths[i][j].empty()) {
+					std::cout << i << ' ' << j << ':' << graph.labelPath(paths[i][j], "label") << std::endl;
+				}
+			}
+		}
+		break;
 	}
 }

@@ -5,13 +5,13 @@
 #include <unordered_set>
 
 #include "nivre_macros.h"
-#include "common/parser/implementations/graph_transition/sim_two_stack_weight.h"
+#include "common/parser/implementations/graph_transition/two_stack_weight.h"
 #include "common/parser/implementations/graph_transition/graph_transition_depparser.h"
 
 namespace nivre {
 
 	using ::DependencyGraph;
-	using graph_transition::SimTwoStackWeight;
+	using graph_transition::TwoStackWeight;
 
 	template<class RET_TYPE>
 	class DepParser : public GraphDepParserBase<RET_TYPE, StateItem, ActionConstant> {
@@ -42,7 +42,7 @@ namespace nivre {
 			int nState, const bool & bChar, const bool & bPath, const bool & bSTag) :
 		GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>(nState, bChar, bPath, bSTag) {
 
-		this->m_Weight = new SimTwoStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
+		this->m_Weight = new TwoStackWeight<RET_TYPE, StateItem, ActionConstant>(sFeatureInput, sFeatureOutput,
 				&this->m_tWords, &this->m_tPOSTags, &this->m_tLabels, &this->m_tSuperTags,
 				&this->m_mapSuperTagCandidatesOfWords, &this->m_mapSuperTagCandidatesOfPOSTags);
 
@@ -173,7 +173,7 @@ namespace nivre {
 
 	template<class RET_TYPE>
 	void DepParser<RET_TYPE>::getOrUpdateFeatureScores(const StateItem & item, const ActionScoreIncrement & amount) {
-		SimTwoStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (SimTwoStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
+		TwoStackWeight<RET_TYPE, StateItem, ActionConstant> * cweight = (TwoStackWeight<RET_TYPE, StateItem, ActionConstant>*)(this->m_Weight);
 		cweight->getOrUpdateFeatureScores((GraphDepParserBase<RET_TYPE, StateItem, ActionConstant>*)this, item, item.shiftBufferEmpty() ? -1 : item.shiftBufferTop(), amount);
 	}
 }
