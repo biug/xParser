@@ -2205,20 +2205,25 @@ namespace graph_transition {
 		else {
 			// st - n0 directed
 			std::vector<int>& path = parser->m_vecPath[st_index][n0_index];
+			int stnw = path.size() > 1 ? parser->m_lSentence[path[1]].first() : outIndex;
+			int stnp = path.size() > 1 ? parser->m_lSentence[path[1]].second() : outIndex;
+			int n0pw = path.size() > 1 ? parser->m_lSentence[path.size() - 2].first() : outIndex;
+			int n0pp = path.size() > 1 ? parser->m_lSentence[path.size() - 2].second() : outIndex;
+
 			m_mapSTN0GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSTN0GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSTN0GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[st_index][n0_index], scoreIndex, amount, trainingRound);
-			tri_features.refer(st_word, n0_postag, parser->m_lSentence[path[1]].first());
+			tri_features.refer(st_word, n0_postag, stnw);
 			m_mapSTwN0ptSTnw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st_word, n0_postag, parser->m_lSentence[path[path.size() - 2]].first());
+			tri_features.refer(st_word, n0_postag, n0pw);
 			m_mapSTwN0ptN0pw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st_word, n0_word, parser->m_lSentence[path[1]].second());
+			tri_features.refer(st_word, n0_word, stnp);
 			m_mapSTwN0wSTnpt.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st_word, n0_word, parser->m_lSentence[path[path.size() - 2]].second());
+			tri_features.refer(st_word, n0_word, n0pp);
 			m_mapSTwN0wN0ppt.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st_postag, n0_word, parser->m_lSentence[path[1]].first());
+			tri_features.refer(st_postag, n0_word, stnw);
 			m_mapSTptN0wSTnw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st_postag, n0_word, parser->m_lSentence[path[path.size() - 2]].first());
+			tri_features.refer(st_postag, n0_word, n0pw);
 			m_mapSTptN0wN0pw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
 		}
 
@@ -2240,20 +2245,25 @@ namespace graph_transition {
 		else {
 			// st2 - n0 directed
 			std::vector<int>& path = parser->m_vecPath[st2_index][n0_index];
+			int st2nw = path.size() > 1 ? parser->m_lSentence[path[1]].first() : outIndex;
+			int st2np = path.size() > 1 ? parser->m_lSentence[path[1]].second() : outIndex;
+			int n0pw = path.size() > 1 ? parser->m_lSentence[path.size() - 2].first() : outIndex;
+			int n0pp = path.size() > 1 ? parser->m_lSentence[path.size() - 2].second() : outIndex;
+
 			m_mapST2N0GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapST2N0GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapST2N0GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_word, n0_postag, parser->m_lSentence[path[1]].first());
+			tri_features.refer(st2_word, n0_postag, st2nw);
 			m_mapST2wN0ptST2nw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_word, n0_postag, parser->m_lSentence[path[path.size() - 2]].first());
+			tri_features.refer(st2_word, n0_postag, n0pw);
 			m_mapST2wN0ptN0pw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_word, n0_word, parser->m_lSentence[path[1]].second());
+			tri_features.refer(st2_word, n0_word, st2np);
 			m_mapST2wN0wST2npt.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_word, n0_word, parser->m_lSentence[path[path.size() - 2]].second());
+			tri_features.refer(st2_word, n0_word, n0pp);
 			m_mapST2wN0wN0ppt.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_postag, n0_word, parser->m_lSentence[path[1]].first());
+			tri_features.refer(st2_postag, n0_word, st2nw);
 			m_mapST2ptN0wST2nw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
-			tri_features.refer(st2_postag, n0_word, parser->m_lSentence[path[path.size() - 2]].first());
+			tri_features.refer(st2_postag, n0_word, n0pw);
 			m_mapST2ptN0wN0pw.getOrUpdateScore(packedScore, tri_features, scoreIndex, amount, trainingRound);
 		}
 
