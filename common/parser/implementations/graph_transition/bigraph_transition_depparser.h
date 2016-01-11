@@ -21,7 +21,7 @@ public:
 
 	LCA m_lcaAnalyzer;
 	RET_TYPE m_lPackedScore;
-	std::vector<std::vector<int>> m_vecDis, m_vecUnDis;
+	std::vector<std::vector<std::vector<int>>> m_vecPath;
 	std::vector<std::vector<std::string>> m_vecLabelPath, m_vecPOSPath, m_vecFPOSPath;
 	std::vector<std::vector<std::string>> m_vecUnLabelPath, m_vecUnPOSPath, m_vecUnFPOSPath;
 
@@ -309,15 +309,15 @@ void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::train(DependencyGr
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 	}
 	// initialize reverse graph
+	m_vecPath = revValidation.shortestPaths(false);
 	m_vecPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
 	m_vecFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
 	m_vecLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
-	auto paths = revValidation.shortestPaths(false);
 	for (int i = 0; i < m_nSentenceLength; ++i) {
 		for (int j = 0; j < m_nSentenceLength; ++j) {
-			m_vecPOSPath[i][j] = revValidation.labelPath(paths[i][j], "pos");
-			m_vecFPOSPath[i][j] = revValidation.labelPath(paths[i][j], "fpos");
-			m_vecLabelPath[i][j] = revValidation.labelPath(paths[i][j], "label");
+			m_vecPOSPath[i][j] = revValidation.labelPath(m_vecPath[i][j], "pos");
+			m_vecFPOSPath[i][j] = revValidation.labelPath(m_vecPath[i][j], "fpos");
+			m_vecLabelPath[i][j] = revValidation.labelPath(m_vecPath[i][j], "label");
 		}
 	}
 	// train
@@ -350,15 +350,15 @@ void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::parse(DependencyGr
 		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
 	}
 	// initialize reverse graph
+	m_vecPath = revParse.shortestPaths(false);
 	m_vecPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
 	m_vecFPOSPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
 	m_vecLabelPath = std::vector<std::vector<std::string>>(m_nSentenceLength, std::vector<std::string>(m_nSentenceLength));
-	auto paths = revParse.shortestPaths(false);
 	for (int i = 0; i < m_nSentenceLength; ++i) {
 		for (int j = 0; j < m_nSentenceLength; ++j) {
-			m_vecPOSPath[i][j] = revParse.labelPath(paths[i][j], "pos");
-			m_vecFPOSPath[i][j] = revParse.labelPath(paths[i][j], "fpos");
-			m_vecLabelPath[i][j] = revParse.labelPath(paths[i][j], "label");
+			m_vecPOSPath[i][j] = revParse.labelPath(m_vecPath[i][j], "pos");
+			m_vecFPOSPath[i][j] = revParse.labelPath(m_vecPath[i][j], "fpos");
+			m_vecLabelPath[i][j] = revParse.labelPath(m_vecPath[i][j], "label");
 		}
 	}
 	// parse

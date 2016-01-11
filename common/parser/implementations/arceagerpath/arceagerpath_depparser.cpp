@@ -38,6 +38,7 @@ namespace arceagerpath {
 		int lastTrainingRound = m_nTrainingRound;
 		m_nTrainingRound = round;
 		m_nSentenceLength = correct.size();
+		m_lcaAnalyzer = std::vector<LCA>(correct.front().second.size());
 		m_dtSyntaxTree = std::vector<DependencyTree>(correct.front().second.size());
 		for (const auto & node : correct) {
 			for (int i = 0; i < node.second.size(); ++i) {
@@ -63,6 +64,7 @@ namespace arceagerpath {
 		int idx = 0;
 		++m_nTrainingRound;
 		m_nSentenceLength = sentence.size();
+		m_lcaAnalyzer = std::vector<LCA>(sentence.front().second.size());
 		m_dtSyntaxTree = std::vector<DependencyTree>(sentence.front().second.size());
 		for (const auto & token : sentence) {
 			for (int i = 0; i < token.second.size(); ++i) {
