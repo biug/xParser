@@ -93,7 +93,7 @@ typedef HexaGram<gtype> WordPOSTagPOSTagPOSTagPOSTagInt;
 
 typedef std::tuple<ttoken, ttoken> POSTaggedWord;
 typedef std::tuple<POSTaggedWord, int, ttoken> DependencyTreeNode;
-typedef std::pair<DependencyTreeNode, int> DependencyPathTreeNode;
+typedef std::pair<DependencyTreeNode, std::vector<int>> DependencyPathTreeNode;
 typedef std::pair<DependencyTreeNode, ttoken> DependencyTaggedTreeNode;
 
 typedef std::vector<POSTaggedWord> Sentence;

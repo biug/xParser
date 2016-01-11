@@ -206,7 +206,7 @@ DependencyPathTree PseudoTreeFitting::extractPseudoScoreTree(const CoNLL08DepGra
 
 	// get tree
 	for (const auto & node : graph) {
-		tree.push_back(DependencyPathTreeNode(DependencyTreeNode(POSTaggedWord(node.m_sWord, node.m_sPOSTag), -1, ""), 0));
+		tree.push_back(DependencyPathTreeNode(DependencyTreeNode(POSTaggedWord(node.m_sWord, node.m_sPOSTag), -1, ""), {0}));
 	}
 	for (const auto & arc : vecArcs) {
 		TREENODE_HEAD(tree[std::get<1>(arc)].first) = std::get<0>(arc);
@@ -215,7 +215,7 @@ DependencyPathTree PseudoTreeFitting::extractPseudoScoreTree(const CoNLL08DepGra
 			label = DECODE_FORE_LABEL(label);
 		}
 		TREENODE_LABEL(tree[std::get<1>(arc)].first) = label;
-		tree[std::get<1>(arc)].second = std::get<2>(arc);
+		tree[std::get<1>(arc)].second.front() = std::get<2>(arc);
 	}
 	return tree;
 }
@@ -227,7 +227,7 @@ DependencyPathTree PseudoTreeFitting::extractPseudoScoreTree(const CoNLL08DepGra
 
 	// get tree
 	for (const auto & node : graph) {
-		tree.push_back(DependencyPathTreeNode(DependencyTreeNode(POSTaggedWord(node.m_sWord, node.m_sPOSTag), -1, ""), 0));
+		tree.push_back(DependencyPathTreeNode(DependencyTreeNode(POSTaggedWord(node.m_sWord, node.m_sPOSTag), -1, ""), {0}));
 	}
 	for (const auto & arc : vecArcs) {
 		TREENODE_HEAD(tree[std::get<1>(arc)].first) = std::get<0>(arc);
@@ -236,7 +236,7 @@ DependencyPathTree PseudoTreeFitting::extractPseudoScoreTree(const CoNLL08DepGra
 			label = DECODE_FORE_LABEL(label);
 		}
 		TREENODE_LABEL(tree[std::get<1>(arc)].first) = label;
-		tree[std::get<1>(arc)].second = std::get<2>(arc);
+		tree[std::get<1>(arc)].second.front() = std::get<2>(arc);
 	}
 	return tree;
 }

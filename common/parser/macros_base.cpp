@@ -130,7 +130,11 @@ std::istream & operator>>(std::istream & input, DependencyPathTree & tree) {
 		}
 		DependencyPathTreeNode node;
 		std::istringstream iss(line);
-		iss >> TREENODE_WORD(node.first) >> TREENODE_POSTAG(node.first) >> TREENODE_HEAD(node.first) >> TREENODE_LABEL(node.first) >> node.second;
+		iss >> TREENODE_WORD(node.first) >> TREENODE_POSTAG(node.first) >> TREENODE_HEAD(node.first) >> TREENODE_LABEL(node.first);
+		int head;
+		while (iss >> head) {
+			node.second.push_back(head);
+		}
 		tree.push_back(node);
 	}
 	return input;
@@ -177,7 +181,11 @@ std::ostream & operator<<(std::ostream & output, const DependencyTree & tree) {
 
 std::ostream & operator<<(std::ostream & output, const DependencyPathTree & tree) {
 	for (auto itr = tree.begin(); itr != tree.end(); ++itr) {
-		output << TREENODE_WORD(itr->first) << "\t" << TREENODE_POSTAG(itr->first) << "\t" << TREENODE_HEAD(itr->first) << "\t" << TREENODE_LABEL(itr->first) << "\t" << itr->second << std::endl;
+		output << TREENODE_WORD(itr->first) << "\t" << TREENODE_POSTAG(itr->first) << "\t" << TREENODE_HEAD(itr->first) << "\t" << TREENODE_LABEL(itr->first);
+		for (const auto & head : itr->second) {
+			output << "\t" << head;
+		}
+		output << std::endl;
 	}
 	output << std::endl;
 	return output;

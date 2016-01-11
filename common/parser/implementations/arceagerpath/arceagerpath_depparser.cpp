@@ -33,16 +33,21 @@ namespace arceagerpath {
 	void DepParser::train(const DependencyPathTree & correct, const int & round) {
 		// initialize
 		int idx = 0;
+		DependencyTree synTree;
 		int lastTotalErrors = m_nTotalErrors;
 		int lastTrainingRound = m_nTrainingRound;
 		m_nTrainingRound = round;
-		m_dtSyntaxTree.clear();
 		m_nSentenceLength = correct.size();
+		m_dtSyntaxTree = std::vector<DependencyTree>(correct.front().second.size());
 		for (const auto & node : correct) {
-			m_dtSyntaxTree.push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(node.first), node.second, "_"));
+			for (int i = 0; i < node.second.size(); ++i) {
+				m_dtSyntaxTree[i].push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(node.first), node.second[i], "_"));
+			}
 			m_lSentence[idx++].refer(TWord::code(TREENODE_WORD(node.first)), TPOSTag::code(TREENODE_POSTAG(node.first)));
 		}
-		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
+		for (int i = 0; i < correct.front().second.size(); ++i) {
+			m_lcaAnalyzer[i].loadPath(m_dtSyntaxTree[i]);
+		}
 		// train
 		work(nullptr, correct);
 		if (lastTrainingRound > 0) {
@@ -57,13 +62,17 @@ namespace arceagerpath {
 	void DepParser::parse(const DependencyPathTree & sentence, DependencyTree * retval) {
 		int idx = 0;
 		++m_nTrainingRound;
-		m_dtSyntaxTree.clear();
 		m_nSentenceLength = sentence.size();
+		m_dtSyntaxTree = std::vector<DependencyTree>(sentence.front().second.size());
 		for (const auto & token : sentence) {
-			m_dtSyntaxTree.push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token.first), token.second, "_"));
+			for (int i = 0; i < token.second.size(); ++i) {
+				m_dtSyntaxTree[i].push_back(DependencyTreeNode(TREENODE_POSTAGGEDWORD(token.first), token.second[i], "_"));
+			}
 			m_lSentence[idx++].refer(TWord::code(TREENODE_WORD(token.first)), TPOSTag::code(TREENODE_POSTAG(token.first)));
 		}
-		m_lcaAnalyzer.loadPath(m_dtSyntaxTree);
+		for (int i = 0; i < sentence.front().second.size(); ++i) {
+			m_lcaAnalyzer[i].loadPath(m_dtSyntaxTree[i]);
+		}
 		work(retval, sentence);
 		if (m_nTrainingRound > 1) {
 			nBackSpace("parsing sentence " + std::to_string(m_nTrainingRound - 1));
@@ -493,29 +502,31 @@ namespace arceagerpath {
 			cweight->m_mapN0tlp.getOrUpdateScore(m_mapPackedScore, tag_tagset, m_nScoreIndex, amount, m_nTrainingRound);
 		}
 
-		const WordPOSTag & st_syn_head_word_postag = (st_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[st_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[st_index])]);
-		const WordPOSTag & n0_syn_head_word_postag = (n0_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[n0_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[n0_index])]);
+		for (int i = 0; i < m_dtSyntaxTree.size(); ++i) {
+			const WordPOSTag & st_syn_head_word_postag = (st_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[i][st_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[i][st_index])]);
+			const WordPOSTag & n0_syn_head_word_postag = (n0_index == -1 || TREENODE_HEAD(m_dtSyntaxTree[i][n0_index]) == -1 ? empty_taggedword : m_lSentence[TREENODE_HEAD(m_dtSyntaxTree[i][n0_index])]);
 
-		if (st_index == -1 || n0_index == -1) {
-			cweight->m_mapSTPOSPath.getOrUpdateScore(m_mapPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_mapSTFPOSPath.getOrUpdateScore(m_mapPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
+			if (st_index == -1 || n0_index == -1) {
+				cweight->m_mapSTPOSPath.getOrUpdateScore(m_mapPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
+				cweight->m_mapSTFPOSPath.getOrUpdateScore(m_mapPackedScore, "n#", m_nScoreIndex, amount, m_nTrainingRound);
+			}
+			else {
+				cweight->m_mapSTPOSPath.getOrUpdateScore(m_mapPackedScore, m_lcaAnalyzer[i].POSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
+				cweight->m_mapSTFPOSPath.getOrUpdateScore(m_mapPackedScore, m_lcaAnalyzer[i].FPOSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
+			}
+			word_word_tag.refer(st_word, st_syn_head_word_postag.first(), n0_tag);
+			cweight->m_mapSTwN0ptSTsynhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_word_tag.refer(st_word, n0_word, st_syn_head_word_postag.second());
+			cweight->m_mapSTwN0wSTsynhpt.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_word_tag.refer(n0_word, st_syn_head_word_postag.first(), st_tag);
+			cweight->m_mapSTptN0wSTsynhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_word_tag.refer(st_word, n0_syn_head_word_postag.first(), n0_tag);
+			cweight->m_mapSTwN0ptN0synhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_word_tag.refer(st_word, n0_word, n0_syn_head_word_postag.second());
+			cweight->m_mapSTwN0wN0synhpt.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
+			word_word_tag.refer(n0_word, n0_syn_head_word_postag.first(), st_tag);
+			cweight->m_mapSTptN0wN0synhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
 		}
-		else {
-			cweight->m_mapSTPOSPath.getOrUpdateScore(m_mapPackedScore, m_lcaAnalyzer.POSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
-			cweight->m_mapSTFPOSPath.getOrUpdateScore(m_mapPackedScore, m_lcaAnalyzer.FPOSPath[st_index][n0_index], m_nScoreIndex, amount, m_nTrainingRound);
-		}
-		word_word_tag.refer(st_word, st_syn_head_word_postag.first(), n0_tag);
-		cweight->m_mapSTwN0ptSTsynhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
-		word_word_tag.refer(st_word, n0_word, st_syn_head_word_postag.second());
-		cweight->m_mapSTwN0wSTsynhpt.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
-		word_word_tag.refer(n0_word, st_syn_head_word_postag.first(), st_tag);
-		cweight->m_mapSTptN0wSTsynhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
-		word_word_tag.refer(st_word, n0_syn_head_word_postag.first(), n0_tag);
-		cweight->m_mapSTwN0ptN0synhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
-		word_word_tag.refer(st_word, n0_word, n0_syn_head_word_postag.second());
-		cweight->m_mapSTwN0wN0synhpt.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
-		word_word_tag.refer(n0_word, n0_syn_head_word_postag.first(), st_tag);
-		cweight->m_mapSTptN0wN0synhw.getOrUpdateScore(m_mapPackedScore, word_word_tag, m_nScoreIndex, amount, m_nTrainingRound);
 	}
 
 }

@@ -51,8 +51,8 @@ namespace arceagerpath {
 		Int set_of_2_tags;
 		Int set_of_3_tags;
 
-		LCA m_lcaAnalyzer;
-		DependencyTree m_dtSyntaxTree;
+		std::vector<LCA> m_lcaAnalyzer;
+		std::vector<DependencyTree> m_dtSyntaxTree;
 
 		PackedScoreType m_mapPackedScore;
 
