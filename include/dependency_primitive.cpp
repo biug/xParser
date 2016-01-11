@@ -348,8 +348,8 @@ std::vector<std::vector<std::vector<int>>> CoNLL08DepGraph::shortestPaths(bool c
 }
 
 std::string CoNLL08DepGraph::labelPath(std::vector<int>& path, std::string type) {
-	if (path.empty()) return "#n";
-	if (path.size() == 1 && type == "label") return "#n";
+	if (path.empty() || path.size() == 1) return "#n";
+	if (path.size() > 4) return "#l";
 	std::string result;
 	if (type == "pos") result = m_vecNodes[path[0]].m_sPOSTag;
 	else if (type == "fpos") result = m_vecNodes[path[0]].m_sPOSTag.substr(0, 1);

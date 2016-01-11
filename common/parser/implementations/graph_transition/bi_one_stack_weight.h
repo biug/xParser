@@ -298,31 +298,19 @@ namespace graph_transition {
 
 		// graph path feature
 		// st - n0 directed
-		IntMap<RET_TYPE> m_mapSTN0GDis;
 		StringMap<RET_TYPE> m_mapSTN0GPOSPath;
 		StringMap<RET_TYPE> m_mapSTN0GFPOSPath;
 		StringMap<RET_TYPE> m_mapSTN0GLabelPath;
-		StringMap<RET_TYPE> m_mapN0STGPOSPath;
-		StringMap<RET_TYPE> m_mapN0STGFPOSPath;
-		StringMap<RET_TYPE> m_mapN0STGLabelPath;
+//		StringMap<RET_TYPE> m_mapN0STGPOSPath;
+//		StringMap<RET_TYPE> m_mapN0STGFPOSPath;
+//		StringMap<RET_TYPE> m_mapN0STGLabelPath;
 		// st2 - n0 directed
-		IntMap<RET_TYPE> m_mapST2N0GDis;
 		StringMap<RET_TYPE> m_mapST2N0GPOSPath;
 		StringMap<RET_TYPE> m_mapST2N0GFPOSPath;
 		StringMap<RET_TYPE> m_mapST2N0GLabelPath;
-		StringMap<RET_TYPE> m_mapN0ST2GPOSPath;
-		StringMap<RET_TYPE> m_mapN0ST2GFPOSPath;
-		StringMap<RET_TYPE> m_mapN0ST2GLabelPath;
-		// st - n0 undirected
-		IntMap<RET_TYPE> m_mapSTN0GUnDis;
-		StringMap<RET_TYPE> m_mapSTN0GUnPOSPath;
-		StringMap<RET_TYPE> m_mapSTN0GUnFPOSPath;
-		StringMap<RET_TYPE> m_mapSTN0GUnLabelPath;
-		// st2 - n0 undirected
-		IntMap<RET_TYPE> m_mapST2N0GUnDis;
-		StringMap<RET_TYPE> m_mapST2N0GUnPOSPath;
-		StringMap<RET_TYPE> m_mapST2N0GUnFPOSPath;
-		StringMap<RET_TYPE> m_mapST2N0GUnLabelPath;
+//		StringMap<RET_TYPE> m_mapN0ST2GPOSPath;
+//		StringMap<RET_TYPE> m_mapN0ST2GFPOSPath;
+//		StringMap<RET_TYPE> m_mapN0ST2GLabelPath;
 
 		// supertag feature
 		SuperTagMap<RET_TYPE> m_mapSTst;
@@ -629,31 +617,19 @@ namespace graph_transition {
 		m_mapST2ptN0wN0synhw("m_mapST2ptN0wN0synhw"),
 
 		// st - n0 directed
-		m_mapSTN0GDis("m_mapSTN0GDis"),
 		m_mapSTN0GPOSPath("m_mapSTN0GPOSPath"),
 		m_mapSTN0GFPOSPath("m_mapSTN0GFPOSPath"),
 		m_mapSTN0GLabelPath("m_mapSTN0GLabelPath"),
-		m_mapN0STGPOSPath("m_mapN0STGPOSPath"),
-		m_mapN0STGFPOSPath("m_mapN0STGFPOSPath"),
-		m_mapN0STGLabelPath("m_mapN0STGLabelPath"),
+//		m_mapN0STGPOSPath("m_mapN0STGPOSPath"),
+//		m_mapN0STGFPOSPath("m_mapN0STGFPOSPath"),
+//		m_mapN0STGLabelPath("m_mapN0STGLabelPath"),
 		// st2 - n0 directed
-		m_mapST2N0GDis("m_mapST2N0GDis"),
 		m_mapST2N0GPOSPath("m_mapST2N0GPOSPath"),
 		m_mapST2N0GFPOSPath("m_mapST2N0GFPOSPath"),
 		m_mapST2N0GLabelPath("m_mapST2N0GLabelPath"),
-		m_mapN0ST2GPOSPath("m_mapN0ST2GPOSPath"),
-		m_mapN0ST2GFPOSPath("m_mapN0ST2GFPOSPath"),
-		m_mapN0ST2GLabelPath("m_mapN0ST2GLabelPath"),
-		// st - n0 undirected
-		m_mapSTN0GUnDis("m_mapSTN0GUnDis"),
-		m_mapSTN0GUnPOSPath("m_mapSTN0GUnPOSPath"),
-		m_mapSTN0GUnFPOSPath("m_mapSTN0GUnFPOSPath"),
-		m_mapSTN0GUnLabelPath("m_mapSTN0GUnLabelPath"),
-		// st2 - n0 undirected
-		m_mapST2N0GUnDis("m_mapST2N0GUnDis"),
-		m_mapST2N0GUnPOSPath("m_mapST2N0GUnPOSPath"),
-		m_mapST2N0GUnFPOSPath("m_mapST2N0GUnFPOSPath"),
-		m_mapST2N0GUnLabelPath("m_mapST2N0GUnLabelPath"),
+//		m_mapN0ST2GPOSPath("m_mapN0ST2GPOSPath"),
+//		m_mapN0ST2GFPOSPath("m_mapN0ST2GFPOSPath"),
+//		m_mapN0ST2GLabelPath("m_mapN0ST2GLabelPath"),
 
 		// supertag feature
 		m_mapSTst("m_mapSTst"),
@@ -974,31 +950,19 @@ namespace graph_transition {
 		input >> m_mapST2ptN0wN0synhw;
 
 		// st - n0 directed
-		input >> m_mapSTN0GDis;
 		input >> m_mapSTN0GPOSPath;
 		input >> m_mapSTN0GFPOSPath;
 		input >> m_mapSTN0GLabelPath;
-		input >> m_mapN0STGPOSPath;
-		input >> m_mapN0STGFPOSPath;
-		input >> m_mapN0STGLabelPath;
+//		input >> m_mapN0STGPOSPath;
+//		input >> m_mapN0STGFPOSPath;
+//		input >> m_mapN0STGLabelPath;
 		// st2 - n0 directed
-		input >> m_mapST2N0GDis;
 		input >> m_mapST2N0GPOSPath;
 		input >> m_mapST2N0GFPOSPath;
 		input >> m_mapST2N0GLabelPath;
-		input >> m_mapN0ST2GPOSPath;
-		input >> m_mapN0ST2GFPOSPath;
-		input >> m_mapN0ST2GLabelPath;
-		// st - n0 undirected
-		input >> m_mapSTN0GUnDis;
-		input >> m_mapSTN0GUnPOSPath;
-		input >> m_mapSTN0GUnFPOSPath;
-		input >> m_mapSTN0GUnLabelPath;
-		// st2 - n0 undirected
-		input >> m_mapST2N0GUnDis;
-		input >> m_mapST2N0GUnPOSPath;
-		input >> m_mapST2N0GUnFPOSPath;
-		input >> m_mapST2N0GUnLabelPath;
+//		input >> m_mapN0ST2GPOSPath;
+//		input >> m_mapN0ST2GFPOSPath;
+//		input >> m_mapN0ST2GLabelPath;
 
 		// supertag feature
 		input >> m_mapSTst;
@@ -1307,31 +1271,19 @@ namespace graph_transition {
 		output << m_mapST2ptN0wN0synhw;
 
 		// st - n0 directed
-		output << m_mapSTN0GDis;
 		output << m_mapSTN0GPOSPath;
 		output << m_mapSTN0GFPOSPath;
 		output << m_mapSTN0GLabelPath;
-		output << m_mapN0STGPOSPath;
-		output << m_mapN0STGFPOSPath;
-		output << m_mapN0STGLabelPath;
+//		output << m_mapN0STGPOSPath;
+//		output << m_mapN0STGFPOSPath;
+//		output << m_mapN0STGLabelPath;
 		// st2 - n0 directed
-		output << m_mapST2N0GDis;
 		output << m_mapST2N0GPOSPath;
 		output << m_mapST2N0GFPOSPath;
 		output << m_mapST2N0GLabelPath;
-		output << m_mapN0ST2GPOSPath;
-		output << m_mapN0ST2GFPOSPath;
-		output << m_mapN0ST2GLabelPath;
-		// st - n0 undirected
-		output << m_mapSTN0GUnDis;
-		output << m_mapSTN0GUnPOSPath;
-		output << m_mapSTN0GUnFPOSPath;
-		output << m_mapSTN0GUnLabelPath;
-		// st2 - n0 undirected
-		output << m_mapST2N0GUnDis;
-		output << m_mapST2N0GUnPOSPath;
-		output << m_mapST2N0GUnFPOSPath;
-		output << m_mapST2N0GUnLabelPath;
+//		output << m_mapN0ST2GPOSPath;
+//		output << m_mapN0ST2GFPOSPath;
+//		output << m_mapN0ST2GLabelPath;
 
 		// supertag feature
 		output << m_mapSTst;
@@ -1620,31 +1572,19 @@ namespace graph_transition {
 		m_mapST2ptN0wN0synhw.computeAverage(round);
 
 		// st - n0 directed
-		m_mapSTN0GDis.computeAverage(round);
 		m_mapSTN0GPOSPath.computeAverage(round);
 		m_mapSTN0GFPOSPath.computeAverage(round);
 		m_mapSTN0GLabelPath.computeAverage(round);
-		m_mapN0STGPOSPath.computeAverage(round);
-		m_mapN0STGFPOSPath.computeAverage(round);
-		m_mapN0STGLabelPath.computeAverage(round);
+//		m_mapN0STGPOSPath.computeAverage(round);
+//		m_mapN0STGFPOSPath.computeAverage(round);
+//		m_mapN0STGLabelPath.computeAverage(round);
 		// st2 - n0 directed
-		m_mapST2N0GDis.computeAverage(round);
 		m_mapST2N0GPOSPath.computeAverage(round);
 		m_mapST2N0GFPOSPath.computeAverage(round);
 		m_mapST2N0GLabelPath.computeAverage(round);
-		m_mapN0ST2GPOSPath.computeAverage(round);
-		m_mapN0ST2GFPOSPath.computeAverage(round);
-		m_mapN0ST2GLabelPath.computeAverage(round);
-		// st - n0 undirected
-		m_mapSTN0GUnDis.computeAverage(round);
-		m_mapSTN0GUnPOSPath.computeAverage(round);
-		m_mapSTN0GUnFPOSPath.computeAverage(round);
-		m_mapSTN0GUnLabelPath.computeAverage(round);
-		// st2 - n0 undirected
-		m_mapST2N0GUnDis.computeAverage(round);
-		m_mapST2N0GUnPOSPath.computeAverage(round);
-		m_mapST2N0GUnFPOSPath.computeAverage(round);
-		m_mapST2N0GUnLabelPath.computeAverage(round);
+//		m_mapN0ST2GPOSPath.computeAverage(round);
+//		m_mapN0ST2GFPOSPath.computeAverage(round);
+//		m_mapN0ST2GLabelPath.computeAverage(round);
 
 		// supertag feature
 		m_mapSTst.computeAverage(round);
@@ -2219,63 +2159,39 @@ namespace graph_transition {
 		// graph path
 		if (st_index == -1 || n0_index == -1) {
 			// st - n0 directed
-			m_mapSTN0GDis.getOrUpdateScore(packedScore, -1, scoreIndex, amount, trainingRound);
 			m_mapSTN0GPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 			m_mapSTN0GFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 			m_mapSTN0GLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0STGPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0STGFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0STGLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			// st - n0 undirected
-			m_mapSTN0GUnDis.getOrUpdateScore(packedScore, -1, scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0STGPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0STGFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0STGLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 		}
 		else {
 			// st - n0 directed
-			m_mapSTN0GDis.getOrUpdateScore(packedScore, parser->m_vecDis[st_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSTN0GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSTN0GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSTN0GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[st_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapN0STGPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[n0_index][st_index], scoreIndex, amount, trainingRound);
-			m_mapN0STGFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[n0_index][st_index], scoreIndex, amount, trainingRound);
-			m_mapN0STGLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[n0_index][st_index], scoreIndex, amount, trainingRound);
-			// st - n0 undirected
-			m_mapSTN0GUnDis.getOrUpdateScore(packedScore, parser->m_vecUnDis[st_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnPOSPath.getOrUpdateScore(packedScore, parser->m_vecUnPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnFPOSPath.getOrUpdateScore(packedScore, parser->m_vecUnFPOSPath[st_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapSTN0GUnLabelPath.getOrUpdateScore(packedScore, parser->m_vecUnLabelPath[st_index][n0_index], scoreIndex, amount, trainingRound);
+//			m_mapN0STGPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[n0_index][st_index], scoreIndex, amount, trainingRound);
+//			m_mapN0STGFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[n0_index][st_index], scoreIndex, amount, trainingRound);
+//			m_mapN0STGLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[n0_index][st_index], scoreIndex, amount, trainingRound);
 		}
 		if (st2_index == -1 || n0_index == -1) {
 			// st2 - n0 directed
-			m_mapST2N0GDis.getOrUpdateScore(packedScore, -1, scoreIndex, amount, trainingRound);
 			m_mapST2N0GPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 			m_mapST2N0GFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 			m_mapST2N0GLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0ST2GPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0ST2GFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapN0ST2GLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			// st2 - n0 undirected
-			m_mapST2N0GUnDis.getOrUpdateScore(packedScore, -1, scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GFPOSPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GLabelPath.getOrUpdateScore(packedScore, "#n", scoreIndex, amount, trainingRound);
 		}
 		else {
 			// st2 - n0 directed
-			m_mapST2N0GDis.getOrUpdateScore(packedScore, parser->m_vecDis[st2_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapST2N0GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapST2N0GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapST2N0GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapN0ST2GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
-			m_mapN0ST2GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
-			m_mapN0ST2GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
-			// st - n0 undirected
-			m_mapST2N0GUnDis.getOrUpdateScore(packedScore, parser->m_vecUnDis[st2_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnPOSPath.getOrUpdateScore(packedScore, parser->m_vecUnPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnFPOSPath.getOrUpdateScore(packedScore, parser->m_vecUnFPOSPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
-			m_mapST2N0GUnLabelPath.getOrUpdateScore(packedScore, parser->m_vecUnLabelPath[st2_index][n0_index], scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
+//			m_mapN0ST2GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[n0_index][st2_index], scoreIndex, amount, trainingRound);
 		}
 
 		if (parser->m_bChar) {
