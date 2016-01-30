@@ -13,6 +13,7 @@
 #include "common/parser/implementations/graph_transition/twostack/twostack_run.h"
 #include "common/parser/implementations/graph_transition/titov/bititov_run.h"
 #include "common/parser/implementations/graph_transition/titov/srtitov_run.h"
+#include "common/parser/implementations/graph_transition/twostack/bitwostack_run.h"
 #include "common/parser/implementations/graph_transition/nivre/std_nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/std_twostack_run.h"
@@ -44,7 +45,7 @@ void runner(int argc, char * argv[]) {
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
 			strcmp(argv[2], "twoway_sr") == 0 || strcmp(argv[2], "twoway_titov") == 0 || strcmp(argv[2], "arcsr") == 0 ||
-			strcmp(argv[2], "bititov") == 0 || strcmp(argv[2], "srtitov") == 0) {
+			strcmp(argv[2], "bititov") == 0 || strcmp(argv[2], "srtitov") == 0 || strcmp(argv[2], "bitwostack") == 0) {
 		bool bChar = false;
 		bool bPath = false;
 		bool bSuperTag = false;
@@ -93,6 +94,9 @@ void runner(int argc, char * argv[]) {
 		}
 		else if (strcmp(argv[2], "srtitov") == 0) {
 			run.reset(new srtitov::Run(bChar, bPath, bSuperTag));
+		}
+		else if (strcmp(argv[2], "bitwostack") == 0) {
+			run.reset(new bitwostack::Run(bChar, bPath, bSuperTag));
 		}
 	}
 
