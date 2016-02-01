@@ -3042,7 +3042,7 @@ namespace graph_transition {
 		}
 		else {
 			// sst - n0 directed
-			m_mapSSTN0GDis.getOrUpdateScore(packedScore, parser->m_vecPath[sst_index][n0_index].size() >= 4 ? 5 : parser->m_vecPath[st2_index][n0_index].size(), scoreIndex, amount, trainingRound);
+			m_mapSSTN0GDis.getOrUpdateScore(packedScore, parser->m_vecPath[sst_index][n0_index].size() >= 4 ? 5 : parser->m_vecPath[sst_index][n0_index].size(), scoreIndex, amount, trainingRound);
 			m_mapSSTN0GPOSPath.getOrUpdateScore(packedScore, parser->m_vecPOSPath[sst_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSSTN0GFPOSPath.getOrUpdateScore(packedScore, parser->m_vecFPOSPath[sst_index][n0_index], scoreIndex, amount, trainingRound);
 			m_mapSSTN0GLabelPath.getOrUpdateScore(packedScore, parser->m_vecLabelPath[sst_index][n0_index], scoreIndex, amount, trainingRound);
