@@ -284,12 +284,6 @@ void BiGraphDepParserBase<RET_TYPE, STATE_TYPE, ACTION_TYPE>::goldCheck(Dependen
 //		std::cout << "error No." << m_nTotalErrors << std::flush;
 		std::cout << "error" << std::endl;
 	}
-	else {
-		for (int i = 1; i <= m_iCorrect.actionBack(); ++i) {
-			m_cActions.print(m_iCorrect.action(i));
-		}
-		std::cout << std::endl;
-	}
 }
 
 template<class RET_TYPE, class STATE_TYPE, class ACTION_TYPE>

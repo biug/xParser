@@ -100,6 +100,7 @@ void BiGraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_T
 		if (input) {
 			while (input >> sentence) {
 				revInput >> rsentence;
+				rsentence = -rsentence;
 				if (sentence.size() < MAX_SENTENCE_SIZE) {
 					parser->parse(sentence, rsentence, &graph);
 					output << graph;
@@ -122,6 +123,7 @@ void BiGraphTransitionRun<DEP_PARSER, RET_TYPE1, RET_TYPE2, STATE_TYPE, ACTION_T
 		if (input) {
 			while (input >> sentence) {
 				revInput >> rsentence;
+				rsentence = -rsentence;
 				if (sentence.size() < MAX_SENTENCE_SIZE) {
 					sentence.clearSuperTag();
 					parser->parse(sentence, rsentence, &graph);

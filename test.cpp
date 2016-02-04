@@ -25,7 +25,7 @@
 #include <memory>
 #include <fstream>
 
-#define	SLASH	"\\"
+#define	SLASH	"/"
 
 void runner(int argc, char * argv[]) {
 
