@@ -9,3 +9,4 @@ void combineGraph(int argc, char * argv[]);
 void removeTree(int argc, char * argv[]);
 void stronglyComponents(int argc, char * argv[]);
 void graphPath(int argc, char * argv[]);
+void testCrossArc(int argc, char * argv[]);

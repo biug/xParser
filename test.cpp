@@ -5,22 +5,15 @@
 #include "include/dependency_primitive.h"
 #include "common/parser/fittings/pseudo_tree.h"
 #include "common/parser/implementations/arceager/arceager_run.h"
-#include "common/parser/implementations/arceagerpath/arceagerpath_run.h"
-#include "common/parser/implementations/arceagertag/arceagertag_run.h"
-#include "common/parser/implementations/minitwostack/minitwostack_run.h"
 #include "common/parser/implementations/graph_transition/nivre/nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/twostack_run.h"
 #include "common/parser/implementations/graph_transition/titov/bititov_run.h"
 #include "common/parser/implementations/graph_transition/nivre/binivre_run.h"
 #include "common/parser/implementations/graph_transition/twostack/bitwostack_run.h"
-#include "common/parser/implementations/graph_transition/titov/srtitov_run.h"
 #include "common/parser/implementations/graph_transition/nivre/std_nivre_run.h"
 #include "common/parser/implementations/graph_transition/titov/std_titov_run.h"
 #include "common/parser/implementations/graph_transition/twostack/std_twostack_run.h"
-#include "common/parser/implementations/graph_transition/sr/twoway_sr_run.h"
-#include "common/parser/implementations/graph_transition/arcsr/arcsr_run.h"
-#include "common/parser/implementations/graph_transition/titov/twoway_titov_run.h"
 
 #include <memory>
 #include <fstream>
@@ -33,15 +26,6 @@ void runner(int argc, char * argv[]) {
 
 	if (strcmp(argv[2], "arceager") == 0) {
 		run.reset(new arceager::Run());
-	}
-	else if (strcmp(argv[2], "arceagerpath") == 0) {
-		run.reset(new arceagerpath::Run());
-	}
-	else if (strcmp(argv[2], "arceagertag") == 0) {
-		run.reset(new arceagertag::Run());
-	}
-	else if (strcmp(argv[2], "minit") == 0) {
-		run.reset(new minitwostack::Run());
 	}
 	else if (strcmp(argv[2], "titov") == 0 || strcmp(argv[2], "twostack") == 0 || strcmp(argv[2], "nivre") == 0 ||
 			strcmp(argv[2], "std_titov") == 0 || strcmp(argv[2], "std_twostack") == 0 || strcmp(argv[2], "std_nivre") == 0 ||
@@ -82,15 +66,6 @@ void runner(int argc, char * argv[]) {
 		else if (strcmp(argv[2], "std_twostack") == 0) {
 			run.reset(new std_twostack::Run(bChar, bPath, bSuperTag));
 		}
-		else if (strcmp(argv[2], "twoway_sr") == 0) {
-			run.reset(new twoway_sr::Run(bChar, bPath, bSuperTag));
-		}
-		else if (strcmp(argv[2], "twoway_titov") == 0) {
-			run.reset(new twoway_titov::Run(bChar, bPath, bSuperTag));
-		}
-		else if (strcmp(argv[2], "arcsr") == 0) {
-			run.reset(new arcsr::Run(bChar, bPath, bSuperTag));
-		}
 		else if (strcmp(argv[2], "bititov") == 0) {
 			run.reset(new bititov::Run(bChar, bPath, bSuperTag));
 		}
@@ -99,9 +74,6 @@ void runner(int argc, char * argv[]) {
 		}
 		else if (strcmp(argv[2], "bitwostack") == 0) {
 			run.reset(new bitwostack::Run(bChar, bPath, bSuperTag));
-		}
-		else if (strcmp(argv[2], "srtitov") == 0) {
-			run.reset(new srtitov::Run(bChar, bPath, bSuperTag));
 		}
 	}
 
@@ -360,4 +332,33 @@ void graphPath(int argc, char * argv[]) {
 		}
 		break;
 	}
+}
+
+void testCrossArc(int argc, char * argv[]) {
+	std::ifstream input(argv[2]);
+	CoNLL08DepGraph graph;
+	int len = 0, rlen = 0, num = 0;
+	int maxLen = 0, minLen = 0x7fffffff, maxRLen = 0, minRLen = 0x7fffffff;
+	while (input >> graph) {
+		for (int l = 0; l < graph.size(); ++l) {
+			for (const auto & arc : graph[l].m_vecRightArcs) {
+				int r = arc.first;
+				for (int l0 = l + 1; l0 < r; ++l0) {
+					for (const auto & arc0 : graph[l0].m_vecRightArcs) {
+						if (arc0.first > r) {
+							len += (l0 - l);
+							rlen += (arc0.first - r);
+							++num;
+							maxLen = std::max(maxLen, l0 - l);
+							minLen = std::min(minLen, l0 - l);
+							maxRLen = std::max(maxRLen, arc0.first - r);
+							minRLen = std::min(minRLen, arc0.first - r);
+						}
+					}
+				}
+			}
+		}
+	}
+	std::cout << (double)len / (double)num << " " << (double)rlen / (double)num << " " << num << std::endl;
+	std::cout << maxLen << " " << minLen << " " << maxRLen << " " << minRLen << std::endl;
 }
